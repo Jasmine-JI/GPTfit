@@ -1,0 +1,94 @@
+@import 'grid-setting.scss';
+@import 'color.scss';
+@import 'flex-center.scss';
+
+@mixin info-value($bg-color, $border-color) {
+  position: relative;
+  background-color: $bg-color;
+
+  &:after {
+    content: '';
+    position: absolute;
+    bottom: -5px;
+    border-bottom: 3px solid $border-color;
+    display: block;
+    width: 100%;
+  }
+}
+
+.grid__container {
+  @include diff-gap-grid(1px, 5px);
+  margin-bottom: 8px;
+}
+
+.info__title {
+  grid-column: span 12;
+  text-align: center;
+  margin: 0;
+  font-weight: bold;
+}
+
+.info__icon {
+  grid-column: span 1;
+  font-size: 2rem;
+}
+
+.info__value__unit {
+  grid-column: span 5;
+  padding: 2px 0;
+  min-height: 45px;
+  justify-content: center;
+}
+
+.info__value {
+  display: flex;
+  justify-content: center;
+  font-size: 1.5rem;
+  font-weight: bold;
+  line-height: 1;
+}
+
+.info__unit {
+  font-size: 0.8rem;
+  text-align: center;
+  min-height: 18px;
+}
+
+.column__divide__line {
+  grid-column: span 1;
+  @include center();
+
+  &:after {
+    content: '';
+    display: block;
+    width: 1px;
+    height: 100%;
+    background-color: rgba(100, 100, 100, 1);
+  }
+}
+
+.base__value {
+  @include info-value($file-base-bg, $file-base-color);
+}
+
+.compare__value {
+  @include info-value($file-compare-bg, $file-compare-color);
+}
+
+.info__diff {
+  grid-column: 3 / 6;
+  font-size: 0.8rem;
+  text-align: center;
+  position: relative;
+  top: 6px;
+}
+
+.positive__value {
+  background-color: $positive-bg-color;
+  color: $positive-color;
+}
+
+.negative__value {
+  background-color: $negative-bg-color;
+  color: $negative-color;
+}

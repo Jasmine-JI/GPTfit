@@ -1,3 +1,6 @@
+/**
+ * 使用者資訊相關表單檢查
+ */
 export const formTest = {
   email:
     /^[a-zA-Z0-9.+_-]{2,63}@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/,
@@ -11,3 +14,8 @@ export const formTest = {
   newIdCardNumber: /^[A-Za-z]{1}[1-2]{1}[0-9]{8}$/, // 身份證號或新版居留證號
   oldIdCardNumber: /^[a-zA-Z][C|D|c|d][0-9]{8}$/, // 舊版居留證號
 };
+
+/**
+ * 輸入配速之格式檢查
+ */
+export const paceReg = /(^([0-5]?\d)'[0-5]\d")|(60'00")/;

@@ -29,7 +29,7 @@ export class GroupSportsReportInfo {
 
       // 群組成員清單只存基準日期範圍的運動達成人數和隱私權開放狀態
       const { openPrivacy } = _base;
-      const targetAchieved = _base.targetAchieved ?? false;
+      const targetAchieved = Boolean(_base.targetAchieved);
       const _totalActivities = _base.totalActivities ?? 0;
 
       GroupInfo.getBelongGroup(_groupId).forEach((_list) => {
@@ -49,7 +49,7 @@ export class GroupSportsReportInfo {
             (_groupBaseData.targetAchievedPeople ?? 0) + (targetAchieved ? 1 : 0); // 達成目標人數
           if (_compare) {
             const { openPrivacy: _compareOpenPrivacy } = _compare;
-            const _compareTargetAchieved = _compare.targetAchieved ?? false;
+            const _compareTargetAchieved = Boolean(_compare.targetAchieved);
             const _compareTotalActivities = _compare.totalActivities ?? 0;
             const _groupCompareData = groupObj[_gId].compare;
 

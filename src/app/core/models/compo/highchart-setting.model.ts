@@ -7,7 +7,7 @@ export interface HighchartSetting {
   credits: {
     enabled: boolean; // 是否在圖表顯示'Highchart'字樣
   };
-  legend?: HighchartSettingLegend;
+  legend?: HighchartSettingLegend; // 數據類別對應說明
   plotOptions?: HighchartPlotOptions;
   series: Array<SeriesOption>;
   title: HighchartSettingTitle;
@@ -24,6 +24,8 @@ export interface HighchartSettingChart {
   spacing?: number | Array<number>; // 圖表（含 title、legend）與邊界的距離，預設[10, 10, 15, 10]（[上, 右, 下, 左]）
   type?: ChartType;
   zoomType?: 'x' | 'y' | 'xy'; // undefined 為不啟用
+  marginLeft?: number; // 圖表左側留白距離（不含y axis）
+  marginRight?: number; // 圖表右側留白距離（不含y axis）
 }
 
 export interface HighchartSettingLegend {
@@ -75,6 +77,18 @@ export interface HighchartPlotOptions {
     marker: {
       radius: 2;
     };
+  };
+  area?: {
+    zones?: Array<AreaZoneColor>;
+    opacity?: number; // 整體透明度 0～1
+    fillOpacity?: number; // 填充顏色透明度 0～1
+    marker?: {
+      enabled: boolean; // 是否顯示標註記號
+    };
+    lineWidth?: number; // 線條寬度
+    fillColor?: LinearGradient; // 填充顏色
+    color?: string; // 整體顏色
+    threshold?: number; // 門檻值
   };
   series?: {
     animation?: boolean; // 是否使用動畫，預設為true，此參數可帶物件去設定動畫，但目前暫無需求
@@ -136,13 +150,14 @@ export interface HighchartSettingAxis {
     offset?: number;
     x?: number;
     y?: number;
-  };
+  } | null;
   tickAmount?: number; // 軸線標示數目，僅適用於 type: linear。
   tickInterval?: number; // 軸線標示的數據間距，僅適用於 type: 'linear' | 'datetime'。
   tickPixelInterval?: number; // 根據設定的pixel值自動設定軸線標示的數據間距。
   tickPositions?: Array<number>; // 手動設定軸線上標示的數據。
   opposite?: boolean; // 軸線是否放置於另一邊
   pointPlacement?: PointPlacement;
+  reversed?: boolean; // 是否反轉軸線
 }
 
 /**
@@ -263,4 +278,12 @@ export interface DataSetting {
   sliced?: boolean; // 圓餅圖中是否將此區塊與其他區塊進行分隔
   borderColor?: string;
   borderWidth?: number;
+}
+
+/**
+ * 區域圖y軸各區間顏色設定
+ */
+export interface AreaZoneColor {
+  value?: number;
+  color: string;
 }

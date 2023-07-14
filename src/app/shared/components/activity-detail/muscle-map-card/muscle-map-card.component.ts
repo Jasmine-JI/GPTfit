@@ -1,6 +1,6 @@
 import { Component, OnInit, OnChanges, OnDestroy, Input } from '@angular/core';
 import {
-  asept,
+  adept,
   metacarpus,
   novice,
   muscleMapColorSetting,
@@ -44,7 +44,7 @@ export class MuscleMapCardComponent implements OnInit, OnChanges, OnDestroy {
   weightTraining = {
     focusPart: <MuscleCode>null, // 紀錄現在聚焦的肌肉部位
     focusSection: <HTMLElement>null, // 紀錄現在聚焦的html區塊
-    colorBarInfo: <typeof asept | typeof metacarpus | typeof novice>novice, // 顏色棒所顯示的%數
+    colorBarInfo: <typeof adept | typeof metacarpus | typeof novice>novice, // 顏色棒所顯示的%數
   };
 
   baseUrl = window.location.href;
@@ -76,8 +76,8 @@ export class MuscleMapCardComponent implements OnInit, OnChanges, OnDestroy {
         proficiencyCoefficient = Proficiency.metacarpus;
         break;
       default:
-        this.weightTraining.colorBarInfo = asept;
-        proficiencyCoefficient = Proficiency.asept;
+        this.weightTraining.colorBarInfo = adept;
+        proficiencyCoefficient = Proficiency.adept;
         break;
     }
 

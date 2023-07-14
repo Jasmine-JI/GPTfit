@@ -1,0 +1,196 @@
+<div style="position: relative">
+  <button
+    class="flexCenter optional__button"
+    (click)="toggleSetting($event)"
+    (mousedown)="$event.stopPropagation()"
+  >
+    <i class="icon-svg_web-icon_p1_001-setting"></i>
+  </button>
+  <section
+    class="flexCol drop__menu"
+    (mousedown)="clickDropMenu($event)"
+    *ngIf="displaySetting && quadrantSetting"
+  >
+    <div
+      *ngTemplateOutlet="
+        axisSetting;
+        context: {
+          axis: 'X',
+          currentType: quadrantSetting.xAxis.type,
+          origin: quadrantSetting.xAxis.origin
+        }
+      "
+    ></div>
+    <div
+      *ngTemplateOutlet="
+        axisSetting;
+        context: {
+          axis: 'Y',
+          currentType: quadrantSetting.yAxis.type,
+          origin: quadrantSetting.yAxis.origin
+        }
+      "
+    ></div>
+    <div
+      *ngTemplateOutlet="
+        quadrantSymbol;
+        context: {
+          quadrant: 1,
+          symbol: quadrantSetting.meaning.quadrantI
+        }
+      "
+    ></div>
+    <div
+      *ngTemplateOutlet="
+        quadrantSymbol;
+        context: {
+          quadrant: 2,
+          symbol: quadrantSetting.meaning.quadrantII
+        }
+      "
+    ></div>
+    <div
+      *ngTemplateOutlet="
+        quadrantSymbol;
+        context: {
+          quadrant: 3,
+          symbol: quadrantSetting.meaning.quadrantIII
+        }
+      "
+    ></div>
+    <div
+      *ngTemplateOutlet="
+        quadrantSymbol;
+        context: {
+          quadrant: 4,
+          symbol: quadrantSetting.meaning.quadrantIV
+        }
+      "
+    ></div>
+    <div class="flexRow button__section">
+      <button class="restore__button" (click)="restoreDefault()">
+        {{ 'universal_operating_restoreDefaults' | translate }}
+      </button>
+      <button class="confirm__button" (click)="confirmSetting()">
+        {{ 'universal_operating_confirm' | translate }}
+      </button>
+    </div>
+  </section>
+</div>
+
+<ng-template #axisSetting let-axis="axis" let-currentType="currentType" let-origin="origin">
+  <div class="flexRow axis__setting__row">
+    <div
+      *ngTemplateOutlet="
+        axisTypeMenu;
+        context: {
+          axis: axis,
+          currentType: currentType
+        }
+      "
+    ></div>
+    <div
+      *ngTemplateOutlet="
+        axisOrigin;
+        context: {
+          axis: axis,
+          currentType: currentType,
+          origin: origin
+        }
+      "
+    ></div>
+  </div>
+</ng-template>
+
+<ng-template #axisTypeMenu let-axis="axis" let-currentType="currentType">
+  <div class="flexCol axis__type__setting">
+    <label class="menu__label" [for]="'quadrant__type__' + axis">
+      {{ axis }} {{ 'universal_vocabulary_data' | translate }}
+    </label>
+    <div
+      class="type__menu"
+      [id]="'quadrant__type__' + axis"
+      role="menu"
+      (mousedown)="$event.stopPropagation()"
+      (click)="toggleTypeMenu($event, axis)"
+    >
+      <span class="current__type" [class.current__type--active]="axis === displayAxisTypeSetting">
+        {{ currentType | dataTypeTranslate: { unitType: unit, sportsType } | translate }}
+      </span>
+      <ul class="type__drop__menu" *ngIf="axis === displayAxisTypeSetting">
+        <li class="type__drop__item" (click)="changeOriginType('hr', axis)">
+          {{ 'universal_activityData_hr' | translate }}
+        </li>
+        <li class="type__drop__item" (click)="changeOriginType('speed', axis)">
+          {{ 'speed' | dataTypeTranslate: { unitType: unit, sportsType } | translate }}
+        </li>
+        <li class="type__drop__item" (click)="changeOriginType('cadence', axis)">
+          {{ 'cadence' | dataTypeTranslate: { sportsType } | translate }}
+        </li>
+        <li
+          class="type__drop__item"
+          (click)="changeOriginType('power', axis)"
+          *ngIf="includesSportsType([SportType.cycle, SportType.row])"
+        >
+          {{ 'power' | dataTypeTranslate | translate }}
+        </li>
+      </ul>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #axisOrigin let-axis="axis" let-currentType="currentType" let-origin="origin">
+  <div class="flexCol origin__setting">
+    <label class="origin__label" [for]="'quadrant__origin__' + axis" [ngSwitch]="axis">
+      <ng-container *ngSwitchCase="'X'">
+        {{ 'universal_vocabulary_xOrigin' | translate }}
+      </ng-container>
+      <ng-container *ngSwitchCase="'Y'">
+        {{ 'universal_vocabulary_yOrigin' | translate }}
+      </ng-container>
+    </label>
+    <input
+      [id]="'quadrant__origin__' + axis"
+      class="origin__input"
+      type="text"
+      maxlength="10"
+      [value]="
+        currentType === 'speed'
+          ? (origin | sportPaceSibs: { sportType: sportsType, userUnit: unit, showUnit: false })
+          : origin
+      "
+      (change)="changeOriginValue($event, axis)"
+    />
+  </div>
+</ng-template>
+
+<ng-template #quadrantSymbol let-quadrant="quadrant" let-symbol="symbol">
+  <div class="flexCol">
+    <label
+      [for]="'quadrant__symbol__' + quadrant"
+      [ngClass]="{
+        quadrant__label: true,
+        quadrant__first: quadrant === 1,
+        quadrant__second: quadrant === 2,
+        quadrant__third: quadrant === 3,
+        quadrant__fourth: quadrant === 4
+      }"
+      [ngSwitch]="quadrant"
+    >
+      {{ 'universal_vocabulary_quadrant' | translate }}
+      <ng-container *ngSwitchCase="1"> I </ng-container>
+      <ng-container *ngSwitchCase="2"> II </ng-container>
+      <ng-container *ngSwitchCase="3"> III </ng-container>
+      <ng-container *ngSwitchCase="4"> IV </ng-container>
+    </label>
+    <input
+      [id]="'quadrant__symbol__' + quadrant"
+      class="symbol__input"
+      type="text"
+      maxlength="50"
+      [value]="symbol"
+      [placeholder]="'universal_activityData_enterBodyFit' | translate"
+      (change)="changeSymbol($event, quadrant)"
+    />
+  </div>
+</ng-template>

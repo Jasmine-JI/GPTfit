@@ -16,14 +16,14 @@
     text-anchor="middle"
     font-size="16"
     font-weight="bold"
-    *ngIf="hrZoneRange && hrZoneRange.hrBase === HrBase.reserve"
+    *ngIf="hrZoneRange?.hrBase === HrBase.reserve"
   >
     {{ 'universal_userProfile_heartRateReserve' | translate }}
   </text>
   <table width="100%" border="0" cellpadding="0">
     <tr style="color: #ff9292">
       <td>&nbsp;</td>
-      <td class="zone__range">{{ hrZoneRange ? hrZoneRange.z5 : 'Z5' }}</td>
+      <td class="zone__range">{{ hrZoneRange?.z5 ?? 'Z5' }}</td>
       <td>
         <table cellspacing="0" cellpadding="0">
           <tr>
@@ -57,7 +57,7 @@
           </tr>
         </table>
       </td>
-      <td class="zone__range">{{ hrZoneRange ? hrZoneRange.z4 : 'Z4' }}</td>
+      <td class="zone__range">{{ hrZoneRange?.z4 ?? 'Z4' }}</td>
     </tr>
     <tr>
       <td class="text__top" rowspan="3">
@@ -72,7 +72,7 @@
       </td>
     </tr>
     <tr style="color: #ffdc00">
-      <td class="zone__range">{{ hrZoneRange ? hrZoneRange.z3 : 'Z3' }}</td>
+      <td class="zone__range">{{ hrZoneRange?.z3 ?? 'Z3' }}</td>
       <td>
         <table cellspacing="0" cellpadding="0">
           <tr>
@@ -105,7 +105,7 @@
           </tr>
         </table>
       </td>
-      <td class="zone__range">{{ hrZoneRange ? hrZoneRange.z2 : 'Z2' }}</td>
+      <td class="zone__range">{{ hrZoneRange?.z2 ?? 'Z2' }}</td>
     </tr>
     <tr>
       <td class="text__top" rowspan="3">
@@ -120,7 +120,7 @@
       </td>
     </tr>
     <tr style="color: #6bebf9">
-      <td class="zone__range">{{ hrZoneRange ? hrZoneRange.z1 : 'Z1' }}</td>
+      <td class="zone__range">{{ hrZoneRange?.z1 ?? 'Z1' }}</td>
       <td>
         <table cellspacing="0" cellpadding="0">
           <tr>
@@ -153,7 +153,7 @@
           </tr>
         </table>
       </td>
-      <td class="zone__range">{{ hrZoneRange ? hrZoneRange.z0 : 'Z0' }}</td>
+      <td class="zone__range">{{ hrZoneRange?.z0 ?? 'Z0' }}</td>
     </tr>
     <tr>
       <td class="text__top" rowspan="3">

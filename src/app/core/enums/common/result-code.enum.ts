@@ -9,4 +9,5 @@ export enum ResultCode {
   forbidden = 403,
   pageNotFound = 404,
   conflict = 409,
+  connectError = 500,
 }

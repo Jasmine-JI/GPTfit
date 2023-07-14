@@ -155,7 +155,7 @@ export class AllInfoDataComponent implements OnChanges {
       'totalFeedbackEnergy',
       'runAvgCadence',
       'runMaxCadence',
-      'totalRestLapOrSet',
+      'totalActivityLapOrSet',
       'totalWeightKg',
       'totalReps',
       'swimAvgCadence',
@@ -237,16 +237,15 @@ export class AllInfoDataComponent implements OnChanges {
     const isAvgData = key !== 'maxSpeed';
     const isMetric = userUnit === DataUnitType.metric;
     const getSpeedByUnit = (speed: number, isMetric: boolean) => {
-      mathRounding(isMetric ? speed : speed / mi, 2);
+      return mathRounding(isMetric ? speed : speed / mi, 2);
     };
 
     const speed = this.activityInfo[key] ?? 0;
     const diffSpeed = this.diffData ? this.diffData[key] ?? 0 : 0;
-
     return {
       title: this.getPaceTitle(isAvgData, +type),
       value: getSpeedByUnit(speed, isMetric),
-      unit: isMetric ? 'kph' : 'mi / hr',
+      unit: isMetric ? 'kph' : 'mph',
       diff: getSpeedByUnit(diffSpeed, isMetric),
       isPositiveDiff: diffSpeed >= 0,
     };
@@ -290,7 +289,7 @@ export class AllInfoDataComponent implements OnChanges {
       case SportType.row:
         return {
           title: avgWattTranslateKey,
-          value: mathRounding(this.activityInfo.rowingAvgWatt, 2),
+          value: mathRounding(this.activityInfo.rowingAvgWatt ?? 0, 2),
           unit: 'w',
           diff: this.diffData?.rowingAvgWatt ?? 0,
           isPositiveDiff: this.diffData?.rowingAvgWatt >= 0,
@@ -298,7 +297,7 @@ export class AllInfoDataComponent implements OnChanges {
       default:
         return {
           title: avgWattTranslateKey,
-          value: mathRounding(this.activityInfo.cycleAvgWatt, 2),
+          value: mathRounding(this.activityInfo.cycleAvgWatt ?? 0, 2),
           unit: 'w',
           diff: this.diffData?.cycleAvgWatt ?? 0,
           isPositiveDiff: this.diffData?.cycleAvgWatt >= 0,
@@ -316,7 +315,7 @@ export class AllInfoDataComponent implements OnChanges {
       case SportType.row:
         return {
           title: maxWattTranslateKey,
-          value: mathRounding(this.activityInfo.rowingMaxWatt, 2),
+          value: mathRounding(this.activityInfo.rowingMaxWatt ?? 0, 2),
           unit: 'w',
           diff: this.diffData?.rowingMaxWatt ?? 0,
           isPositiveDiff: this.diffData?.rowingMaxWatt >= 0,
@@ -324,7 +323,7 @@ export class AllInfoDataComponent implements OnChanges {
       default:
         return {
           title: maxWattTranslateKey,
-          value: mathRounding(this.activityInfo.cycleMaxWatt, 2),
+          value: mathRounding(this.activityInfo.cycleMaxWatt ?? 0, 2),
           unit: 'w',
           diff: this.diffData?.cycleMaxWatt ?? 0,
           isPositiveDiff: this.diffData?.cycleMaxWatt >= 0,

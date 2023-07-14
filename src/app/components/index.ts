@@ -29,3 +29,8 @@ export * from './loading-mask/loading-mask.component';
 export * from './connection-error/connection-error.component';
 export * from './image-cropper/image-cropper.component';
 export * from './share-box/share-box.component';
+export * from './tree-map-chart/tree-map-chart.component';
+export * from './line-area-compare-chart/line-area-compare-chart.component';
+export * from './hr-zone-hint/hr-zone-hint.component';
+export * from './muscle-map/muscle-map.component';
+export * from './muscle-info-card/muscle-info-card.component';

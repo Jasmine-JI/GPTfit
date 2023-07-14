@@ -629,7 +629,7 @@ export class GroupSportsChartData {
     let compareDateList = [];
     const unitString = dateUnit.getUnitString();
     const { startTimestamp: baseStart, endTimestamp: baseEnd } = baseTime;
-    const referenceUnitString = isMondayFirst ? 'isoWeek' : unitString;
+    const referenceUnitString = unitString === 'week' && isMondayFirst ? 'isoWeek' : unitString;
     const baseDiffTime = baseTime.getCrossRange(unitString, referenceUnitString);
     const compareDiffTime = compareTime
       ? compareTime.getCrossRange(unitString, referenceUnitString)

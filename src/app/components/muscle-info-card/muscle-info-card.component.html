@@ -1,0 +1,122 @@
+<ul class="muscle__list">
+  <li
+    class="muscle__data__row"
+    [class.muscle__data__row--focus]="
+      focusId === (isCompareMode ? _data.muscleGroup : _data.muscle)
+    "
+    (click)="focusMuscle(isCompareMode ? _data.muscleGroup : _data.muscle)"
+    *ngFor="let _data of muscleData; let _index = index"
+  >
+    <h6 class="row__title">
+      <ng-container *ngIf="isCompareMode">
+        {{ _data.muscleGroup | muscleGroupName | translate }}
+      </ng-container>
+      <ng-container *ngIf="!isCompareMode">
+        {{ _data.muscle | muscleName | translate }}
+      </ng-container>
+    </h6>
+    <div class="flexCenter row__icon">
+      <ng-container *ngIf="isCompareMode">
+        <i class="muscle__icon" [class]="_data.muscleGroup | muscleGroupIcon"></i>
+      </ng-container>
+      <ng-container *ngIf="!isCompareMode">
+        <i class="muscle__icon" [class]="_data.muscle | musclePartIcon"></i>
+      </ng-container>
+    </div>
+    <div class="row__data">
+      <div
+        *ngTemplateOutlet="
+          dataItem;
+          context: {
+            title: 'universal_activityData_limit_totalSets',
+            baseValue: _data?.totalSets ?? 0,
+            compareValue: compareMuscleGroup ? compareMuscleGroup[_index]?.totalSets : null,
+            diffValue: diffData ? diffData[_index]?.totalSets : null,
+            unit: 'universal_unit_set'
+          }
+        "
+      ></div>
+      <div
+        *ngTemplateOutlet="
+          dataItem;
+          context: {
+            title: 'universal_activityData_limit_totalReps',
+            baseValue: _data?.totalReps ?? 0,
+            compareValue: compareMuscleGroup ? compareMuscleGroup[_index]?.totalReps : null,
+            diffValue: diffData ? diffData[_index]?.totalReps : null,
+            unit: 'universal_unit_times'
+          }
+        "
+      ></div>
+      <div
+        *ngTemplateOutlet="
+          dataItem;
+          context: {
+            title: 'universal_activityData_limit_totalWeight',
+            baseValue:
+              _data?.totalWeightKg ?? 0 | weightSibs: { unitType: userUnit, showUnit: false },
+            compareValue: compareMuscleGroup
+              ? (compareMuscleGroup[_index]?.totalWeightKg
+                | weightSibs: { unitType: userUnit, showUnit: false })
+              : null,
+            diffValue: diffData
+              ? (diffData[_index]?.totalWeightKg
+                | weightSibs: { unitType: userUnit, showUnit: false })
+              : null,
+            unit: 'weight' | dataTypeUnit: { sportsType: SportType.WeightTrain, unitType: userUnit }
+          }
+        "
+      ></div>
+      <div
+        *ngTemplateOutlet="
+          dataItem;
+          context: {
+            title: '1RM',
+            baseValue:
+              _data?.max1RmWeightKg ?? 0 | weightSibs: { unitType: userUnit, showUnit: false },
+            compareValue: compareMuscleGroup
+              ? (compareMuscleGroup[_index]?.max1RmWeightKg
+                | weightSibs: { unitType: userUnit, showUnit: false })
+              : null,
+            diffValue: diffData
+              ? (diffData[_index]?.max1RmWeightKg
+                | weightSibs: { unitType: userUnit, showUnit: false })
+              : null,
+            unit: 'weight' | dataTypeUnit: { sportsType: SportType.WeightTrain, unitType: userUnit }
+          }
+        "
+      ></div>
+    </div>
+  </li>
+</ul>
+
+<ng-template
+  #dataItem
+  let-title="title"
+  let-baseValue="baseValue"
+  let-compareValue="compareValue"
+  let-diffValue="diffValue"
+  let-unit="unit"
+>
+  <div class="flexCol row__data__item" [class.row__data__item--compare]="isCompareMode">
+    <span class="data__title">{{ title | translate }}</span>
+    <span class="base__data">
+      <span class="data__value">{{ baseValue }}</span>
+      <span class="data__unit" *ngIf="unit">{{ unit | translate }}</span>
+      <span
+        class="diff__value"
+        [class]="{
+          positive__value: diffValue >= 0,
+          nagetive__value: diffValue < 0
+        }"
+        *ngIf="diffValue != null"
+      >
+        {{ diffValue >= 0 ? '+' : '' }}{{ diffValue }}
+      </span>
+    </span>
+    <span class="compare__data" *ngIf="compareValue != null">
+      <span class="data__value">{{ compareValue }}</span>
+      <span class="data__unit" *ngIf="unit">{{ unit | translate }}</span>
+    </span>
+  </div>
+</ng-template>

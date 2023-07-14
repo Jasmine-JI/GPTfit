@@ -65,3 +65,4 @@ export * from './file-sort-type.pipe';
 export * from './time-range-string.pipe';
 export * from './product-error-log.pipe';
 export * from './access-name.pipe';
+export * from './pace-second-to-pace.pipe';

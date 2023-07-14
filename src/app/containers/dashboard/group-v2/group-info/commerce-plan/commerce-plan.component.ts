@@ -60,11 +60,6 @@ export class CommercePlanComponent implements OnInit, OnDestroy {
   commerceInfo: any;
 
   /**
-   * 目前管理員總數
-   */
-  totalAdmin = 0;
-
-  /**
    * 送出api 1116的req body
    */
   editBody = {
@@ -114,25 +109,7 @@ export class CommercePlanComponent implements OnInit, OnDestroy {
         this.groupInfo = resArr[0];
         this.commerceInfo = resArr[1];
         this.userSimpleInfo = resArr[2];
-        this.countTotalAdminNum(this.commerceInfo);
       });
-  }
-
-  /**
-   * 計算所有管理員加總數量
-   * @param commerce {any}
-   * @author kidin-1091112
-   */
-  countTotalAdminNum(commerce: any) {
-    const admin = commerce.groupManagerStatus;
-    this.totalAdmin = 0;
-    for (const _admin in admin) {
-      if (Object.prototype.hasOwnProperty.call(admin, _admin)) {
-        if (_admin.indexOf('current') > -1) {
-          this.totalAdmin += +admin[_admin];
-        }
-      }
-    }
   }
 
   /**

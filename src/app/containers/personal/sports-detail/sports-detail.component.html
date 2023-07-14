@@ -1,14 +1,20 @@
 <app-loading-bar [progress]="progress"></app-loading-bar>
 <app-loading-mask [isLoading]="progress !== 100"></app-loading-mask>
+
 <app-connection-error *ngIf="connectionError"></app-connection-error>
-<article class="file__content grid-container" *ngIf="baseFileData && !connectionError">
+
+<article
+  class="file__content grid-container"
+  [class.portal__container]="isPortal"
+  *ngIf="baseFileData && !connectionError"
+>
   <div class="function__toolbar grid-col-12" *ngIf="!isPreviewPrint">
     <app-compare-file-selector
       [fileId]="baseFileData.fileInfo.fileId"
-      [sportsType]="+baseFileData.activityInfoLayer.type"
+      [sportsType]="sportsType"
       [cloudrunMapId]="baseFileData.fileInfo.cloudRunMapId"
       (selectFile)="selectCompareFile($event)"
-      *ngIf="+baseFileData.activityInfoLayer.type !== SportType.complex && (isLogin | async)"
+      *ngIf="sportsType !== SportType.complex && (isLogin | async) && isMainFile"
     >
     </app-compare-file-selector>
     <ng-container *ngIf="!compareFileData">
@@ -16,102 +22,530 @@
         [fileName]="baseFileData.fileInfo.dispName"
         [fileId]="baseFileData.fileInfo.fileId"
         (changeFileName)="updateFileName($event)"
-        *ngIf="isFileOwner"
+        *ngIf="isFileOwner && isMainFile"
       ></app-edit-button>
       <app-change-photo-button
         [fileId]="baseFileData.fileInfo.fileId"
         [photo]="baseFileData.fileInfo.photo"
         (changePhoto)="changeFileSenery($event)"
-        *ngIf="isFileOwner"
+        *ngIf="isFileOwner && isMainFile"
       ></app-change-photo-button>
       <app-privacy-setting-button
         [fileInfo]="baseFileData.fileInfo"
-        *ngIf="isFileOwner"
+        *ngIf="isFileOwner && isMainFile"
       ></app-privacy-setting-button>
       <app-share-button
         [title]="baseFileData.fileInfo.dispName"
         [fileId]="baseFileData.fileInfo.fileId"
-        *ngIf="isFileOwner"
+        *ngIf="isFileOwner && isMainFile"
       ></app-share-button>
       <app-download-gpx-button
         [rawData]="baseFileData"
-        *ngIf="isFileOwner"
+        *ngIf="isFileOwner && isMainFile"
       ></app-download-gpx-button>
       <app-download-csv-button
         [rawData]="baseFileData"
-        *ngIf="isFileOwner"
+        *ngIf="isFileOwner && isMainFile"
       ></app-download-csv-button>
       <app-print-button [fileId]="baseFileData.fileInfo.fileId"></app-print-button>
       <app-delete-button
         [fileId]="baseFileData.fileInfo.fileId"
-        *ngIf="isFileOwner"
+        *ngIf="isFileOwner && isMainFile"
       ></app-delete-button>
     </ng-container>
-    <app-return-button></app-return-button>
+    <app-return-button
+      (cancelFileCompare)="cancelFileCompare()"
+      *ngIf="compareFileData && isMainFile"
+    ></app-return-button>
   </div>
+
+  <app-sports-file-road
+    class="grid-col-12"
+    [fileList]="complexInfoList"
+    [userUnit]="unit"
+    (selectFile)="selectFile($event)"
+    *ngIf="complexInfoList"
+  ></app-sports-file-road>
+
   <app-header
     [ngClass]="{
-      'grid-col-12': !compareFileData,
-      'grid-col-6': compareFileData
+      'grid-col-12': !compareFileData || !isLargeScreen,
+      'grid-col-6': compareFileData && isLargeScreen
     }"
-    [fileData]="baseFileData"
+    [file]="baseFileData"
+    [compareFile]="!isLargeScreen ? compareFileData : undefined"
+    [isLargeScreen]="isLargeScreen"
   ></app-header>
-  <ng-container *ngIf="compareFileData">
-    <app-header class="grid-col-6" [fileData]="compareFileData"></app-header>
+  <ng-container *ngIf="compareFileData && isLargeScreen">
+    <app-header class="grid-col-6" [file]="compareFileData"></app-header>
   </ng-container>
-  <app-info-data-image
-    [ngClass]="{
-      'grid-col-12': !compareFileData,
-      'grid-col-6': compareFileData
-    }"
-    [imagePath]="baseFileData.fileInfo.photo"
-    [activityInfo]="baseFileData.activityInfoLayer"
-  ></app-info-data-image>
-  <ng-container *ngIf="compareFileData">
+
+  <ng-container *ngIf="isLargeScreen || !compareFileData">
     <app-info-data-image
-      class="grid-col-6"
-      [imagePath]="compareFileData.fileInfo.photo"
-      [activityInfo]="compareFileData.activityInfoLayer"
-    ></app-info-data-image>
-  </ng-container>
-  <app-all-info-data
-    [ngClass]="{
-      'grid-col-12': !compareFileData,
-      'grid-col-6': compareFileData
-    }"
-    [activityInfo]="baseFileData.activityInfoLayer"
-    [isCompareMode]="compareFileData !== undefined"
-    [compareActivityInfo]="compareFileData?.activityInfoLayer"
-  ></app-all-info-data>
-  <ng-container *ngIf="compareFileData">
-    <app-all-info-data
-      class="grid-col-6"
-      [isBaseFile]="false"
-      [activityInfo]="compareFileData.activityInfoLayer"
-      [isCompareMode]="compareFileData !== undefined"
-    ></app-all-info-data>
-  </ng-container>
-  <ng-container *ngIf="baseFileData.activityLapLayer?.length > 0">
-    <app-lap-info-table
       [ngClass]="{
-        'grid-col-12': !compareFileData,
-        'grid-col-6': compareFileData
+        'grid-col-6': true,
+        info__data__image: !compareFileData
       }"
-      [sportsType]="+baseFileData.activityInfoLayer.type"
-      [activityLap]="baseFileData.activityLapLayer"
-      [isCompareMode]="compareFileData !== undefined"
-      [compareActivityLap]="compareFileData?.activityLapLayer"
-      [oppsiteLapLength]="compareFileData?.activityLapLayer?.length ?? 0"
-    ></app-lap-info-table>
+      [imagePath]="baseFileData.fileInfo.photo"
+      [activityInfo]="baseFileData.activityInfoLayer"
+    ></app-info-data-image>
     <ng-container *ngIf="compareFileData">
-      <app-lap-info-table
+      <app-info-data-image
+        class="grid-col-6"
+        [imagePath]="compareFileData.fileInfo.photo"
+        [activityInfo]="compareFileData.activityInfoLayer"
+      ></app-info-data-image>
+    </ng-container>
+    <app-all-info-data
+      [ngClass]="{
+        'grid-col-6': true,
+        info__data__table: !compareFileData
+      }"
+      [activityInfo]="baseFileData.activityInfoLayer"
+      [isCompareMode]="compareFileData !== undefined"
+      [compareActivityInfo]="compareFileData?.activityInfoLayer"
+    ></app-all-info-data>
+    <ng-container *ngIf="compareFileData">
+      <app-all-info-data
         class="grid-col-6"
         [isBaseFile]="false"
-        [sportsType]="+baseFileData.activityInfoLayer.type"
-        [activityLap]="compareFileData.activityLapLayer"
+        [activityInfo]="compareFileData.activityInfoLayer"
         [isCompareMode]="compareFileData !== undefined"
-        [oppsiteLapLength]="baseFileData.activityLapLayer.length ?? 0"
-      ></app-lap-info-table>
+      ></app-all-info-data>
     </ng-container>
   </ng-container>
+
+  <app-info-data-compare-rwd
+    class="grid-col-12"
+    [baseInfo]="baseFileData.activityInfoLayer"
+    [compareInfo]="compareFileData.activityInfoLayer"
+    *ngIf="!isLargeScreen && compareFileData"
+  ></app-info-data-compare-rwd>
+
+  <ng-container *ngIf="baseFileData.activityLapLayer?.length > 0">
+    <app-lap-info-table
+      class="grid-col-12"
+      [sportsType]="sportsType"
+      [activityLap]="baseFileData.activityLapLayer"
+      [compareActivityLap]="compareFileData?.activityLapLayer"
+    ></app-lap-info-table>
+  </ng-container>
+
+  <div
+    [ngClass]="{
+      flexCol: true,
+      'grid-col-12': !compareFileData,
+      'grid-col-6': compareFileData
+    }"
+  >
+    <h6 class="section__title">{{ 'universal_activityData_hrZone' | translate }}</h6>
+    <app-tree-map-chart
+      [zoneInfo]="{
+        type: 'hrZone',
+        data: baseFileData.hrZoneArray
+      }"
+      [reflowCount]="reflowCount"
+    ></app-tree-map-chart>
+  </div>
+
+  <div class="flexCol grid-col-6" *ngIf="compareFileData">
+    <h6 class="section__title optional__title">
+      {{ 'universal_activityData_hrZone' | translate }}
+    </h6>
+    <app-tree-map-chart
+      [zoneInfo]="{
+        type: 'hrZone',
+        data: compareFileData.hrZoneArray
+      }"
+    ></app-tree-map-chart>
+  </div>
+
+  <ng-container *ngIf="isIncluded([SportType.run, SportType.cycle, SportType.swim, SportType.row])">
+    <h6 class="section__title optional__title grid-col-12">
+      {{ 'universal_activityData_quadrantAnalysis' | translate }}
+      <app-quadrant-setting [sportsType]="sportsType"></app-quadrant-setting>
+    </h6>
+    <app-quadrant-info
+      class="grid-col-6 media__full"
+      [setting]="quadrantSetting$ | async"
+      [quadrantNum]="baseQuadrantData.quadrantPointNum"
+      [sportsType]="sportsType"
+    ></app-quadrant-info>
+    <hr class="grid-col-12 row__divide__line" *ngIf="!isLargeScreen && compareFileData" />
+    <app-quadrant-info
+      class="grid-col-6 media__full"
+      [setting]="quadrantSetting$ | async"
+      [quadrantNum]="compareQuadrantData.quadrantPointNum"
+      [sportsType]="sportsType"
+      [isBaseFile]="false"
+      *ngIf="compareFileData"
+    ></app-quadrant-info>
+    <app-quadrant-chart
+      class="grid-col-6 media__full"
+      [setting]="quadrantSetting$ | async"
+      [sportsType]="sportsType"
+      [chartData]="baseQuadrantData.chartData"
+      [boundary]="baseQuadrantData.boundary"
+      *ngIf="isLargeScreen || !compareFileData"
+    ></app-quadrant-chart>
+    <app-quadrant-chart
+      class="grid-col-6 media__full"
+      [setting]="quadrantSetting$ | async"
+      [sportsType]="sportsType"
+      [chartData]="compareQuadrantData.chartData"
+      [boundary]="compareQuadrantData.boundary"
+      *ngIf="isLargeScreen && compareFileData"
+    ></app-quadrant-chart>
+  </ng-container>
+
+  <div class="grid-col-12" *ngIf="!compareFileData && baseFileData.gpsPath.hasEffectValue">
+    <h6 class="section__title optional__title">
+      {{ 'universal_activityData_map' | translate }}
+      <app-map-option
+        [source]="mapSource"
+        (mapSourceChange)="mapSourceChange($event)"
+        *ngIf="canUseGoogle"
+      ></app-map-option>
+    </h6>
+    <div class="map__section">
+      <app-google-map
+        [usePage]="sportsFile"
+        [mapType]="mapType"
+        [path]="baseFileData.gpsPath.data"
+        *ngIf="mapSource === MapSource.google"
+      ></app-google-map>
+      <app-leaflet-map
+        [usePage]="sportsFile"
+        [mapType]="mapType"
+        [path]="baseFileData.gpsPath.data"
+        *ngIf="mapSource === MapSource.osm"
+      ></app-leaflet-map>
+    </div>
+  </div>
+
+  <ng-container *ngIf="sportsType === SportType.weightTrain">
+    <h6 class="section__title optional__title grid-col-12">
+      {{ 'universal_activityData_weightTrainingEffectiveness' | translate }}
+      <app-weight-train-level (changeLevel)="changeLevel($event)"></app-weight-train-level>
+    </h6>
+    <app-muscle-map
+      [class]="{
+        'grid-col-6': true,
+        normal__muscle__data: !compareFileData
+      }"
+      [data]="baseFileData.weightTrainData.displayMuscleList"
+      [useViceMuscle]="baseFileData.weightTrainData.useViceMuscle"
+      [bodyWeight]="bodyWeight"
+      [trainingLevel]="weightTrainLevel"
+    ></app-muscle-map>
+    <app-muscle-map
+      class="grid-col-6"
+      [data]="compareFileData.weightTrainData.displayMuscleList"
+      [useViceMuscle]="compareFileData.weightTrainData.useViceMuscle"
+      [bodyWeight]="bodyWeight"
+      [trainingLevel]="weightTrainLevel"
+      [isCompareData]="true"
+      *ngIf="compareFileData"
+    ></app-muscle-map>
+    <app-muscle-info-card
+      [class]="{
+        'grid-col-6': !compareFileData,
+        normal__muscle__data: !compareFileData,
+        'grid-col-12': compareFileData
+      }"
+      [muscleData]="
+        baseFileData.weightTrainData[compareFileData ? 'muscleGroupList' : 'muscleList']
+      "
+      [compareMuscleGroup]="compareFileData?.weightTrainData.muscleGroupList"
+      [isCompareMode]="compareFileData ?? false"
+      [focusId]="baseFileData.weightTrainData[compareFileData ? 'focusMuscleGroup' : 'focusMuscle']"
+      (focusMusclePart)="focusMusclePart($event)"
+      (focusMuscleGroup)="focusMuscleGroup($event)"
+    ></app-muscle-info-card>
+  </ng-container>
+
+  <div class="grid-col-12">
+    <h6 class="section__title">{{ 'universal_activityData_trend' | translate }}</h6>
+    <p
+      class="no__data__hint"
+      *ngIf="!baseFileData.haveEffectTrend && !compareFileData?.haveEffectTrend"
+    >
+      {{ 'universal_status_noData' | translate }}
+    </p>
+    <div
+      class="flexCol"
+      *ngIf="baseFileData.hr.hasEffectValue || compareFileData?.hr.hasEffectValue"
+    >
+      <app-trend-chart-info
+        [titleKey]="'universal_activityData_hr'"
+        [unit]="'bpm'"
+        [baseDate]="baseFileData.activityInfoLayer.startTime"
+        [baseAvg]="baseFileData.activityInfoLayer.avgHeartRateBpm"
+        [baseBest]="baseFileData.activityInfoLayer.maxHeartRateBpm"
+        [compareDate]="compareFileData?.activityInfoLayer.startTime"
+        [compareAvg]="compareFileData?.activityInfoLayer.avgHeartRateBpm"
+        [compareBest]="compareFileData?.activityInfoLayer.maxHeartRateBpm"
+      ></app-trend-chart-info>
+      <app-line-area-compare-chart
+        [tooltipTranslateKey]="'universal_activityData_hr'"
+        [unit]="'bpm'"
+        [data]="baseFileData.hr.data"
+        [compareData]="compareFileData?.hr.data"
+        [zoneColor]="hrZoneColor"
+        [yAxisTickPosition]="hrYAxisTickPosition"
+      >
+      </app-line-area-compare-chart>
+    </div>
+    <div
+      class="flexCol"
+      *ngIf="baseFileData.speedPace.hasEffectValue || compareFileData?.speedPace.hasEffectValue"
+    >
+      <app-trend-chart-info
+        [titleKey]="'speed' | dataTypeTranslate: { sportsType }"
+        [isPaceData]="isIncluded([SportType.run, SportType.swim, SportType.row])"
+        [unit]="'pace' | dataTypeUnit: { sportsType, unitType: unit }"
+        [baseDate]="baseFileData.activityInfoLayer.startTime"
+        [baseAvg]="
+          baseFileData.activityInfoLayer.avgSpeed ?? baseFileData.speedPace.avg
+            | sportPaceSibs: PacePipeArgs
+        "
+        [baseBest]="
+          baseFileData.activityInfoLayer.maxSpeed ?? baseFileData.speedPace.bestValue
+            | sportPaceSibs: PacePipeArgs
+        "
+        [compareDate]="compareFileData?.activityInfoLayer.startTime"
+        [compareAvg]="
+          !compareFileData
+            ? undefined
+            : (compareFileData.activityInfoLayer.avgSpeed ?? compareFileData.speedPace.avg
+              | sportPaceSibs: PacePipeArgs)
+        "
+        [compareBest]="
+          !compareFileData
+            ? undefined
+            : (compareFileData?.activityInfoLayer.maxSpeed ?? compareFileData.speedPace.bestValue
+              | sportPaceSibs: PacePipeArgs)
+        "
+      ></app-trend-chart-info>
+      <app-line-area-compare-chart
+        [tooltipTranslateKey]="'speed' | dataTypeTranslate: { sportsType }"
+        [unit]="'pace' | dataTypeUnit: { sportsType: sportsType, unitType: unit }"
+        [data]="baseFileData.speedPace.data"
+        [compareData]="compareFileData?.speedPace.data"
+        [isPaceData]="isIncluded([SportType.run, SportType.swim, SportType.row])"
+      >
+      </app-line-area-compare-chart>
+    </div>
+    <div
+      class="flexCol"
+      *ngIf="baseFileData.altitude.hasEffectValue || compareFileData?.altitude.hasEffectValue"
+    >
+      <app-trend-chart-info
+        [titleKey]="'universal_activityData_altitude'"
+        [unit]="isMetric ? 'm' : 'ft'"
+        [baseDate]="baseFileData.activityInfoLayer.startTime"
+        [baseAvg]="baseFileData.altitude.avg"
+        [baseBest]="baseFileData.altitude.bestValue"
+        [compareDate]="compareFileData?.activityInfoLayer.startTime"
+        [compareAvg]="compareFileData?.altitude.avg"
+        [compareBest]="compareFileData?.altitude.bestValue"
+      ></app-trend-chart-info>
+      <app-line-area-compare-chart
+        [tooltipTranslateKey]="'universal_activityData_altitude'"
+        [unit]="isMetric ? 'm' : 'ft'"
+        [data]="baseFileData.altitude.data"
+        [compareData]="compareFileData?.altitude.data"
+      >
+      </app-line-area-compare-chart>
+    </div>
+    <div
+      class="flexCol"
+      *ngIf="baseFileData.runCadence.hasEffectValue || compareFileData?.runCadence.hasEffectValue"
+    >
+      <app-trend-chart-info
+        [titleKey]="'universal_activityData_stepCadence'"
+        [unit]="'spm'"
+        [baseDate]="baseFileData.activityInfoLayer.startTime"
+        [baseAvg]="baseFileData.activityInfoLayer.runAvgCadence"
+        [baseBest]="baseFileData.activityInfoLayer.runMaxCadence"
+        [compareDate]="compareFileData?.activityInfoLayer.startTime"
+        [compareAvg]="compareFileData?.activityInfoLayer.runAvgCadence"
+        [compareBest]="compareFileData?.activityInfoLayer.runMaxCadence"
+      ></app-trend-chart-info>
+      <app-line-area-compare-chart
+        [tooltipTranslateKey]="'universal_activityData_stepCadence'"
+        [unit]="'spm'"
+        [data]="baseFileData.runCadence.data"
+        [compareData]="compareFileData?.runCadence.data"
+      >
+      </app-line-area-compare-chart>
+    </div>
+    <div
+      class="flexCol"
+      *ngIf="
+        baseFileData.cycleCadence.hasEffectValue || compareFileData?.cycleCadence.hasEffectValue
+      "
+    >
+      <app-trend-chart-info
+        [titleKey]="'universal_activityData_CyclingCadence'"
+        [unit]="'rpm'"
+        [baseDate]="baseFileData.activityInfoLayer.startTime"
+        [baseAvg]="baseFileData.activityInfoLayer.cycleAvgCadence"
+        [baseBest]="baseFileData.activityInfoLayer.cycleMaxCadence"
+        [compareDate]="compareFileData?.activityInfoLayer.startTime"
+        [compareAvg]="compareFileData?.activityInfoLayer.cycleAvgCadence"
+        [compareBest]="compareFileData?.activityInfoLayer.cycleMaxCadence"
+      ></app-trend-chart-info>
+      <app-line-area-compare-chart
+        [tooltipTranslateKey]="'universal_activityData_CyclingCadence'"
+        [unit]="'rpm'"
+        [data]="baseFileData.cycleCadence.data"
+        [compareData]="compareFileData?.cycleCadence.data"
+      >
+      </app-line-area-compare-chart>
+    </div>
+    <div
+      class="flexCol"
+      *ngIf="baseFileData.swimCadence.hasEffectValue || compareFileData?.swimCadence.hasEffectValue"
+    >
+      <app-trend-chart-info
+        [titleKey]="'universal_activityData_swimCadence'"
+        [unit]="'spm'"
+        [baseDate]="baseFileData.activityInfoLayer.startTime"
+        [baseAvg]="baseFileData.activityInfoLayer.swimAvgCadence"
+        [baseBest]="baseFileData.activityInfoLayer.swimMaxCadence"
+        [compareDate]="compareFileData?.activityInfoLayer.startTime"
+        [compareAvg]="compareFileData?.activityInfoLayer.swimAvgCadence"
+        [compareBest]="compareFileData?.activityInfoLayer.swimMaxCadence"
+      ></app-trend-chart-info>
+      <app-line-area-compare-chart
+        [tooltipTranslateKey]="'universal_activityData_swimCadence'"
+        [unit]="'spm'"
+        [data]="baseFileData.swimCadence.data"
+        [compareData]="compareFileData?.swimCadence.data"
+      >
+      </app-line-area-compare-chart>
+    </div>
+    <div
+      class="flexCol"
+      *ngIf="baseFileData.rowCadence.hasEffectValue || compareFileData?.rowCadence.hasEffectValue"
+    >
+      <app-trend-chart-info
+        [titleKey]="'universal_activityData_rowCadence'"
+        [unit]="'rpm'"
+        [baseDate]="baseFileData.activityInfoLayer.startTime"
+        [baseAvg]="baseFileData.activityInfoLayer.rowingAvgCadence"
+        [baseBest]="baseFileData.activityInfoLayer.rowingMaxCadence"
+        [compareDate]="compareFileData?.activityInfoLayer.startTime"
+        [compareAvg]="compareFileData?.activityInfoLayer.rowingAvgCadence"
+        [compareBest]="compareFileData?.activityInfoLayer.rowingMaxCadence"
+      ></app-trend-chart-info>
+      <app-line-area-compare-chart
+        [tooltipTranslateKey]="'universal_activityData_rowCadence'"
+        [unit]="'rpm'"
+        [data]="baseFileData.rowCadence.data"
+        [compareData]="compareFileData?.rowCadence.data"
+      >
+      </app-line-area-compare-chart>
+    </div>
+    <div
+      class="flexCol"
+      *ngIf="baseFileData.cycleWatt.hasEffectValue || compareFileData?.cycleWatt.hasEffectValue"
+    >
+      <app-trend-chart-info
+        [titleKey]="'universal_activityData_power'"
+        [unit]="'w'"
+        [baseDate]="baseFileData.activityInfoLayer.startTime"
+        [baseAvg]="baseFileData.activityInfoLayer.cycleAvgWatt"
+        [baseBest]="baseFileData.activityInfoLayer.cycleMaxWatt"
+        [compareDate]="compareFileData?.activityInfoLayer.startTime"
+        [compareAvg]="compareFileData?.activityInfoLayer.cycleAvgWatt"
+        [compareBest]="compareFileData?.activityInfoLayer.cycleMaxWatt"
+      ></app-trend-chart-info>
+      <app-line-area-compare-chart
+        [tooltipTranslateKey]="'universal_activityData_power'"
+        [unit]="'w'"
+        [data]="baseFileData.cycleWatt.data"
+        [compareData]="compareFileData?.cycleWatt.data"
+      >
+      </app-line-area-compare-chart>
+    </div>
+    <div
+      class="flexCol"
+      *ngIf="baseFileData.rowWatt.hasEffectValue || compareFileData?.rowWatt.hasEffectValue"
+    >
+      <app-trend-chart-info
+        [titleKey]="'universal_activityData_power'"
+        [unit]="'w'"
+        [baseDate]="baseFileData.activityInfoLayer.startTime"
+        [baseAvg]="baseFileData.activityInfoLayer.rowingAvgWatt"
+        [baseBest]="baseFileData.activityInfoLayer.rowingMaxWatt"
+        [compareDate]="compareFileData?.activityInfoLayer.startTime"
+        [compareAvg]="compareFileData?.activityInfoLayer.rowingAvgWatt"
+        [compareBest]="compareFileData?.activityInfoLayer.rowingMaxWatt"
+      ></app-trend-chart-info>
+      <app-line-area-compare-chart
+        [tooltipTranslateKey]="'universal_activityData_power'"
+        [unit]="'w'"
+        [data]="baseFileData.rowWatt.data"
+        [compareData]="compareFileData?.rowWatt.data"
+      >
+      </app-line-area-compare-chart>
+    </div>
+    <div
+      class="flexCol"
+      *ngIf="
+        baseFileData.moveRepetitions.hasEffectValue ||
+        compareFileData?.moveRepetitions.hasEffectValue
+      "
+    >
+      <app-trend-chart-info
+        [titleKey]="'universal_activityData_repeatTempo'"
+        [unit]="'spm'"
+        [baseDate]="baseFileData.activityInfoLayer.startTime"
+        [baseAvg]="baseFileData.moveRepetitions.avg"
+        [baseBest]="baseFileData.moveRepetitions.bestValue"
+        [compareDate]="compareFileData?.activityInfoLayer.startTime"
+        [compareAvg]="compareFileData?.moveRepetitions.avg"
+        [compareBest]="compareFileData?.moveRepetitions.bestValue"
+      ></app-trend-chart-info>
+      <app-line-area-compare-chart
+        [tooltipTranslateKey]="'universal_activityData_repeatTempo'"
+        [unit]="'spm'"
+        [data]="baseFileData.moveRepetitions.data"
+        [compareData]="compareFileData?.moveRepetitions.data"
+      >
+      </app-line-area-compare-chart>
+    </div>
+    <div
+      class="flexCol"
+      *ngIf="baseFileData.temp.hasEffectValue || compareFileData?.temp.hasEffectValue"
+    >
+      <app-trend-chart-info
+        [titleKey]="'universal_activityData_temperature'"
+        [unit]="'temperature' | dataTypeUnit: { unitType: unit }"
+        [baseDate]="baseFileData.activityInfoLayer.startTime"
+        [baseAvg]="baseFileData.activityInfoLayer.avgTemp | temperatureSibs: tempPipeArgs"
+        [baseBest]="baseFileData.activityInfoLayer.maxTemp | temperatureSibs: tempPipeArgs"
+        [compareDate]="compareFileData?.activityInfoLayer.startTime"
+        [compareAvg]="
+          !compareFileData
+            ? undefined
+            : (compareFileData?.activityInfoLayer.avgTemp | temperatureSibs: tempPipeArgs)
+        "
+        [compareBest]="
+          !compareFileData
+            ? undefined
+            : (compareFileData?.activityInfoLayer.maxTemp | temperatureSibs: tempPipeArgs)
+        "
+      ></app-trend-chart-info>
+      <app-line-area-compare-chart
+        [tooltipTranslateKey]="'universal_activityData_temperature'"
+        [unit]="'temperature' | dataTypeUnit: { unitType: unit }"
+        [data]="baseFileData.temp.data"
+        [compareData]="compareFileData?.temp.data"
+      >
+      </app-line-area-compare-chart>
+    </div>
+  </div>
 </article>

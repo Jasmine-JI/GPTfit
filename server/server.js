@@ -340,6 +340,8 @@ app.use(function (req, res, next) {
     allowedOrigins = [
       'http://192.168.1.235:8080',
       'https://192.168.1.235:8080',
+      'http://192.168.1.235:8081', // 協同開發用
+      'https://192.168.1.235:8081', // 協同開發用
       'http://192.168.1.235',
       'https://192.168.1.235',
     ];
@@ -355,12 +357,14 @@ app.use(function (req, res, next) {
       'http://192.168.1.234',
       'http://alatechapp.alatech.com.tw',
       'http://192.168.1.235:8080',
+      'http://192.168.1.235:8081', // 協同開發用
       'http://192.168.1.231:8080',
       'http://localhost:8080',
       'http://app.alatech.com.tw',
       'https://192.168.1.234',
       'https://alatechapp.alatech.com.tw',
       'https://192.168.1.235:8080',
+      'https://192.168.1.235:8081', // 協同開發用
       'https://192.168.1.231:8080',
       'http://localhost:8080',
       'https://app.alatech.com.tw',

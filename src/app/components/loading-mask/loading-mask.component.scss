@@ -2,9 +2,9 @@
 @import 'z-index.scss';
 @import 'keyframes.scss';
 
-.loading__mask {
+@mixin mask($position: fixed) {
   @include center();
-  position: fixed;
+  position: $position;
   top: 0;
   left: 0;
   bottom: 0px;
@@ -12,6 +12,14 @@
   z-index: $mask-full-screen;
   pointer-events: none;
   background: rgba(0, 0, 0, 0.2);
+}
+
+.loading__mask__full {
+  @include mask();
+}
+
+.loading__mask__partial {
+  @include mask(absolute);
 }
 
 .loading__mask__animation {

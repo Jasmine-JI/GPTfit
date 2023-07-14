@@ -1,5 +1,5 @@
 import { Observable, fromEvent, merge, of, throwError } from 'rxjs';
-import { QueryString, DateUnit } from '../enums/common';
+import { QueryString, DateUnit, ResultCode } from '../enums/common';
 import { rgbaReg, hslaReg } from '../models/regex';
 import { ReportDateUnit } from '../../shared/classes/report-date-unit';
 import dayjs from 'dayjs';
@@ -81,7 +81,7 @@ export function showErrorApiLog(resultCode: number, apiCode: number, msg: string
  */
 export function checkRxFlowResponse(res: any, showErrorMsg = false): Observable<any> {
   const isEffect = checkResponse(res, showErrorMsg);
-  return isEffect ? of(res) : throwRxError();
+  return isEffect ? of(res) : throwRxError(res);
 }
 
 /**
@@ -387,9 +387,11 @@ export function splitNameInfo(nameInfo: string): { [key: string]: string } {
  * 處理rxjs資料流錯誤回應
  * @param error 錯誤訊息
  */
-export function throwRxError(error?: string) {
+export function throwRxError(error?: any) {
   return throwError(() => {
-    const err = new Error(error ?? 'Exception!');
+    const err = new Error(
+      error?.resultCode ?? error?.processResult?.resultCode ?? ResultCode.connectError
+    );
     return err;
   });
 }

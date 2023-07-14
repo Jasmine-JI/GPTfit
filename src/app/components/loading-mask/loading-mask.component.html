@@ -1,4 +1,10 @@
-<div [class.loading__mask]="isLoading" *ngIf="isLoading">
+<div
+  [class]="{
+    loading__mask__full: isFullPage,
+    loading__mask__partial: !isFullPage
+  }"
+  *ngIf="isLoading"
+>
   <div class="loading__mask__animation"></div>
   <div class="loading__mask__animation"></div>
   <div class="loading__mask__animation"></div>

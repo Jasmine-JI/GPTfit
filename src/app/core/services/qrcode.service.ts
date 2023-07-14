@@ -28,8 +28,8 @@ export class QrcodeService {
    */
   createDeviceChecksum(sn: string): string {
     const weighted = [2, 2, 6, 1, 8, 3, 4, 1, 1, 1, 1, 1, 1, 1];
-    let oddTotal = 0,
-      evenTotal = 0;
+    let oddTotal = 0;
+    let evenTotal = 0;
     for (let i = 0, len = sn.length; i < len; i++) {
       const weightedValue = sn.charCodeAt(i) * weighted[i];
       if ((i + 1) % 2 === 0) {
@@ -39,9 +39,9 @@ export class QrcodeService {
       }
     }
 
-    const multiplyStr = `${evenTotal * oddTotal}`,
-      multiplyStrLen = multiplyStr.length,
-      checkSum = multiplyStr.slice(multiplyStrLen - 4, multiplyStrLen);
+    const multiplyStr = `${evenTotal * oddTotal}`;
+    const multiplyStrLen = multiplyStr.length;
+    const checkSum = multiplyStr.slice(multiplyStrLen - 4, multiplyStrLen);
     return checkSum;
   }
 }

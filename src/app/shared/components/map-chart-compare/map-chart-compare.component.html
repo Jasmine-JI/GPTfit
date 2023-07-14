@@ -11,12 +11,18 @@
     <i class="icon-svg_web-icon_p1_001-setting settingIcon" (click)="handleShowOptMenu($event)"></i>
     <div id="map__opt__menu" *ngIf="uiFlag.showMapOpt" (click)="$event.stopPropagation()">
       <div class="flexRow selector__section" *ngIf="mapOpt.showMapSourceSelector && uiFlag.showMap">
-        <span class="flexRow radioSelector" (click)="changeMapSource('google')">
-          <span class="radioBtn" [class.radioBtn--active]="mapOpt.mapSource === 'google'"></span>
+        <span class="flexRow radioSelector" (click)="changeMapSource(MapSource.google)">
+          <span
+            class="radioBtn"
+            [class.radioBtn--active]="mapOpt.mapSource === MapSource.google"
+          ></span>
           Google
         </span>
-        <span class="flexRow radioSelector" (click)="changeMapSource('OSM')">
-          <span class="radioBtn" [class.radioBtn--active]="mapOpt.mapSource === 'OSM'"></span>
+        <span class="flexRow radioSelector" (click)="changeMapSource(MapSource.osm)">
+          <span
+            class="radioBtn"
+            [class.radioBtn--active]="mapOpt.mapSource === MapSource.osm"
+          ></span>
           OSM
         </span>
       </div>
@@ -177,7 +183,7 @@
     [mapType]="mapOpt.mapKind"
     [path]="userPoint[0].latLngPath"
     [currentMarkPosition]="focusPosition"
-    *ngIf="uiFlag.showMap && mapOpt.mapSource === 'google'"
+    *ngIf="uiFlag.showMap && mapOpt.mapSource === MapSource.google"
   ></app-google-map>
   <app-leaflet-map
     class="map__style"
@@ -185,7 +191,7 @@
     [mapType]="mapOpt.mapKind"
     [path]="userPoint[0].latLngPath"
     [currentMarkPosition]="focusPosition"
-    *ngIf="uiFlag.showMap && mapOpt.mapSource === 'OSM'"
+    *ngIf="uiFlag.showMap && mapOpt.mapSource === MapSource.osm"
   ></app-leaflet-map>
   <app-trinomial-chart
     [class.chart__insert__map]="uiFlag.showMap"

@@ -1,5 +1,4 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import { TranslateService } from '@ngx-translate/core';
 import { MuscleGroup } from '../enums/sports';
 
 @Pipe({
@@ -7,8 +6,6 @@ import { MuscleGroup } from '../enums/sports';
   standalone: true,
 })
 export class MuscleGroupNamePipe implements PipeTransform {
-  constructor(public translateService: TranslateService) {}
-
   /**
    * 將肌肉代碼轉為多國語系的鍵
    * @param value {string | number}-肌肉代碼
@@ -17,19 +14,19 @@ export class MuscleGroupNamePipe implements PipeTransform {
   transform(value: string | number): string {
     switch (+value) {
       case MuscleGroup.armMuscle:
-        return this.translateService.instant('universal_muscleName_armMuscles');
+        return 'universal_muscleName_armMuscles';
       case MuscleGroup.pectoralsMuscle:
-        return this.translateService.instant('universal_muscleName_pectoralsMuscle');
+        return 'universal_muscleName_pectoralsMuscle';
       case MuscleGroup.shoulderMuscle:
-        return this.translateService.instant('universal_muscleName_shoulderMuscle');
+        return 'universal_muscleName_shoulderMuscle';
       case MuscleGroup.backMuscle:
-        return this.translateService.instant('universal_muscleName_backMuscle');
+        return 'universal_muscleName_backMuscle';
       case MuscleGroup.abdominalMuscle:
-        return this.translateService.instant('universal_muscleName_abdominalMuscle');
+        return 'universal_muscleName_abdominalMuscle';
       case MuscleGroup.legMuscle:
-        return this.translateService.instant('universal_muscleName_legMuscle');
+        return 'universal_muscleName_legMuscle';
       default:
-        return this.translateService.instant('universal_status_noData');
+        return 'universal_status_noData';
     }
   }
 }

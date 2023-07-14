@@ -17,7 +17,7 @@ import { AnalysisOptionComponent } from '../analysis-option/analysis-option.comp
 import { SmallHrzoneChartComponent } from '../small-hrzone-chart/small-hrzone-chart.component';
 import { TipDialogComponent } from '../tip-dialog/tip-dialog.component';
 import { ProfessionalChartAnalysisOption } from '../../containers/professional/classes/professional-chart-analysis-option';
-import { PersonalChartAnalysisOption } from '../../containers/personal/classes/personal-chart-analysis-option';
+import { PersonalChartAnalysisOption } from '../../containers/personal/classes';
 import { DataUnitType } from '../../core/enums/common';
 import { SportType } from '../../core/enums/sports';
 import {

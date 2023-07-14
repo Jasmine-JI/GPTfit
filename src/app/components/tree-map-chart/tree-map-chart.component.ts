@@ -9,7 +9,7 @@ import {
 } from '@angular/core';
 import { of } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { zoneColor } from '../../../../core/models/represent-color';
+import { zoneColor } from '../../core/models/represent-color';
 import Highcharts from 'highcharts';
 import { chart } from 'highcharts';
 import Treemap from 'highcharts/modules/treemap';
@@ -19,8 +19,11 @@ import {
   getFtpZoneTranslation,
   getMuscleGroupTranslation,
   mathRounding,
-} from '../../../../core/utils';
+} from '../../core/utils';
 import { NgIf } from '@angular/common';
+import { GlobalEventsService } from '../../core/services';
+import { Subject } from 'rxjs';
+import { takeUntil, debounceTime } from 'rxjs/operators';
 
 // highchart 引入 tree map
 Treemap(Highcharts);
@@ -34,19 +37,34 @@ Treemap(Highcharts);
 })
 export class TreeMapChartComponent implements OnInit, OnChanges, OnDestroy {
   @Input() zoneInfo: {
-    type: string;
+    type: 'hrZone' | 'ftpZone' | 'muscleGroup';
     data: Array<number>;
   };
 
+  /**
+   * 透過count促使圖表重繪來自適應元素寬度改變
+   */
+  @Input() reflowCount = 0;
+
   @ViewChild('container', { static: false })
   container: ElementRef;
+
+  private ngUnsubscribe = new Subject();
+
+  /**
+   * hichart元件
+   */
+  private _chart: Highcharts.Chart;
 
   /**
    * 是否沒有區間數據
    */
   noData = true;
 
-  constructor(private translate: TranslateService) {}
+  constructor(
+    private translate: TranslateService,
+    private globalEventsService: GlobalEventsService
+  ) {}
 
   ngOnInit(): void {}
 
@@ -60,11 +78,17 @@ export class TreeMapChartComponent implements OnInit, OnChanges, OnDestroy {
       of(this.zoneInfo)
         .pipe(
           map((zoneInfo) => [zoneInfo.data, this.getZoneTranslate(zoneInfo.type)]),
-          map(([data, translation]) => this.initChart(data, translation)),
+          map(([data, translation]) =>
+            this.initChart(data as Array<any>, translation as Array<string>)
+          ),
           map((chartData) => this.createChart(chartData))
         )
-        .subscribe();
+        .subscribe(() => {
+          this.subscribeGlobalEvent();
+        });
     }
+
+    if (this._chart && this.reflowCount) this._chart.reflow();
   }
 
   /**
@@ -104,12 +128,32 @@ export class TreeMapChartComponent implements OnInit, OnChanges, OnDestroy {
         this.createChart(option);
       } else {
         const chartDiv = this.container.nativeElement;
-        chart(chartDiv, option);
+        this._chart = chart(chartDiv, option);
       }
     }, 200);
   }
 
-  ngOnDestroy(): void {}
+  /**
+   * 訂閱側邊欄收合事件，並重繪圖表以符合變更後的元素寬度
+   */
+  subscribeGlobalEvent() {
+    this.globalEventsService
+      .getRxSideBarMode()
+      .pipe(debounceTime(100), takeUntil(this.ngUnsubscribe))
+      .subscribe(() => {
+        setTimeout(() => {
+          if (this._chart) this._chart.reflow();
+        }, 200); // 待sidebar收合動畫結束再重繪
+      });
+  }
+
+  /**
+   * 解除rxjs訂閱
+   */
+  ngOnDestroy(): void {
+    this.ngUnsubscribe.next(null);
+    this.ngUnsubscribe.complete();
+  }
 }
 
 /**

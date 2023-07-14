@@ -204,11 +204,12 @@ export class PersonalSportsChartData {
     let compareDateList = [];
     const unitString = dateUnit.getUnitString();
     const { startTimestamp: baseStart, endTimestamp: baseEnd } = baseTime;
-    const referenceUnitString = isMondayFirst ? 'isoWeek' : unitString;
+    const referenceUnitString = unitString === 'week' && isMondayFirst ? 'isoWeek' : unitString;
     const baseDiffTime = baseTime.getCrossRange(unitString, referenceUnitString);
     const compareDiffTime = compareTime
       ? compareTime.getCrossRange(unitString, referenceUnitString)
       : -1;
+
     if (baseDiffTime >= compareDiffTime) {
       baseDateList = this.createDateList([], unitString, baseStart, baseEnd);
       if (compareTime) {

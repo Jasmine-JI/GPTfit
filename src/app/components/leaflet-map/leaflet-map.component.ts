@@ -26,6 +26,7 @@ import {
 } from '../../core/models/const';
 import 'heatmap.js';
 import { RacerInfo } from '../../core/models/compo';
+import { MapType } from '../../core/enums/compo';
 
 declare const HeatmapOverlay: any;
 const leaflet = globalThis.L;
@@ -41,7 +42,7 @@ const leaflet = globalThis.L;
 export class LeafletMapComponent implements OnInit, OnChanges, OnDestroy {
   @ViewChild('mapContainer') mapContainer: ElementRef;
   @Input() usePage: 'sportsFile' | 'cloudrunReport';
-  @Input() mapType: 'normal' | 'heat' = 'normal';
+  @Input() mapType = MapType.normal;
   @Input() path: Array<[number, number]>;
   @Input() currentMarkPosition: any;
   @Input() currentRacerPosition: Map<number, [number, number]>;
@@ -50,6 +51,7 @@ export class LeafletMapComponent implements OnInit, OnChanges, OnDestroy {
   @Input() currentFocusRacer: number;
   @Input() playSecond: number;
   @Input() removeAllRacer = true;
+  @Input() pathColor = 'rgba(255, 0, 170, 1)';
   @Output() mapError = new EventEmitter();
 
   /**
@@ -123,10 +125,9 @@ export class LeafletMapComponent implements OnInit, OnChanges, OnDestroy {
     of('')
       .pipe(
         map(() => this.initVarible()),
-        map(() => this.getNeedData()),
-        map((effectIndex) => this.createLeafletPath(effectIndex))
+        map(() => this.getBoundary())
       )
-      .subscribe((leafletPath) => this.createMap(leafletPath));
+      .subscribe(() => this.createMap(this.path));
   }
 
   /**
@@ -138,38 +139,12 @@ export class LeafletMapComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   /**
-   * 根據原始路徑取得必要參數，以用來修正原始路徑與地圖視圖
+   * 根據路徑取得最適地圖縮放大小
    */
-  getNeedData() {
-    const effectIndexList: Array<number> = [];
-    this.path.forEach(([_lat, _lng], _index) => {
-      if (_lng && _lat) {
-        this.reservedSpace.boundaryLat = _lat;
-        this.reservedSpace.boundaryLng = _lng;
-        effectIndexList.push(_index);
-      }
-    });
-
-    return effectIndexList;
-  }
-
-  /**
-   * 生成有效路徑
-   * @param effectIndexList {Array<number>}-路徑中有效座標的序列
-   */
-  createLeafletPath(effectIndexList: Array<number>): Array<[number, number]> {
-    // 將無效點以該點後面的有效點進行填補
-    let i = 0;
-    const { path } = this;
-    return path.map((_path, _index) => {
-      const effectIndex = effectIndexList[i];
-      if (_index !== effectIndex) {
-        const [_effectLat, _effectLng] = path[effectIndex];
-        return [_effectLat, _effectLng];
-      }
-
-      i++;
-      return _path;
+  getBoundary() {
+    this.path.forEach(([_lat, _lng]) => {
+      this.reservedSpace.boundaryLat = _lat;
+      this.reservedSpace.boundaryLng = _lng;
     });
   }
 
@@ -195,15 +170,23 @@ export class LeafletMapComponent implements OnInit, OnChanges, OnDestroy {
           })
           .addTo(this.leafletMap);
 
-        const boundPath = deepCopy(leafletPath);
-        const { horizonCenter, verticalCenter } = this.reservedSpace.mapCenter;
-        if (this.usePage === 'sportsFile') boundPath.push([verticalCenter, horizonCenter]);
-        this.leafletMap.fitBounds(boundPath);
+        this.fitBounds(leafletPath);
         this.addStartEndMark(leafletPath);
         this.addPathLine(leafletPath);
         this.initUserMark(leafletPath);
       }
     });
+  }
+
+  /**
+   * 將視圖縮放置可瀏覽整個路徑的大小
+   * @param basePath 基本檔案路徑
+   */
+  fitBounds(basePath: Array<[number, number]>) {
+    const boundPath = deepCopy(basePath);
+    const { horizonCenter, verticalCenter } = this.reservedSpace.mapCenter;
+    if (this.usePage === 'sportsFile') boundPath.push([verticalCenter, horizonCenter]);
+    this.leafletMap.fitBounds(boundPath);
   }
 
   /**
@@ -230,7 +213,7 @@ export class LeafletMapComponent implements OnInit, OnChanges, OnDestroy {
    */
   addPathLine(path: Array<[number, number]>) {
     switch (this.mapType) {
-      case 'heat': {
+      case MapType.heatMap: {
         const heatLayerConfig = {
           radius: 5,
           maxOpacity: 0.8,
@@ -251,7 +234,7 @@ export class LeafletMapComponent implements OnInit, OnChanges, OnDestroy {
         break;
       }
       default: {
-        const pathLine = leaflet.polyline(path, { color: '#FF00AA' });
+        const pathLine = leaflet.polyline(path, { color: this.pathColor });
         pathLine.addTo(this.leafletMap);
         break;
       }
@@ -330,7 +313,7 @@ export class LeafletMapComponent implements OnInit, OnChanges, OnDestroy {
    */
   removeRacer(racer: number) {
     if (racer) {
-      this.racerMarkList.get(racer).remove();
+      this.racerMarkList.get(racer)?.remove();
       this.racerMarkList.delete(racer);
     }
   }
@@ -373,7 +356,7 @@ export class LeafletMapComponent implements OnInit, OnChanges, OnDestroy {
   focusRacer(racer: number) {
     const mark = this.racerMarkList.get(racer);
     if (racer) {
-      mark.adjustIconSize(true);
+      mark?.adjustIconSize(true);
     }
   }
 
@@ -384,7 +367,7 @@ export class LeafletMapComponent implements OnInit, OnChanges, OnDestroy {
   changeRacerPosition(racerPositionList: Map<number, [number, number]>) {
     if (racerPositionList) {
       racerPositionList.forEach((_value, _fileId) => {
-        this.racerMarkList.get(_fileId).move(_value);
+        this.racerMarkList.get(_fileId)?.move(_value);
       });
     }
   }

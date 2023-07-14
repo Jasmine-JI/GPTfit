@@ -3,7 +3,7 @@ import { MuscleCode } from '../../enums/sports';
 /**
  * 高階者重訓程度
  */
-export const asept = ['1%', '100%', '200%'] as const;
+export const adept = ['1%', '100%', '200%'] as const;
 
 /**
  * 進階者重訓程度

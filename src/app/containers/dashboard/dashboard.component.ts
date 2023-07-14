@@ -583,17 +583,20 @@ export class DashboardComponent implements OnInit, AfterViewChecked, OnDestroy {
    */
   checkNewMail() {
     const body = { token: this.authService.token };
-    this.api50xxService.fetchMessageNotifyFlagStatus(body).subscribe((res) => {
-      if (checkResponse(res, false)) {
-        const { status, updateTime } = res.flag;
-        const haveNewMail = status === 2;
-        if (haveNewMail && updateTime !== this.notifyUpdateTime) {
-          this.uiFlag.haveNewMail = true;
-          this.stationMailService.setNewMailNotify(true);
+    this.api50xxService.fetchMessageNotifyFlagStatus(body).subscribe({
+      next: (res) => {
+        if (checkResponse(res, false)) {
+          const { status, updateTime } = res.flag;
+          const haveNewMail = status === 2;
+          if (haveNewMail && updateTime !== this.notifyUpdateTime) {
+            this.uiFlag.haveNewMail = true;
+            this.stationMailService.setNewMailNotify(true);
+          }
+        } else {
+          this.uiFlag.haveNewMail = false;
         }
-      } else {
-        this.uiFlag.haveNewMail = false;
-      }
+      },
+      error: (err) => console.error(err),
     });
   }
 

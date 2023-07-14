@@ -17,4 +17,8 @@ export enum LocalStorageKey {
   sportsReportTableData = 'srtd',
   weightTrainAnalysis = 'wta',
   includeAdmin = 'ica', // 是否包含管理員
+  quadrantSettingRun = 'qs_run', // 跑步類別的象限圖設定
+  quadrantSettingCycle = 'qs_cycle', // 騎乘類別的象限圖設定
+  quadrantSettingSwim = 'qs_swim', // 游泳類別的象限圖設定
+  quadrantSettingRow = 'qs_row', // 划船類別的象限圖設定
 }

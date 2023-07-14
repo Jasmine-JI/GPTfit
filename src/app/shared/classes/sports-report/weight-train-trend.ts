@@ -1,12 +1,17 @@
 import dayjs from 'dayjs';
 import quarterOfYear from 'dayjs/plugin/quarterOfYear';
-import { WeightTrainingInfo } from '../../../core/models/api/api-21xx';
+import { WeightTrainingInfo } from '../../../core/models/api/api-common';
 import { mathRounding, deepCopy, getCorrespondingMuscleGroup } from '../../../core/utils';
 import { weightTrainColor } from '../../../core/models/represent-color';
 import { ReportDateType } from '../../../core/models/compo/report-condition.model';
 import { lb } from '../../../core/models/const/bs-constant.model';
 import { DataUnitType } from '../../../core/enums/common';
-import { MuscleCode, Proficiency, WeightTrainingLevel } from '../../../core/enums/sports';
+import {
+  MuscleCode,
+  Proficiency,
+  WeightTrainingLevel,
+  MuscleGroup,
+} from '../../../core/enums/sports';
 
 dayjs.extend(quarterOfYear);
 
@@ -46,8 +51,8 @@ export class WeightTrainingTrend {
    * 基準或比較日期範圍期間各時間前同部位最大1RM
    */
   private _max1RMTrendData = {
-    base: [],
-    compare: [],
+    base: [] as Array<any>,
+    compare: [] as Array<any>,
   };
 
   /**
@@ -61,7 +66,7 @@ export class WeightTrainingTrend {
   /**
    * 紀錄每一筆數據之日期（不管有無重訓數據與否），方便後續補零用
    */
-  private _allDateList = [];
+  private _allDateList: Array<any> = [];
 
   /**
    * 期間同部位訓練趨勢數據
@@ -99,8 +104,8 @@ export class WeightTrainingTrend {
    */
   getProficiency(level: WeightTrainingLevel): Proficiency {
     switch (level) {
-      case WeightTrainingLevel.asept:
-        return Proficiency.asept;
+      case WeightTrainingLevel.adept:
+        return Proficiency.adept;
       case WeightTrainingLevel.metacarpus:
         return Proficiency.metacarpus;
       case WeightTrainingLevel.novice:
@@ -247,7 +252,7 @@ export class WeightTrainingTrend {
       totalWeightKg: currentWeight,
       totalReps: currentReps,
     } = partInfo;
-    const muscleGroup = getCorrespondingMuscleGroup(muscle);
+    const muscleGroup = getCorrespondingMuscleGroup(+muscle);
     if (!this._sameGroupData[muscleGroup]) {
       this._sameGroupData[muscleGroup] = {
         max1RM: current1RM,
@@ -270,8 +275,8 @@ export class WeightTrainingTrend {
    */
   fillupDate(dataArray: any) {
     let index = 0;
-    const maxData = [];
-    const avgData = [];
+    const maxData: Array<any> = [];
+    const avgData: Array<any> = [];
     const fillup = (obj: any) => {
       maxData.push(obj);
       avgData.push(obj);

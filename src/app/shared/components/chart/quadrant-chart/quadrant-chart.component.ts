@@ -449,7 +449,6 @@ export class QuadrantChartComponent implements OnInit, OnChanges, OnDestroy {
 
   /**
    * 由localstorage取得使用者的象限圖設定，若取不到則給予預設
-   * @author kidin-1100128
    */
   setUserOpt() {
     const storageOpt = getLocalStorageObject(`quadrantOpt__${this.sportType}`);

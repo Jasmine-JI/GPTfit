@@ -1,0 +1,117 @@
+@import 'overflow-scroll.scss';
+@import 'color.scss';
+@import 'screen-size.scss';
+
+@mixin symbol-color($border-color, $background-color) {
+  border-left: 3px solid $border-color;
+  background-color: $background-color;
+}
+
+.muscle__list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  max-height: 400px;
+  min-height: 250px;
+  height: 30vw;
+  @include overflow-y-scroll();
+}
+
+.muscle__data__row {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 2px;
+  margin: 5px 0;
+  padding: 5px;
+  border: 1px solid rgba(159, 159, 159, 1);
+  border-radius: 5px;
+  cursor: pointer;
+
+  &:hover {
+    background-color: rgba(200, 200, 200, 0.2);
+  }
+}
+
+.muscle__data__row--focus {
+  border-width: 2px;
+  border-color: $primary-blue;
+}
+
+.data__table__column {
+  grid-column: span 1;
+}
+
+.row__title {
+  grid-column: span 5;
+  margin: 0;
+  font-weight: bold;
+}
+
+.row__icon {
+  grid-column: span 1;
+}
+
+.muscle__icon {
+  font-size: 6rem;
+}
+
+.row__data {
+  grid-column: span 4;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 5px;
+}
+
+.row__data__item {
+  grid-column: span 2;
+}
+
+.row__data__item--compare {
+  grid-column: span 1;
+
+  @include medium-screen() {
+    grid-column: span 2;
+  }
+}
+
+.data__title {
+  font-size: 0.9rem;
+  font-weight: bold;
+  color: rgba(100, 100, 100, 1);
+  margin: 0 5px;
+}
+
+.base__data {
+  @include symbol-color($file-base-color, rgba(255, 243, 217, 1));
+}
+
+.compare__data {
+  @include symbol-color($file-compare-color, rgba(211, 203, 255, 1));
+}
+
+.data__value {
+  font-weight: bold;
+  font-size: 1.1rem;
+  margin: 0 5px;
+}
+
+.data__unit {
+  font-size: 0.9rem;
+}
+
+.diff__value {
+  display: inline-block;
+  font-size: 0.8rem;
+  min-width: 40px;
+  text-align: center;
+}
+
+.positive__value {
+  color: $positive-color;
+  background-color: $positive-bg-color;
+}
+
+.nagetive__value {
+  color: $negative-color;
+  background-color: $negative-bg-color;
+}
