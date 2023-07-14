@@ -1,0 +1,643 @@
+@import 'flex-center.scss';
+@import 'font.scss';
+@import 'color.scss';
+@import 'transition.scss';
+@import 'keyframes.scss';
+@import 'overflow-scroll';
+
+// RWD 手機
+@mixin m() {
+  @media screen and (max-width: 767px) {
+    @content;
+  }
+}
+
+// RWD 平板
+@mixin l() {
+  @media screen and (min-width: 768px) {
+    @content;
+  }
+}
+
+// 圖片
+@mixin img() {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  vertical-align: top;
+  @content;
+}
+
+@mixin btn() {
+}
+
+// @mixin home-image($image) {
+//   background-image: $image;
+//   background-position: center;
+//   background-repeat: no-repeat;
+//   background-size: cover;
+//   height: 45vw;
+//   min-height: 400px;
+//   width: 100%;
+//   position: relative;
+// }
+
+@mixin header-title($min-width: 257px) {
+  padding: 9px 35px;
+  min-width: $min-width;
+  color: #fff;
+  background-color: rgba(0, 0, 0, 0.35);
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  @content;
+}
+
+@keyframes fadein {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+.fade__in {
+  animation: fadein 1.5s ease 0s 1;
+}
+/* home */
+.banner {
+  position: relative;
+}
+.header-titile {
+  height: fit-content;
+  min-width: fit-content;
+  margin: 35px;
+  @include l() {
+    max-width: 1024px;
+    margin: 20px auto;
+    font-family: 'Poppins', sans-serif;
+    font-size: 30px;
+    font-weight: 700;
+    text-align: left;
+    .system__title--size {
+      font-weight: 700;
+      font-size: 60px;
+    }
+  }
+}
+// banner
+.banner {
+  margin: auto;
+  @include l() {
+    max-width: 1024px;
+  }
+  .wrapper {
+    width: 100%;
+    > div {
+      margin-block-end: 20px;
+    }
+    @include l() {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .intro {
+      @include l() {
+        margin: 0 20px;
+      }
+      .message {
+        margin: 10px 35px;
+        text-align: center;
+        @include l() {
+          margin: 10px 0;
+        }
+        p {
+          @include l() {
+            font-size: 24px;
+          }
+        }
+      }
+    }
+    .start {
+      @include l() {
+        display: flex;
+        justify-content: center;
+        gap: 55px;
+        margin: 20px;
+      }
+      ul {
+        padding: 10px;
+        margin: 0;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        @include l() {
+          padding: 0;
+          gap: 55px;
+        }
+        li {
+          list-style: none;
+          cursor: pointer;
+          &:hover figure {
+            box-shadow: 2px 3px 5px 2px rgb(233 117 117 / 40%);
+          }
+          @include l() {
+            list-style: none;
+            box-sizing: border-box;
+          }
+          a {
+            color: black;
+            &:hover {
+              text-decoration: none;
+            }
+          }
+          figure {
+            margin: 0;
+            align-items: center;
+            gap: 10px;
+
+            position: relative;
+            $border: 1px;
+            background: white;
+            background-clip: padding-box;
+            border: solid $border transparent;
+            border-radius: 10px;
+
+            &:before {
+              content: '';
+              position: absolute;
+              top: 0;
+              right: 0;
+              bottom: 0;
+              left: 0;
+              z-index: -1;
+              margin: -$border;
+              border-radius: inherit;
+              background: $border-gradient;
+            }
+            img {
+              @include img();
+              padding: 10px;
+            }
+            figcaption {
+              padding-bottom: 10px;
+            }
+          }
+        }
+      }
+    }
+  }
+  .login {
+    align-items: center;
+    @include l() {
+      width: 100%;
+    }
+    .system__t1 {
+      margin: 20px;
+      display: none;
+      @include l() {
+        display: block;
+        width: 90%;
+        box-sizing: border-box;
+      }
+      img {
+        @include img();
+        object-position: center left;
+        position: relative;
+        border-radius: 20px;
+      }
+    }
+  }
+}
+
+// banner 登入/開始使用
+.login-start {
+  cursor: auto;
+  list-style: none;
+  box-sizing: border-box;
+  @include l() {
+    width: 178px;
+    max-height: 226px;
+  }
+  button {
+    margin: 20px auto;
+    padding: 10px 30%;
+    cursor: pointer;
+    position: relative;
+    $border: 1px;
+    background-clip: padding-box;
+    border-radius: 10px;
+    background: $btn-gradient;
+    @include l() {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+    }
+    &:before {
+      content: '';
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      z-index: -1;
+      margin: -$border;
+      border-radius: inherit;
+      background: $border-gradient;
+    }
+    &:hover {
+      background: $border-gradient;
+      color: white;
+    }
+  }
+}
+
+// section title + pic
+.system,
+.analysis {
+  position: relative;
+  margin: 0 auto 90px auto;
+  @include l() {
+    max-width: 1024px;
+  }
+  > .system-titile {
+    display: flex;
+    flex-direction: column;
+    margin: 0 20px 20px 20px;
+    p {
+      text-align: left;
+      font-weight: bold;
+      font-size: 20px;
+      @include l() {
+        font-size: 30px;
+      }
+    }
+    img {
+      @include img();
+    }
+  }
+}
+// 資料收集
+.system {
+  > div {
+    margin-block-end: 30px;
+  }
+  @include l() {
+    .imgcontent:nth-child(odd) {
+      flex-direction: row-reverse;
+    }
+  }
+  .imgcontent {
+    width: 100%;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 50px;
+    @include l() {
+      flex-direction: row;
+      justify-content: space-between;
+      width: auto;
+      margin: 20px;
+    }
+    .image {
+      height: 15vh;
+      @include l() {
+        height: 20vh;
+      }
+      img {
+        @include img();
+      }
+    }
+    .content {
+      width: 100%;
+      @include l() {
+      }
+      width: 80%;
+      // p {
+      // }
+    }
+  }
+  .exploreProducts {
+    display: flex;
+    justify-content: center;
+    button {
+      padding: 10px 20px;
+      cursor: pointer;
+      position: relative;
+      $border: 1px;
+      border-radius: 10px;
+      background: $btn-gradient;
+      box-shadow: 1px 1px 1px 0px $border-gradient;
+      &:before {
+        content: '';
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        z-index: -1;
+        margin: -$border;
+        border-radius: inherit;
+        background: $border-gradient;
+      }
+      &:hover {
+        background: $border-gradient;
+        span {
+          color: white;
+        }
+      }
+    }
+  }
+}
+
+// 分析
+.analysis {
+  .content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    @include l() {
+      flex-direction: row;
+      margin: 20px 20px 40px 20px;
+    }
+    .ala-app-info {
+      display: block;
+      @include l() {
+        display: block;
+        height: 100%;
+        width: 50%;
+      }
+      img {
+        height: 55vh;
+        @include l() {
+          height: 100%;
+          width: 100%;
+        }
+      }
+    }
+    .msg {
+      align-self: flex-start;
+      top: 50px;
+      @include l() {
+        width: 50%;
+        align-self: flex-start;
+        position: sticky;
+        top: 50px;
+      }
+    }
+  }
+}
+
+.application__title--size {
+  font-size: calc(10px + 2vw);
+  text-align: center;
+}
+
+.home-header-title {
+  padding: 9px 35px;
+  color: #fff;
+  background-color: rgba(0, 0, 0, 0.35);
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.home-header-title h1 {
+  font-size: 20px;
+  line-height: 40px;
+  text-align: center;
+}
+
+.message {
+  margin: 20px;
+  text-align: center;
+}
+
+// .system__t2 {
+//   @include home-image(url('/app/public_html/img/introduction/one/intro_wearable.png'));
+// }
+
+// .system__t3 {
+//   @include home-image(url('/app/public_html/img/introduction/system/T3.jpg'));
+// }
+
+// .system__t4 {
+//   @include home-image(url('/app/public_html/img/introduction/system/T4.jpg'));
+// }
+
+// .analysis__t1 {
+//   @include home-image(url('/app/public_html/img/introduction/analysis/T1.jpg'));
+// }
+
+// .analysis__t2 {
+//   @include home-image(url('/app/public_html/img/introduction/analysis/T2.jpg'));
+// }
+
+// .analysis__t3 {
+//   @include home-image(url('/app/public_html/img/introduction/analysis/T3.jpg'));
+// }
+
+// .analysis__t4 {
+//   @include home-image(url('/app/public_html/img/introduction/analysis/T4.jpg'));
+// }
+
+.app-link-container {
+  display: flex;
+  flex-direction: column;
+}
+
+.cloudRun-app-container {
+  display: none;
+}
+
+.cloudRun-app-info {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+.coach-img {
+  display: none;
+}
+
+.home-connect-info {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+// .ala-app-info {
+//   display: none;
+// }
+
+.homepage__btn {
+  @include center();
+  @include bold-font(18px);
+  border: 1px solid black;
+  width: 200px;
+  height: 60px;
+  cursor: pointer;
+  @include transition(background-color);
+
+  &:hover {
+    background-color: $ligntest-gray;
+    @include transition(background-color);
+  }
+}
+
+.system__introduction__text {
+  @include bold-font(18px);
+  text-align: left;
+}
+
+.hide__slide__img {
+  opacity: 0;
+}
+
+.left__slide__in {
+  display: initial;
+  position: relative;
+  animation: left-slide-in 1s 1;
+  animation-timing-function: ease-in;
+  @include keyframes(left-slide-in) {
+    0% {
+      opacity: 0;
+      left: -50px;
+    }
+
+    100% {
+      opacity: 1;
+      left: 0;
+    }
+  }
+}
+
+.right__slide__in {
+  display: initial;
+  position: relative;
+  animation: right-slide-in 1s 1;
+  animation-timing-function: ease-in;
+  @include keyframes(right-slide-in) {
+    0% {
+      opacity: 0;
+      left: 50px;
+    }
+
+    100% {
+      opacity: 1;
+      left: 0;
+    }
+  }
+}
+
+.bottom__slide__in {
+  display: initial;
+  position: relative;
+  animation: bottom-slide-in 1s 1;
+  animation-timing-function: ease-in;
+  @include keyframes(bottom-slide-in) {
+    0% {
+      opacity: 0;
+      top: 50px;
+    }
+
+    100% {
+      opacity: 1;
+      top: 0;
+    }
+  }
+}
+
+.darkMode {
+  background-color: black;
+}
+
+/*************************** media *************************/
+
+@media (min-width: 768px) {
+  .date-picker {
+    vertical-align: middle;
+    display: inline-block;
+    width: calc((100% - 30px) / 2);
+  }
+
+  .home-header-title {
+    padding: 11px 50px;
+    min-width: 382px;
+    color: #fff;
+  }
+
+  .home-connect-app {
+    display: flex;
+  }
+
+  .cloudRun-app-container {
+    display: block;
+  }
+
+  .coach-img {
+    width: 45%;
+    display: block;
+  }
+
+  .message a {
+    float: right;
+  }
+
+  .home-cloudRun-description {
+    height: 887px;
+  }
+
+  .home-coach-description {
+    height: 841px;
+  }
+
+  .home-fitness-description {
+    height: 887px;
+  }
+}
+
+@media (max-width: 767px) {
+  .rwd__hide {
+    display: none;
+  }
+}
+
+@media (min-width: 1440px) {
+  .app-link + .app-link {
+    margin-top: 0px;
+    margin-left: 35px;
+  }
+
+  .app-link-container {
+    flex-direction: row;
+  }
+
+  .app-link img {
+    width: 174px;
+    height: auto;
+  }
+
+  .cloudRun-app-info {
+    flex-direction: row;
+    align-items: flex-end;
+  }
+
+  .cloudRun-app-info .app-link-container {
+    margin-left: 95px;
+  }
+
+  .home-header-title {
+    padding: 40px 120px;
+  }
+
+  .home-header-title h1 {
+    font-size: 35px;
+    line-height: 70px;
+  }
+}

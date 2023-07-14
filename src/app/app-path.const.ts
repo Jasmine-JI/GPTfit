@@ -123,9 +123,9 @@ export const appPath = {
     home: '',
     introduction: {
       home: 'introduction',
-      system: 'system',
-      application: 'application',
-      analysis: 'analysis',
+      system: '#system',
+      application: '#application',
+      analysis: '#analysis',
       cloudrunAnchor: '#cloudrun',
       connectAnchor: '#connect',
       trainliveAnchor: '#trainlive',
