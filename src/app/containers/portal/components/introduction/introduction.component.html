@@ -1,0 +1,217 @@
+<div class="fade__in">
+  <!-- 標題 -->
+  <header class="header-titile">
+    <h1 class="system__title--size" innerHtml="{{ 'universal_app_systemSlogan' | translate }}"></h1>
+  </header>
+  <section class="banner">
+    <div class="wrapper">
+      <!-- 文字 -->
+      <div class="flexCol intro">
+        <div class="message">
+          <p class="system__introduction__text">
+            {{ 'universal_app_gptInfo2' | translate }}
+          </p>
+          <p class="system__introduction__text">
+            {{ 'universal_app_gptInfo3' | translate }}
+          </p>
+        </div>
+      </div>
+      <!-- 圖片按鈕 -->
+      <div class="start">
+        <ul class="flexRow">
+          <li (click)="srollToElement($event, 'system')">
+            <a>
+              <figure class="flexCol">
+                <img src="/app/public_html/img/introduction/one/intro_gym.png" />
+                <figcaption>{{ 'universal_message_dataCollection' | translate }}</figcaption>
+              </figure>
+            </a>
+          </li>
+          <li>
+            <a>
+              <figure class="flexCol">
+                <img src="/app/public_html/img/introduction/one/intro_class.png" />
+                <figcaption>{{ 'universal_message_classManage' | translate }}</figcaption>
+              </figure>
+            </a>
+          </li>
+          <li (click)="srollToElement($event, 'analysis')">
+            <a>
+              <figure class="flexCol">
+                <img src="/app/public_html/img/introduction/one/intro_stats.png" />
+                <figcaption>{{ 'universal_message_dataAnalysis' | translate }}</figcaption>
+              </figure>
+            </a>
+          </li>
+        </ul>
+        <!-- 開始使用 -->
+        <li class="login-start">
+          <button (click)="ifLogin()">{{ 'universal_uiFitpair_startUsing' | translate }}</button>
+        </li>
+      </div>
+    </div>
+    <!-- 輪播/開始使用 -->
+    <div class="flexCol login">
+      <!-- 輪播 -->
+      <!-- <div class="system__t1" >
+        <img src="/app/public_html/img/introduction/one/main.png" />
+      </div> -->
+    </div>
+  </section>
+
+  <!-- 系統 - 運動資料收集 -->
+  <section #systemSection class="system" id="system">
+    <div class="system-titile">
+      <p>{{ 'universal_message_dataCollection' | translate }}</p>
+      <img src="/app/public_html/img/introduction/one/intro_wearable.png" alt="運動資料收集" />
+    </div>
+    <div class="imgcontent">
+      <div class="image">
+        <img
+          #system_T2
+          id="systemT2"
+          class="hide__slide__img"
+          src="/app/public_html/img/introduction/system/T2-wearable.jpg"
+          alt="WB002"
+        />
+      </div>
+      <div class="flexCol content">
+        <p class="system__introduction__text">
+          {{ 'universal_app_wearableInfo1' | translate }}
+        </p>
+        <p class="system__introduction__text">
+          {{ 'universal_app_wearableInfo2' | translate }}
+        </p>
+      </div>
+    </div>
+
+    <div class="imgcontent">
+      <div class="image">
+        <img
+          #system_T3
+          id="systemT3"
+          class="hide__slide__img"
+          src="/app/public_html/img/introduction/system/T3-app.jpg"
+          alt="Fitness"
+        />
+      </div>
+      <div class="flexCol content">
+        <p class="system__introduction__text">
+          {{ 'universal_app_appInfo1' | translate }}
+        </p>
+        <p class="system__introduction__text">
+          {{ 'universal_app_appInfo2' | translate }}
+        </p>
+      </div>
+    </div>
+
+    <div class="imgcontent">
+      <div class="image">
+        <img
+          #system_T4
+          id="systemT4"
+          src="/app/public_html/img/introduction/system/T4-iot.jpg"
+          alt="AP1000"
+          class="hide__slide__img"
+        />
+      </div>
+      <div class="flexCol content">
+        <p class="system__introduction__text">
+          {{ 'universal_app_iotInfo1' | translate }}
+        </p>
+        <p class="system__introduction__text">
+          {{ 'universal_app_iotInfo2' | translate }}
+        </p>
+      </div>
+    </div>
+    <!-- 探索產品 -->
+    <div class="exploreProducts">
+      <button (click)="handleNavigation(2)">
+        <span>{{ 'universal_app_exploreProducts' | translate }}</span>
+      </button>
+    </div>
+  </section>
+
+  <!-- 分析 - 運動資料統計 -->
+  <section #analysisSection class="analysis" id="analysis">
+    <div class="system-titile">
+      <p>
+        {{ 'universal_app_analyze' | translate }}
+      </p>
+      <img
+        src="https://www.gptfit.com/app/public_html/img/introduction/one/intro_data.png"
+        alt="analysis"
+      />
+    </div>
+    <div class="content">
+      <div class="ala-app-info">
+        <img
+          #analysis_T1
+          id="analysisT1"
+          src="/app/public_html/img/introduction/one/intro_report.png"
+          class="hide__slide__img"
+        />
+      </div>
+      <div class="msg">
+        <div class="message">
+          <p class="system__introduction__text">
+            {{ 'universal_app_hrInfo1' | translate }}
+          </p>
+          <br />
+          <p class="system__introduction__text">
+            {{ 'universal_app_hrInfo2' | translate }}
+          </p>
+        </div>
+      </div>
+    </div>
+    <div class="content">
+      <div class="msg">
+        <div class="message">
+          <p class="system__introduction__text">
+            {{ 'universal_app_sportsScienceInfo1' | translate }}
+          </p>
+          <br />
+          <p class="system__introduction__text">
+            {{ 'universal_app_sportsScienceInfo2' | translate }}
+          </p>
+        </div>
+      </div>
+      <div class="ala-app-info">
+        <img
+          #analysis_T2
+          id="analysisT2"
+          src="/app/public_html/img/introduction/one/intro_compare.png"
+          class="hide__slide__img"
+        />
+      </div>
+    </div>
+
+    <div class="message">
+      <p class="system__introduction__text">
+        {{ 'universal_app_lifeInfo1' | translate }}
+      </p>
+      <br />
+      <p class="system__introduction__text">
+        {{ 'universal_app_lifeInfo2' | translate }}
+      </p>
+    </div>
+
+    <div class="system-titile">
+      <img src="/app/public_html/img/introduction/one/intro_team.png" />
+    </div>
+
+    <div class="message">
+      <p class="system__introduction__text">
+        {{ 'universal_app_groupInfo1' | translate }}
+      </p>
+
+      <p class="system__introduction__text">
+        {{ 'universal_app_groupInfo2' | translate }}
+      </p>
+      <br />
+      <p style="text-align: end; font-size: 14px; font-weight: bold; color: rgba(150, 150, 150, 1)">
+        {{ 'universal_app_groupInfoComment1' | translate }}
+      </p>
+    </div>
+  </section>
+</div>

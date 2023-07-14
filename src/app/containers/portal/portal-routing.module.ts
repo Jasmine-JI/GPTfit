@@ -1,3 +1,4 @@
+import { IntroductionComponent } from './components/introduction/introduction.component';
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 import { PortalComponent } from './portal.component';
@@ -33,168 +34,148 @@ const { portal, personal, professional, device, qrcodeUploadData, pageNoPermissi
 
 const routes: Routes = [
   {
-    path: portal.introduction.home,
-    component: PortalComponent,
+    path: '',
+    component: IntroductionComponent,
+  },
+  {
+    path: device.pair,
+    component: DeviceInfoComponent,
+  },
+  {
+    path: `${personal.activityDetail}/:${personal.fileId}`,
+    component: ActivityDetailComponent,
+    // component: SportsDetailComponent,
+  },
+
+  {
+    path: `${personal.home}/:${personal.userId}`,
+    component: PersonalComponent,
     children: [
       {
-        path: portal.introduction.system,
-        component: PortalComponent,
+        path: personal.activityList,
+        component: ActivityListComponent,
       },
       {
-        path: portal.introduction.application,
-        component: PortalComponent,
+        path: personal.sportsReport,
+        component: SportsReportComponent,
       },
       {
-        path: portal.introduction.analysis,
-        component: PortalComponent,
+        path: personal.lifeTracking,
+        component: MyLifeTrackingComponent,
+      },
+      {
+        path: personal.cloudrun,
+        component: PersonCloudrunReport,
+      },
+      {
+        path: personal.info,
+        component: InfoComponent,
+      },
+      {
+        path: '',
+        component: ActivityListComponent,
       },
     ],
   },
   {
-    path: '',
-    component: PortalComponent,
+    path: `${professional.groupDetail.home}/:${professional.groupId}`,
+    component: GroupInfoComponent,
     children: [
       {
-        path: device.pair,
-        component: DeviceInfoComponent,
-      },
-      {
-        path: `${personal.activityDetail}/:${personal.fileId}`,
-        component: ActivityDetailComponent,
-        // component: SportsDetailComponent,
-      },
-
-      {
-        path: `${personal.home}/:${personal.userId}`,
-        component: PersonalComponent,
-        children: [
-          {
-            path: personal.activityList,
-            component: ActivityListComponent,
-          },
-          {
-            path: personal.sportsReport,
-            component: SportsReportComponent,
-          },
-          {
-            path: personal.lifeTracking,
-            component: MyLifeTrackingComponent,
-          },
-          {
-            path: personal.cloudrun,
-            component: PersonCloudrunReport,
-          },
-          {
-            path: personal.info,
-            component: InfoComponent,
-          },
-          {
-            path: '',
-            component: ActivityListComponent,
-          },
-        ],
-      },
-      {
-        path: `${professional.groupDetail.home}/:${professional.groupId}`,
-        component: GroupInfoComponent,
-        children: [
-          {
-            path: professional.groupDetail.introduction,
-            component: GroupIntroductionComponent,
-          },
-        ],
-      },
-      {
-        path: qrcodeUploadData,
-        component: QrcodeUploadComponent,
-      },
-      {
-        path: portal.register,
-        component: AppSignupComponent,
-      },
-      {
-        path: portal.signIn,
-        component: AppSigninComponent,
-        canActivate: [SigninGuard],
-      },
-      {
-        path: portal.enableAccount,
-        component: AppEnableComponent,
-      },
-      {
-        path: portal.resetPassword,
-        component: AppForgetpwComponent,
-      },
-      {
-        path: portal.editPassword,
-        component: AppModifypwComponent,
-      },
-      {
-        path: portal.changeAccount,
-        component: AppChangeAccountComponent,
-      },
-      {
-        path: portal.signInQrcode,
-        component: AppQrcodeLoginComponent,
-      },
-      {
-        path: portal.firstLogin,
-        component: AppFirstLoginComponent,
-      },
-      {
-        path: portal.compressData,
-        component: AppCompressDataComponent,
-      },
-      {
-        path: portal.destroyAccount,
-        component: AppDestroyAccountComponent,
-      },
-      {
-        path: portal.registerWeb,
-        component: AppSignupComponent,
-      },
-      {
-        path: portal.signInWeb,
-        component: AppSigninComponent,
-        canActivate: [SigninGuard],
-      },
-      {
-        path: portal.enableAccountWeb,
-        component: AppEnableComponent,
-      },
-      {
-        path: portal.resetPasswordWeb,
-        component: AppForgetpwComponent,
-      },
-      {
-        path: portal.editPasswordWeb,
-        component: AppModifypwComponent,
-      },
-      {
-        path: portal.changeAccountWeb,
-        component: AppChangeAccountComponent,
-      },
-      {
-        path: portal.signInQrcodeWeb,
-        component: AppQrcodeLoginComponent,
-      },
-      {
-        path: portal.firstLoginWeb,
-        component: AppFirstLoginComponent,
-      },
-      {
-        path: pageNotFound,
-        component: Page404Component,
-      },
-      {
-        path: pageNoPermission,
-        component: Page403Component,
-      },
-      {
-        path: '**',
-        redirectTo: pageNotFound,
+        path: professional.groupDetail.introduction,
+        component: GroupIntroductionComponent,
       },
     ],
+  },
+  {
+    path: qrcodeUploadData,
+    component: QrcodeUploadComponent,
+  },
+  {
+    path: portal.register,
+    component: AppSignupComponent,
+  },
+  {
+    path: portal.signIn,
+    component: AppSigninComponent,
+    canActivate: [SigninGuard],
+  },
+  {
+    path: portal.enableAccount,
+    component: AppEnableComponent,
+  },
+  {
+    path: portal.resetPassword,
+    component: AppForgetpwComponent,
+  },
+  {
+    path: portal.editPassword,
+    component: AppModifypwComponent,
+  },
+  {
+    path: portal.changeAccount,
+    component: AppChangeAccountComponent,
+  },
+  {
+    path: portal.signInQrcode,
+    component: AppQrcodeLoginComponent,
+  },
+  {
+    path: portal.firstLogin,
+    component: AppFirstLoginComponent,
+  },
+  {
+    path: portal.compressData,
+    component: AppCompressDataComponent,
+  },
+  {
+    path: portal.destroyAccount,
+    component: AppDestroyAccountComponent,
+  },
+  {
+    path: portal.registerWeb,
+    component: AppSignupComponent,
+  },
+  {
+    path: portal.signInWeb,
+    component: AppSigninComponent,
+    canActivate: [SigninGuard],
+  },
+  {
+    path: portal.enableAccountWeb,
+    component: AppEnableComponent,
+  },
+  {
+    path: portal.resetPasswordWeb,
+    component: AppForgetpwComponent,
+  },
+  {
+    path: portal.editPasswordWeb,
+    component: AppModifypwComponent,
+  },
+  {
+    path: portal.changeAccountWeb,
+    component: AppChangeAccountComponent,
+  },
+  {
+    path: portal.signInQrcodeWeb,
+    component: AppQrcodeLoginComponent,
+  },
+  {
+    path: portal.firstLoginWeb,
+    component: AppFirstLoginComponent,
+  },
+  {
+    path: pageNotFound,
+    component: Page404Component,
+  },
+  {
+    path: pageNoPermission,
+    component: Page403Component,
+  },
+  {
+    path: '**',
+    redirectTo: pageNotFound,
   },
 ];
 

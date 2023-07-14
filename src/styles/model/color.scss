@@ -13,6 +13,10 @@ $report-base-color: rgba(249, 248, 212, 1);
 $report-compare-color: rgba(214, 238, 227, 1);
 $sport-analysis-color: rgba(57, 57, 57, 1);
 $system-mail-color: rgba(255, 111, 111, 1);
+$border-gradient: linear-gradient(to bottom, #df3a3a, #c549b8);
+$btn-gradient: linear-gradient(to bottom, #f8d8d8, #f4daee);
+$nav-bgcolor: #f7f2ff;
+$box-shadow: #f4a2b6;
 
 // 心率或閾值區間顏色
 $zone-color: rgba(112, 177, 243, 1), rgba(100, 224, 236, 1), rgba(171, 247, 132, 1),

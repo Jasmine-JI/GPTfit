@@ -33,3 +33,15 @@ $extra-small: 450px;
     @content;
   }
 }
+
+@mixin s() {
+  @media screen and (max-width: 767px) {
+    @content;
+  }
+}
+
+@mixin m() {
+  @media screen and (min-width: 768px) {
+    @content;
+  }
+}

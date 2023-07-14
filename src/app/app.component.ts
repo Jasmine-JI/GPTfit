@@ -8,13 +8,14 @@ import {
   RouterOutlet,
 } from '@angular/router';
 import { NgIf } from '@angular/common';
+import { NavbarComponent } from './shared/components/navbar/navbar.component';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
   standalone: true,
-  imports: [RouterOutlet, NgIf],
+  imports: [RouterOutlet, NgIf, NavbarComponent],
 })
 export class AppComponent {
   title = 'app';
