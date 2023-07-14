@@ -27,6 +27,8 @@ import 'heatmap.js';
 import { RacerInfo } from '../../core/models/compo';
 import { transform, WGS84, GCJ02 } from 'gcoord';
 import { chinaBorder } from '../../core/models/const';
+import { MapType } from '../../core/enums/compo';
+import { googleMapStyle } from '../../core/models/const';
 
 // 若google api掛掉則建物件代替，避免造成gptfit卡住。
 const google: any = (window as any).google || { maps: { OverlayView: null } };
@@ -42,7 +44,7 @@ const google: any = (window as any).google || { maps: { OverlayView: null } };
 export class GoogleMapComponent implements OnInit, OnChanges, OnDestroy {
   @ViewChild('mapContainer') mapContainer: ElementRef;
   @Input() usePage: 'sportsFile' | 'cloudrunReport';
-  @Input() mapType: 'normal' | 'heat' = 'normal';
+  @Input() mapType = MapType.normal;
   @Input() path: Array<[number, number]>;
   @Input() currentMarkPosition: any;
   @Input() currentRacerPosition: Map<number, [number, number]>;
@@ -183,7 +185,7 @@ export class GoogleMapComponent implements OnInit, OnChanges, OnDestroy {
 
   /**
    * 生成有效路徑
-   * @param data {{ newPath: Array<[number, number]>; effectIndexList: Array<number>;}}-路徑中有效座標的序列
+   * @param data 路徑中有效座標的序列
    */
   createGooglePath(data: { newPath: Array<[number, number]>; effectIndexList: Array<number> }) {
     const { newPath, effectIndexList } = data;
@@ -237,6 +239,7 @@ export class GoogleMapComponent implements OnInit, OnChanges, OnDestroy {
           zoomControlOptions: {
             position: google.maps.ControlPosition.RIGHT_CENTER,
           },
+          styles: googleMapStyle,
         };
 
         this.googleMap = new google.maps.Map(container, option);
@@ -277,7 +280,7 @@ export class GoogleMapComponent implements OnInit, OnChanges, OnDestroy {
   addPathLine(path: any) {
     let displayMap: any;
     switch (this.mapType) {
-      case 'heat': {
+      case MapType.heatMap: {
         displayMap = new google.maps.visualization.HeatmapLayer({
           data: path,
           radius: 20,

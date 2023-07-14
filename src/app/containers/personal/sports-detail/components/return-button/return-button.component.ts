@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TranslateModule } from '@ngx-translate/core';
 
@@ -11,10 +11,14 @@ import { TranslateModule } from '@ngx-translate/core';
 })
 export class ReturnButtonComponent {
   /**
-   * 關閉視窗或返回上一頁
+   * 取消比較模式事件傳遞
    */
-  turnBack() {
-    window.close();
-    window.history.back();
+  @Output() cancelFileCompare = new EventEmitter<boolean>();
+
+  /**
+   * 取消比較模式
+   */
+  cancelCompareMode() {
+    this.cancelFileCompare.emit(true);
   }
 }

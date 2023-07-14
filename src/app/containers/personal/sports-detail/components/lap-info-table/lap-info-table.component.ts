@@ -1,6 +1,8 @@
-import { Component, OnChanges, SimpleChanges, Input } from '@angular/core';
+import { Component, OnInit, OnChanges, OnDestroy, SimpleChanges, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TranslateModule } from '@ngx-translate/core';
+import { Subject, Subscription, fromEvent } from 'rxjs';
+import { takeUntil, debounceTime } from 'rxjs/operators';
 import {
   SportTimePipe,
   SportPaceSibsPipe,
@@ -10,6 +12,7 @@ import {
   DistanceSibsPipe,
   TimeRangeStringPipe,
   SwimPosturePipe,
+  DataTypeUnitPipe,
 } from '../../../../../core/pipes';
 import { SportType } from '../../../../../core/enums/sports';
 import { DataUnitType } from '../../../../../core/enums/common';
@@ -47,12 +50,21 @@ interface ValueContext {
     SpeedSibsPipe,
     DistanceSibsPipe,
     SwimPosturePipe,
+    DataTypeUnitPipe,
+    TimeRangeStringPipe,
+    WeightSibsPipe,
   ],
   templateUrl: './lap-info-table.component.html',
   styleUrls: ['./lap-info-table.component.scss'],
-  providers: [TimeRangeStringPipe, WeightSibsPipe],
 })
-export class LapInfoTableComponent implements OnChanges {
+export class LapInfoTableComponent implements OnInit, OnChanges, OnDestroy {
+  /**
+   * 用來解除rxjs訂閱
+   */
+  private _ngUnsubscribe = new Subject();
+
+  private _clickEventSubscription = new Subscription();
+
   /**
    * 是否為基準檔案
    */
@@ -69,24 +81,24 @@ export class LapInfoTableComponent implements OnChanges {
   @Input() activityLap: Array<any> = [];
 
   /**
-   * 是否為比較模式
-   */
-  @Input() isCompareMode = false;
-
-  /**
-   * 比較運動檔案分段資訊
+   * 另一個運動檔案分段資訊
    */
   @Input() compareActivityLap: Array<any>;
 
   /**
-   * 另一個檔案(基準檔案)分段長度
-   */
-  @Input() oppsiteLapLength: number;
-
-  /**
-   * 深拷貝分段資訊
+   * 基準檔案篩去休息的分段資訊
    */
   lapData: Array<any> = [];
+
+  /**
+   * 比較檔案篩去休息的分段資訊
+   */
+  compareLapData?: Array<any>;
+
+  /**
+   * 基準各分段間差值或與比較檔案各分段之差值
+   */
+  diffLapData?: Map<string, Array<number>>;
 
   /**
    * 用來快速取得指定數據於陣列中的序列位置
@@ -94,19 +106,24 @@ export class LapInfoTableComponent implements OnChanges {
   dataIndex: { [key: string]: number } = {};
 
   /**
-   * 兩筆檔案中，最小的分段長度
+   * 瀏覽器寬度
    */
-  minLength = 0;
+  screenSize = window.innerWidth;
+
+  /**
+   * 顯示欄位
+   */
+  displayColumn: Array<string> = [];
+
+  /**
+   * 顯示欄位選單與否
+   */
+  displayColumnMenu: number | null = null;
 
   readonly SportType = SportType;
-
   readonly DataUnitType = DataUnitType;
 
-  constructor(
-    private userService: UserService,
-    private timeRangeStringPipe: TimeRangeStringPipe,
-    private weightSibsPipe: WeightSibsPipe
-  ) {}
+  constructor(private userService: UserService) {}
 
   /**
    * 取得使用者使用單位
@@ -114,65 +131,166 @@ export class LapInfoTableComponent implements OnChanges {
   get userUnit() {
     return this.userService.getUser().unit;
   }
-
   /**
-   * 是否顯示分段名稱
+   * 取得用來判斷顯示的單位參數
    */
-  get showName() {
-    return this.includeSportsType([SportType.weightTrain, SportType.aerobic]);
+  get unitContext() {
+    const { sportsType, userUnit } = this;
+    return { sportsType, unitType: userUnit };
   }
 
   /**
-   * 是否顯示分段距離
+   * 取得是否顯示為速度類型
    */
-  get showDistance() {
-    return this.includeSportsType([SportType.run, SportType.cycle, SportType.row, SportType.ball]);
-  }
-
-  /**
-   * 是否顯示重訓相關分段資訊
-   */
-  get showWeightTrainData() {
-    return this.includeSportsType([SportType.weightTrain]);
-  }
-
-  /**
-   * 是否顯示分段距離
-   */
-  get showSwimPosture() {
-    return this.includeSportsType([SportType.swim]);
-  }
-
-  /**
-   * 是否顯示分段配速
-   */
-  get showPace() {
+  get isPaceType() {
     return this.includeSportsType([SportType.run, SportType.swim, SportType.row]);
   }
 
   /**
-   * 顯示分段速度
+   * 跑步有效數值鍵名
    */
-  get showSpeed() {
-    return this.includeSportsType([SportType.cycle, SportType.ball]);
+  private getEffectKey() {
+    const keyList = {
+      [SportType.run]: [
+        'lapTotalSecond',
+        'lapAvgHeartRateBpm',
+        'lapAvgSpeed',
+        'lapTotalDistanceMeters',
+        'lapRunAvgCadence',
+        'lapElevGain',
+        'lapElevLoss',
+      ],
+      [SportType.cycle]: [
+        'lapTotalSecond',
+        'lapAvgHeartRateBpm',
+        'lapAvgSpeed',
+        'lapTotalDistanceMeters',
+        'lapCycleAvgWatt',
+        'lapCycleAvgCadence',
+        'lapElevGain',
+        'lapElevLoss',
+      ],
+      [SportType.weightTrain]: [
+        'lapTotalSecond',
+        'setTotalReps',
+        'setOneRepMax',
+        'setTotalWeightKg',
+        'setAvgWeightKg',
+        'lapAvgHeartRateBpm',
+        'setMoveRepetitionsAvgCadence',
+      ],
+      [SportType.swim]: [
+        'lapTotalSecond',
+        'lapAvgHeartRateBpm',
+        'lapAvgSpeed',
+        'lapTotalDistanceMeters',
+        'lapSwimAvgCadence',
+        'lapTotalStrokes',
+        'lapSwolf',
+      ],
+      [SportType.aerobic]: ['lapTotalSecond', 'lapAvgHeartRateBpm'],
+      [SportType.row]: [
+        'lapTotalSecond',
+        'lapAvgHeartRateBpm',
+        'lapAvgSpeed',
+        'lapTotalDistanceMeters',
+        'lapRowingAvgWatt',
+        'lapRowingAvgCadence',
+      ],
+      [SportType.ball]: [
+        'lapTotalSecond',
+        'lapAvgHeartRateBpm',
+        'lapAvgSpeed',
+        'lapTotalDistanceMeters',
+        'totalSwingCount',
+      ],
+    };
+
+    return keyList[this.sportsType] ?? keyList[SportType.aerobic];
+  }
+
+  ngOnInit(): void {
+    this.subscribeResizeEvent();
   }
 
   /**
    * 建立數據索引和取得相差數據
    */
   ngOnChanges(e: SimpleChanges): void {
-    const { activityLap, isCompareMode } = e;
+    const { activityLap, compareActivityLap } = e;
+    if (this.sportsType) this.getDefaultDisplayColumn();
     if (activityLap) this.handleLapData();
-    if (isCompareMode) this.handleComparison();
+    if (compareActivityLap) this.handleCompareLapData();
   }
 
   /**
-   * 深拷貝分段數據及取得所需的數據索引
+   * 訂閱螢幕寬度變更事件
+   */
+  subscribeResizeEvent() {
+    fromEvent(window, 'resize')
+      .pipe(debounceTime(100), takeUntil(this._ngUnsubscribe))
+      .subscribe(() => {
+        this.screenSize = window.innerWidth;
+        this.changeColumnNumber();
+      });
+  }
+
+  /**
+   * 根據頁面寬度變更現在的欄位數目
+   */
+  changeColumnNumber() {
+    const columnNumber = this.getColumnNumber();
+    const currentLength = this.displayColumn.length;
+    if (currentLength < columnNumber) {
+      const set = new Set(this.displayColumn);
+      this.getEffectKey().forEach((_key) => {
+        set.add(_key);
+      });
+
+      this.displayColumn = Array.from(set);
+    } else if (currentLength > columnNumber) {
+      this.displayColumn = this.displayColumn.slice(0, columnNumber);
+    }
+  }
+
+  /**
+   * 取得現在頁面寬度可顯示的欄位數
+   */
+  getColumnNumber() {
+    const columWidth = 80;
+    const lapColumnWidth = 60;
+    const minPadding = 20;
+    const { screenSize } = this;
+    return Math.floor((screenSize - minPadding - lapColumnWidth) / columWidth);
+  }
+
+  /**
+   * 根據頁面寬度和運動類別，設定預設顯示欄位
+   */
+  getDefaultDisplayColumn() {
+    const columnNumber = this.getColumnNumber();
+    this.displayColumn = this.getEffectKey().slice(0, columnNumber);
+  }
+
+  /**
+   * 處理基礎分段數據及取得所需的數據索引
    */
   handleLapData() {
     const { activityLap } = this;
-    this.lapData = deepCopy(activityLap);
     this.dataIndex = this.getDataIndex(activityLap);
+    this.lapData = this.filterRestLap(activityLap);
+  }
+
+  /**
+   * 篩去休息分段
+   * @param lap 運動檔案分段
+   */
+  filterRestLap(lap: Array<any>) {
+    const typeIndex = (lap[0] as Array<string>).findIndex((_key) => _key === 'type');
+    return lap.filter((_lap, _index) => {
+      if (_index === 0) return true; // 保留鍵名陣列
+      return +_lap[typeIndex] !== 1;
+    });
   }
 
   /**
@@ -189,19 +307,86 @@ export class LapInfoTableComponent implements OnChanges {
   }
 
   /**
+   * 處理比較分段數據
+   */
+  handleCompareLapData() {
+    const { compareActivityLap } = this;
+    if (!compareActivityLap) {
+      this.handleLapData(); // 將基準分段還原原長度
+      this.compareLapData = undefined;
+      this.diffLapData = this.countLapDiff(this.lapData);
+    } else {
+      this.compareLapData = this.filterRestLap(compareActivityLap);
+      this.handleComparison();
+    }
+  }
+
+  /**
    * 處理比較模式所需資料
    * 1. 對齊兩邊數據長度
    * 2. 取得比較數據
    */
   handleComparison() {
-    const { lapData, oppsiteLapLength } = this;
-    const activityLapLength = lapData.length;
-    if (activityLapLength < oppsiteLapLength) {
-      this.lapData = this.lapData.concat(new Array(oppsiteLapLength - activityLapLength).fill([]));
-      this.minLength = activityLapLength;
+    this.compareLapData = this.filterRestLap(this.compareActivityLap);
+    const { lapData, compareLapData } = this;
+    const baseLapLength = lapData.length;
+    const compareLapLength = compareLapData.length;
+    const diffLength = Math.abs(compareLapLength - baseLapLength);
+    const fillArr = new Array(diffLength).fill([]);
+    if (baseLapLength < compareLapLength) {
+      this.lapData = this.lapData.concat(fillArr);
     } else {
-      this.minLength = oppsiteLapLength;
+      this.compareLapData = this.compareLapData.concat(fillArr);
     }
+
+    this.diffLapData = this.countCompareDiff(this.lapData, this.compareLapData);
+  }
+
+  /**
+   * 計算基準分段間的差值
+   * @param baseLap 基準檔案分段數據
+   */
+  countLapDiff(baseLap: Array<any>) {
+    const effectKey = this.getEffectKey();
+    const result: Map<string, Array<number>> = new Map(effectKey.map((_key) => [_key, []]));
+    const { dataIndex } = this;
+    baseLap.forEach((_baseLap, _index) => {
+      if (_index <= 1) return;
+      effectKey.forEach((_key) => {
+        const _valIndex = dataIndex[_key];
+        const _baseVal = _baseLap ? _baseLap[_valIndex] ?? 0 : 0;
+        const _prevLap = baseLap[_index - 1];
+        const _prevVal = _prevLap[_valIndex] ?? 0;
+        const diffValue = mathRounding(_baseVal - _prevVal, 2);
+        result.get(_key)?.push(diffValue); // 不用重set(call by reference)
+      });
+    });
+
+    return result;
+  }
+
+  /**
+   * 計算基準分段與比較分段的差值
+   * @param baseLap 基準檔案分段數據
+   * @param compareLap 比較檔案分段數據
+   */
+  countCompareDiff(baseLap: Array<any>, compareLap: Array<any>) {
+    const effectKey = this.getEffectKey();
+    const result: Map<string, Array<number>> = new Map(effectKey.map((_key) => [_key, []]));
+    const { dataIndex } = this;
+    baseLap.forEach((_baseLap, _index) => {
+      if (_index === 0) return;
+      effectKey.forEach((_key) => {
+        const _valIndex = dataIndex[_key];
+        const _baseVal = _baseLap ? _baseLap[_valIndex] ?? 0 : 0;
+        const _compareLap = compareLap[_index];
+        const _compareVal = _compareLap ? _compareLap[_valIndex] ?? 0 : 0;
+        const diffValue = mathRounding(_baseVal - _compareVal, 2);
+        result.get('_key')?.push(diffValue); // 不用重set(call by reference)
+      });
+    });
+
+    return result;
   }
 
   /**
@@ -213,246 +398,67 @@ export class LapInfoTableComponent implements OnChanges {
   }
 
   /**
-   * 取得分段時間格式數據與比較檔案的差值
-   * @param lapIndex 分段索引
+   * 顯示數據類別選單
+   * @param e 點擊事件
+   * @param index 點擊的欄位類別目前索引位置
    */
-  getTimeRangeContext(lapIndex: number) {
-    const { dataIndex, lapData, compareActivityLap, isCompareMode, minLength } = this;
-    const totalSecondIndex = dataIndex['lapTotalSecond'];
-    const currentLap = lapData[lapIndex];
-    const currentCompareLap = compareActivityLap ? compareActivityLap[lapIndex] : null;
-    const totalSecond = currentLap[totalSecondIndex] ? +currentLap[totalSecondIndex] : 0;
-    const compareTotalSecond = currentCompareLap ? +currentCompareLap[totalSecondIndex] : null;
-    const pipeArgs = { showZeroHour: false, hideSecond: false };
-    let result: ValueContext = {
-      value: this.timeRangeStringPipe.transform(totalSecond, pipeArgs),
-      displayDiff: lapIndex < minLength,
-    };
-
-    if (isCompareMode && (compareTotalSecond ?? false)) {
-      const diffSecond = totalSecond - compareTotalSecond;
-      result = {
-        ...result,
-        diffValue: this.timeRangeStringPipe.transform(diffSecond, pipeArgs),
-        isPositiveDiff: diffSecond >= 0,
-      };
+  openColumnMenu(e: MouseEvent, index: number) {
+    e.stopPropagation();
+    const { displayColumnMenu } = this;
+    if (index === displayColumnMenu) {
+      this.closeColumnMenu();
+    } else {
+      this.displayColumnMenu = index;
+      if (displayColumnMenu === null) this.subscribeClickEvent();
     }
-
-    return result;
   }
 
   /**
-   * 取得分段平均心率數據與比較檔案的差值
-   * @param lapIndex 分段索引
+   * 關閉數據類別選單
    */
-  getAvgHrContext(lapIndex: number) {
-    const { dataIndex, lapData, compareActivityLap, isCompareMode, minLength } = this;
-    const avgHrIndex = dataIndex['lapAvgHeartRateBpm'];
-    const currentLap = lapData[lapIndex];
-    const currentCompareLap = compareActivityLap ? compareActivityLap[lapIndex] : null;
-    const avgHr = currentLap[avgHrIndex] ? currentLap[avgHrIndex] : 0;
-    const compareAvgHr = currentCompareLap ? currentCompareLap[avgHrIndex] : null;
-    let result: ValueContext = {
-      value: avgHr,
-      displayDiff: lapIndex < minLength,
-    };
-
-    if (isCompareMode && (compareAvgHr ?? false)) {
-      const diffValue = avgHr - compareAvgHr;
-      result = {
-        ...result,
-        diffValue,
-        isPositiveDiff: diffValue >= 0,
-      };
-    }
-
-    return result;
+  closeColumnMenu() {
+    this.displayColumnMenu = null;
+    if (this._clickEventSubscription) this._clickEventSubscription.unsubscribe();
   }
 
   /**
-   * 根據使用者使用公英制及距離是否過千，取得對應距離數據以及與比較檔案的差值
-   * @param lapIndex 分段索引
+   * 訂閱點擊事件，點擊他處則關閉選單
    */
-  getDistanceContext(lapIndex: number) {
-    const { dataIndex, lapData, userUnit, compareActivityLap, isCompareMode, minLength } = this;
-    const distanceIndex = dataIndex['lapTotalDistanceMeters'];
-    const currentLap = lapData[lapIndex];
-    const currentCompareLap = compareActivityLap ? compareActivityLap[lapIndex] : null;
-    const distance = currentLap[distanceIndex] ? currentLap[distanceIndex] : 0;
-    const compareDistance = currentCompareLap ? currentCompareLap[distanceIndex] : null;
-    const isOverThousand = (value: number) => value >= 1000;
-    const showByThousand = isOverThousand(distance) || isOverThousand(compareDistance);
-    const { value, unit } = transformDistance(distance, userUnit, showByThousand);
-    let result: ValueContext = {
-      value,
-      unit,
-      displayDiff: lapIndex < minLength,
-    };
-
-    if (isCompareMode && (compareDistance ?? false)) {
-      const diffDistance = distance - compareDistance;
-      const diffValue = transformDistance(diffDistance, userUnit, showByThousand).value;
-      result = {
-        ...result,
-        diffValue,
-        isPositiveDiff: diffValue >= 0,
-      };
-    }
-
-    return result;
+  subscribeClickEvent() {
+    const clickEvent = fromEvent(window, 'click');
+    clickEvent.pipe(takeUntil(this._ngUnsubscribe)).subscribe(() => {
+      this.closeColumnMenu();
+    });
   }
 
   /**
-   * 根據使用者使用公英制，取得對應速度數據以及與比較檔案的差值
-   * @param lapIndex 分段索引
+   * 變更欄位類別
+   * @param e 點擊事件
+   * @param index 欄位索引
+   * @param type 欄位類別
    */
-  getSpeedContext(lapIndex: number) {
-    const {
-      dataIndex,
-      lapData,
-      userUnit,
-      compareActivityLap,
-      isCompareMode,
-      sportsType,
-      minLength,
-    } = this;
-    const avgSpeedIndex = dataIndex['lapAvgSpeed'];
-    const currentLap = lapData[lapIndex];
-    const currentCompareLap = compareActivityLap ? compareActivityLap[lapIndex] : null;
-    const avgSpeed = currentLap[avgSpeedIndex] ? currentLap[avgSpeedIndex] : 0;
-    const compareAvgSpeed = currentCompareLap ? currentCompareLap[avgSpeedIndex] : null;
-    const unit = getPaceUnit(sportsType, userUnit);
-    let result: ValueContext = {
-      value: speedToPaceSecond(avgSpeed, sportsType, userUnit),
-      unit,
-      displayDiff: lapIndex < minLength,
-    };
-
-    if (isCompareMode && (compareAvgSpeed ?? false)) {
-      const diffAvgSpeed = avgSpeed - compareAvgSpeed;
-      const diffValue = speedToPaceSecond(diffAvgSpeed, sportsType, userUnit);
-      result = {
-        ...result,
-        diffValue,
-        isPositiveDiff: diffValue >= 0,
-      };
+  changeColumnType(e: MouseEvent, index: number, type: string) {
+    e.stopPropagation();
+    this.closeColumnMenu();
+    const { displayColumn } = this;
+    const prevIndex = displayColumn.findIndex((_col) => _col === type);
+    if (index === prevIndex) return false;
+    if (prevIndex > -1) {
+      // 兩個欄位交換位置
+      [displayColumn[prevIndex], displayColumn[index]] = [
+        displayColumn[index],
+        displayColumn[prevIndex],
+      ];
+    } else {
+      displayColumn[index] = type;
     }
-
-    return result;
   }
 
   /**
-   * 根據使用者使用公英制，取得對應配速數據以及與比較檔案的差值
-   * @param lapIndex 分段索引
+   * 解除rxjs訂閱
    */
-  getPaceContext(lapIndex: number) {
-    const {
-      dataIndex,
-      lapData,
-      userUnit,
-      compareActivityLap,
-      isCompareMode,
-      sportsType,
-      minLength,
-    } = this;
-    const avgSpeedIndex = dataIndex['lapAvgSpeed'];
-    const currentLap = lapData[lapIndex];
-    const currentCompareLap = compareActivityLap ? compareActivityLap[lapIndex] : null;
-    const avgPaceSecond = speedToPaceSecond(
-      currentLap ? currentLap[avgSpeedIndex] : 0,
-      sportsType,
-      userUnit
-    );
-    const compareAvgSpeed = currentCompareLap ? currentCompareLap[avgSpeedIndex] : null;
-    const unit = getPaceUnit(sportsType, userUnit);
-    let result: ValueContext = {
-      value: paceSecondTimeFormat(avgPaceSecond),
-      unit,
-      displayDiff: lapIndex < minLength,
-    };
-
-    if (isCompareMode && (compareAvgSpeed ?? false)) {
-      const comparePaceSecond = speedToPaceSecond(compareAvgSpeed, sportsType, userUnit);
-      const diffSecond = avgPaceSecond - comparePaceSecond;
-      result = {
-        ...result,
-        diffValue: paceSecondTimeFormat(diffSecond),
-        isPositiveDiff: diffSecond >= 0,
-      };
-    }
-
-    return result;
-  }
-
-  /**
-   * 根據使用者使用公英制，取得對應 1RM 數據以及與比較檔案的差值
-   * @param lapIndex 分段索引
-   */
-  getOneMaxRepContext(lapIndex: number) {
-    const { dataIndex, lapData, userUnit, compareActivityLap, isCompareMode, minLength } = this;
-    const oneRepMaxIndex = dataIndex['setOneRepMax'];
-    const currentLap = lapData[lapIndex];
-    const currentCompareLap = compareActivityLap ? compareActivityLap[lapIndex] : null;
-    const pipeArgs = { unitType: userUnit, showUnit: false };
-    const oneRepMax = currentLap[oneRepMaxIndex] ? currentLap[oneRepMaxIndex] : 0;
-    const compareOneRepMax = currentCompareLap ? currentCompareLap[oneRepMaxIndex] : null;
-    let result: ValueContext = {
-      value: this.weightSibsPipe.transform(oneRepMax, pipeArgs),
-      unit: userUnit === DataUnitType.metric ? 'kg' : 'lb',
-      displayDiff: lapIndex < minLength,
-    };
-
-    if (isCompareMode && (compareOneRepMax ?? false)) {
-      const diffOneRepMax = oneRepMax - compareOneRepMax;
-      const diffValue = this.weightSibsPipe.transform(diffOneRepMax, pipeArgs);
-      result = {
-        ...result,
-        diffValue,
-        isPositiveDiff: diffOneRepMax >= 0,
-      };
-    }
-
-    return result;
-  }
-
-  /**
-   * 根據使用者使用公英制，取得對應動作節奏數據以及與比較檔案的差值
-   * @param lapIndex 分段索引
-   */
-  getWeightTrainCadenceContext(lapIndex: number) {
-    const { dataIndex, lapData, compareActivityLap, isCompareMode, minLength } = this;
-    const cadenceIndex = dataIndex['setMoveRepetitionsAvgCadence'];
-    const currentLap = lapData[lapIndex];
-    const currentCompareLap = compareActivityLap ? compareActivityLap[lapIndex] : null;
-    const cadence = currentLap[cadenceIndex] ? currentLap[cadenceIndex] : 0;
-    const compareCadence = currentCompareLap ? currentCompareLap[cadenceIndex] : null;
-    let result: ValueContext = {
-      value: cadence,
-      unit: 'spm',
-      displayDiff: lapIndex < minLength,
-    };
-
-    if (isCompareMode && (compareCadence ?? false)) {
-      const diffCadence = mathRounding(cadence - compareCadence, 1);
-      result = {
-        ...result,
-        diffValue: diffCadence,
-        isPositiveDiff: diffCadence >= 0,
-      };
-    }
-
-    return result;
-  }
-
-  /**
-   * 處理同步捲動分段列表
-   * @param e 捲動事件
-   */
-  handleSynchronizeScroll(e: Event) {
-    if (!this.isCompareMode) return false;
-    const { scrollTop } = e.target as any;
-    const scrollElementList = document.querySelectorAll('.table__content');
-    const targetIndex = this.isBaseFile ? 1 : 0;
-    scrollElementList[targetIndex].scroll({ top: scrollTop });
+  ngOnDestroy(): void {
+    this._ngUnsubscribe.next(null);
+    this._ngUnsubscribe.complete();
   }
 }

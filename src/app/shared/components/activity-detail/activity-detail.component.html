@@ -1486,7 +1486,7 @@
                 <ng-container *ngIf="uiFlag.weightTrainLevel === 'metacarpus'">
                   {{ 'universal_activityData_advanced' | translate }}
                 </ng-container>
-                <ng-container *ngIf="uiFlag.weightTrainLevel === 'asept'">
+                <ng-container *ngIf="uiFlag.weightTrainLevel === 'adept'">
                   {{ 'universal_activityData_highRanker' | translate }}
                 </ng-container>
               </span>
@@ -1497,7 +1497,7 @@
                 <span class="report-levelOpt" (click)="changeLevel('metacarpus')">
                   {{ 'universal_activityData_advanced' | translate }}
                 </span>
-                <span class="report-levelOpt" (click)="changeLevel('asept')">
+                <span class="report-levelOpt" (click)="changeLevel('adept')">
                   {{ 'universal_activityData_highRanker' | translate }}
                 </span>
               </div>
@@ -1527,7 +1527,10 @@
               }}</span>
               <app-hrzone-chart [data]="chartData.hr" [type]="mixHrZone"></app-hrzone-chart>
             </div>
-            <app-hrzone-info class="info__chart" [hrZoneRange]="chartData.hrInfo"></app-hrzone-info>
+            <app-hrzone-info
+              class="info__chart"
+              [hrZoneRange]="uiFlag.isFileOwner ? chartData.hrInfo : undefined"
+            ></app-hrzone-info>
           </div>
         </div>
       </section>

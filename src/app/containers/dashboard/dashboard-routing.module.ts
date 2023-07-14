@@ -175,8 +175,8 @@ const routes: Routes = [
       },
       {
         path: `${personal.activityDetail}/:${personal.fileId}`,
-        component: ActivityDetailComponent,
-        // component: SportsDetailComponent,
+        // component: ActivityDetailComponent,
+        component: SportsDetailComponent,
       },
       {
         path: device.home,

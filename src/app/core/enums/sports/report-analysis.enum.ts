@@ -1,5 +1,5 @@
 /**
- * 運動報告分析的欄位
+ * 運動分析的欄位
  */
 export enum AnalysisSportsColumn {
   dateRange,

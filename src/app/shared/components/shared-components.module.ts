@@ -57,9 +57,7 @@ import { PrivacyPolicyComponent } from './privacy-policy/privacy-policy.componen
 import { ConditionSelectorComponent } from './condition-selector/condition-selector.component';
 import { CompareHrzoneTrendComponent } from './chart/compare-hrzone-trend/compare-hrzone-trend.component';
 import { CompareColumnTrendComponent } from './chart/compare-column-trend/compare-column-trend.component';
-import { TreeMapChartComponent } from './chart/tree-map-chart/tree-map-chart.component';
 import { DistributionCanvasChartComponent } from './chart/distribution-canvas-chart/distribution-canvas-chart.component';
-import { SportsTargetTipComponent } from './tooltips/sports-target-tip/sports-target-tip.component';
 import { TargetAchieveChartComponent } from './chart/target-achieve-chart/target-achieve-chart.component';
 import { CompareOverlayColumnChartComponent } from './chart/compare-overlay-column-chart/compare-overlay-column-chart.component';
 import { CompareBodyWeightChartComponent } from './chart/compare-body-weight-chart/compare-body-weight-chart.component';
@@ -253,9 +251,7 @@ import {
     ConditionSelectorComponent,
     CompareHrzoneTrendComponent,
     CompareColumnTrendComponent,
-    TreeMapChartComponent,
     DistributionCanvasChartComponent,
-    SportsTargetTipComponent,
     TargetAchieveChartComponent,
     CompareOverlayColumnChartComponent,
     CompareBodyWeightChartComponent,
@@ -309,9 +305,7 @@ import {
     ConditionSelectorComponent,
     CompareHrzoneTrendComponent,
     CompareColumnTrendComponent,
-    TreeMapChartComponent,
     DistributionCanvasChartComponent,
-    SportsTargetTipComponent,
     TargetAchieveChartComponent,
     CompareOverlayColumnChartComponent,
     CompareBodyWeightChartComponent,

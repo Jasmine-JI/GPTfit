@@ -1,0 +1,93 @@
+<div class="row__grid">
+  <span class="trend__title">{{ titleKey | translate }}</span>
+  <div
+    *ngTemplateOutlet="
+      oneTrendInfoCard;
+      context: {
+        time: baseDate,
+        avg: baseAvg,
+        avgDiff: compareAvg != null ? avgDiff : undefined,
+        best: baseBest,
+        bestDiff: compareBest != null ? bestDiff : undefined,
+        type: 'base'
+      }
+    "
+  ></div>
+  <ng-container *ngIf="compareDate">
+    <div
+      *ngTemplateOutlet="
+        oneTrendInfoCard;
+        context: {
+          time: compareDate,
+          avg: compareAvg,
+          best: compareBest,
+          type: 'compare'
+        }
+      "
+    ></div>
+  </ng-container>
+</div>
+
+<ng-template
+  #oneTrendInfoCard
+  let-time="time"
+  let-avg="avg"
+  let-avgDiff="avgDiff"
+  let-best="best"
+  let-bestDiff="bestDiff"
+  let-type="type"
+>
+  <div
+    [ngClass]="{
+      flexRow: true,
+      base__info__card: type === 'base',
+      compare__info__card: type === 'compare'
+    }"
+  >
+    <div class="flexCol">
+      <time class="file__time">{{ time | timeFormat: 'YYYY-MM-DD HH:mm' }}</time>
+      <div class="flexRow">
+        <div
+          *ngTemplateOutlet="
+            oneTrendInfo;
+            context: {
+              label: 'avg',
+              value: avg,
+              diff: avgDiff
+            }
+          "
+        ></div>
+        <div
+          *ngTemplateOutlet="
+            oneTrendInfo;
+            context: {
+              label: 'max',
+              value: best,
+              diff: bestDiff
+            }
+          "
+        ></div>
+      </div>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #oneTrendInfo let-label="label" let-value="value" let-diff="diff">
+  <div class="flexCol">
+    <span>
+      <span class="trend__info__label">{{ label }}</span>
+      <span class="trend__info__value">{{ value }}</span>
+      <span class="trend__info__unit" *ngIf="showUnit">{{ this.unit ?? '' }}</span>
+    </span>
+    <span
+      [ngClass]="{
+        positive__value: diff >= 0,
+        negative__value: diff < 0,
+      }"
+    >
+      <ng-container *ngIf="diff != null">
+        {{ diff > 0 ? '+' : '' }}{{ isPaceData ? (diff | paceSecondToPace) : diff }}
+      </ng-container>
+    </span>
+  </div>
+</ng-template>

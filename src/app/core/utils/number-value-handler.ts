@@ -1,4 +1,6 @@
 import { ft, inch } from '../models/const/bs-constant.model';
+import { DataUnitOption } from '../models/common';
+import { DataUnitType } from '../enums/common';
 
 /**
  * 四捨五入至小數點特定位數
@@ -100,5 +102,23 @@ export function bodyHeightTransfer(
     }
   } else {
     return forward ? height : `${height}`;
+  }
+}
+
+/**
+ * 若為英制，則將攝氏溫度轉華氏溫度
+ * @param value 溫度
+ * @param args.unitType 單位類別(公英制)
+ * @param args.showUnit 是否顯示單位
+ */
+export function tempTransfer(value: number, args: DataUnitOption) {
+  const checkValue = value ? value : 0;
+  const { unitType, showUnit } = args;
+  if (unitType === DataUnitType.metric) {
+    const resultValue = checkValue.toFixed(1);
+    return showUnit ?? true ? `${resultValue} °C` : +`${resultValue}`;
+  } else {
+    const resultValue = (checkValue * (9 / 5) + 32).toFixed(1);
+    return showUnit ?? true ? `${resultValue} °F` : +`${resultValue}`;
   }
 }

@@ -1,49 +1,252 @@
-<section class="flexCol">
-  <div
-    *ngTemplateOutlet="
-      header;
-      context: {
-        data: fileData
-      }
-    "
-  ></div>
-</section>
+<section class="flexCol header__card" (click)="$event.stopPropagation()" *ngIf="file">
+  <ng-container *ngIf="isLargeScreen || !compareFile">
+    <div class="flexRow align__center info__row">
+      <span
+        *ngTemplateOutlet="
+          authorInfo;
+          context: {
+            avatar: file.fileInfo.authorIcon,
+            name: author,
+            link: file.fileInfo.authorLink
+          }
+        "
+      ></span>
+      <time class="activity__date__time">
+        {{ startDate }}
+        {{ startDateTime | weekDayKey | translate }}
+        <span class="activity__start__time">{{ startTime }}</span>
+      </time>
+    </div>
 
-<ng-template #header let-data="data">
-  <div class="flexRow header__row">
-    <i
-      class="flexCenter sport__type__icon"
-      [class]="+data.activityInfoLayer.type | sportTypeIcon"
-    ></i>
-    <div class="flexCol">
-      <div class="flexRow header__remark">
-        <time class="activiy__start__time">
-          {{ data.activityInfoLayer.startTime.split('T')[0] }}
-          {{ data.activityInfoLayer.startTime | weekDayKey | translate }}
-          {{ data.activityInfoLayer.startTime.split('T')[1] | slice: 0:5 }}
-        </time>
-        <span class="flexRow user__info">
-          <img
-            [src]="data.fileInfo.authorIcon"
-            [alt]="data.fileInfo.author.split('?')[0]"
-            (error)="handleUserIconError($event)"
-            class="user__icon"
-          />
-          <span class="user__nickname" *ngIf="!data.fileInfo.authorLink">
-            {{ data.fileInfo.author.split('?')[0] }}
-          </span>
-          <a
-            class="user__nickname user__link"
-            [routerLink]="[data.fileInfo.authorLink]"
-            *ngIf="data.fileInfo.authorLink"
-          >
-            {{ data.fileInfo.author.split('?')[0] }}
-          </a>
+    <div class="flexRow file__name__row">
+      <i
+        class="flexCenter sport__type__icon"
+        [class]="+file.activityInfoLayer.type | sportTypeIcon"
+      ></i>
+      <h6
+        [title]="file.fileInfo.dispName ?? (+file.activityInfoLayer.type | sportType | translate)"
+        class="file__title"
+      >
+        {{ file.fileInfo.dispName ?? (+file.activityInfoLayer.type | sportType | translate) }}
+      </h6>
+      <button class="about__button" (click)="showOtherInfo()">
+        <i class="icon-svg_web-icon_p1_069-about"></i>
+      </button>
+    </div>
+  </ng-container>
+
+  <ng-container *ngIf="compareFile">
+    <div class="flexRow align__center info__row__compare half__grid">
+      <span
+        *ngTemplateOutlet="
+          authorInfo;
+          context: {
+            avatar: file.fileInfo.authorIcon,
+            name: author,
+            link: file.fileInfo.authorLink
+          }
+        "
+      ></span>
+      <span
+        *ngTemplateOutlet="
+          authorInfo;
+          context: {
+            avatar: compareFile.fileInfo.authorIcon,
+            name: compareAuthor,
+            link: compareFile.fileInfo.authorLink
+          }
+        "
+      ></span>
+    </div>
+
+    <div class="half__grid">
+      <div
+        *ngTemplateOutlet="
+          dateTitle;
+          context: {
+            date: startDate,
+            isCompareFile: false
+          }
+        "
+      ></div>
+      <div
+        *ngTemplateOutlet="
+          dateTitle;
+          context: {
+            date: compareStartDate,
+            isCompareFile: true
+          }
+        "
+      ></div>
+    </div>
+  </ng-container>
+
+  <div class="flexCol drop__info" *ngIf="displayOtherInfo">
+    <app-loading-mask [isLoading]="isLoading" [isFullPage]="false"></app-loading-mask>
+    <button class="close__button" (click)="closeOtherInfo()">
+      <i class="icon-svg_web-icon_p1_012-close"></i>
+    </button>
+
+    <div
+      class="flexRow one__info__type"
+      *ngIf="
+        !classInfo && !teacherInfo && !productInfo && systemAccessRight > AccessRight.marketing
+      "
+    >
+      <figure class="flexCenter image__container"></figure>
+      <span class="row__value">{{ 'universal_status_noData' | translate }}</span>
+    </div>
+
+    <div class="flexRow one__info__type" *ngIf="classInfo">
+      <figure class="flexCenter image__container">
+        <img
+          class="round__icon"
+          [alt]="classInfo.info.groupName"
+          [src]="classInfo.info.groupIcon"
+          (error)="handleGroupIconError($event)"
+        />
+      </figure>
+      <div class="flexCol">
+        <span
+          *ngTemplateOutlet="
+            infoName;
+            context: {
+              key: 'universal_group_classTitle',
+              name: classInfo.info.groupName
+            }
+          "
+        ></span>
+        <span class="class__group__root">
+          {{ classRoot }}
         </span>
       </div>
-      <h6 class="file__title">
-        {{ data.fileInfo.dispName ?? (+data.activityInfoLayer.type | sportType | translate) }}
-      </h6>
+    </div>
+
+    <div class="flexRow one__info__type" *ngIf="teacherInfo">
+      <figure class="flexCenter image__container">
+        <img
+          class="round__icon"
+          [alt]="teacherInfo.userProfile[0].nickname"
+          [src]="teacherInfo.userProfile[0].avatarUrl"
+          (error)="handleUserIconError($event)"
+        />
+      </figure>
+      <span
+        *ngTemplateOutlet="
+          infoName;
+          context: {
+            key: 'universal_group_coach',
+            name: teacherInfo.userProfile[0].nickname
+          }
+        "
+      ></span>
+    </div>
+
+    <ul class="flexCol product__list" *ngIf="productInfo">
+      <li class="flexRow one__info__type" *ngFor="let _productInfo of productInfo">
+        <figure class="flexCenter image__container">
+          <img
+            class="round__icon"
+            [alt]="_productInfo.modelName"
+            [src]="productsImageFolderPath + _productInfo.modelImg"
+            (error)="handleProductImageError($event)"
+          />
+        </figure>
+        <div class="flexCol">
+          <span
+            *ngTemplateOutlet="
+              infoName;
+              context: {
+                key: 'universal_deviceSetting_modeCode',
+                name: _productInfo.modelName
+              }
+            "
+          ></span>
+        </div>
+      </li>
+    </ul>
+
+    <div class="flexCol debug__info" *ngIf="systemAccessRight <= AccessRight.marketing">
+      <span
+        *ngTemplateOutlet="
+          infoName;
+          context: {
+            key: 'universal_activityData_dataFormatVersion',
+            name: file.fileInfo.versionName || '--'
+          }
+        "
+      ></span>
+      <span
+        *ngTemplateOutlet="
+          infoName;
+          context: {
+            key: 'Fw Code',
+            name: file.fileInfo.equipmentFwCode || '--'
+          }
+        "
+      ></span>
+      <span
+        *ngTemplateOutlet="
+          infoName;
+          context: {
+            key: 'universal_activityData_syncDate',
+            name: file.fileInfo.syncDate || '--'
+          }
+        "
+      ></span>
+      <span
+        *ngTemplateOutlet="
+          infoName;
+          context: {
+            key: 'universal_vocabulary_editDate',
+            name: file.fileInfo.editDate || '--'
+          }
+        "
+      ></span>
+      <span
+        *ngTemplateOutlet="
+          infoName;
+          context: {
+            key: 'Create From',
+            name: file.fileInfo.createFrom.split('?')[0] || '--'
+          }
+        "
+      ></span>
     </div>
   </div>
+</section>
+
+<ng-template #authorInfo let-avatar="avatar" let-name="name" let-link="link">
+  <span class="flexRow user__info">
+    <img [src]="avatar" [alt]="name" (error)="handleUserIconError($event)" class="user__icon" />
+    <span class="user__nickname" *ngIf="!link">
+      {{ name }}
+    </span>
+    <a class="user__nickname user__link" [routerLink]="[link]" *ngIf="link">
+      {{ name }}
+    </a>
+  </span>
+</ng-template>
+
+<ng-template #dateTitle let-date="date" let-isCompareFile="isCompareFile">
+  <div class="flexRow align__center">
+    <button class="about__button" (click)="showOtherInfo(isCompareFile)">
+      <i class="icon-svg_web-icon_p1_069-about"></i>
+    </button>
+    <div
+      [class]="{
+        base__time__title: !isCompareFile,
+        compare__time__title: isCompareFile
+      }"
+    >
+      <time class="file__title">{{ date }}</time>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #infoName let-key="key" let-name="name">
+  <span>
+    <span class="row__title">{{ key | translate }}:</span>
+    <span class="row__value">{{ name }}</span>
+  </span>
 </ng-template>

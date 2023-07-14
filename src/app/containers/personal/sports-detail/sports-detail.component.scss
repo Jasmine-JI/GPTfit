@@ -20,6 +20,13 @@ $dialog-border-radius: 10px;
   padding-top: 1rem;
 }
 
+.portal__container {
+  padding: 1rem 5vw;
+  @include extra-small-screen() {
+    padding: 1rem 5px;
+  }
+}
+
 .function__toolbar {
   display: grid;
   gap: 5px;
@@ -103,4 +110,58 @@ $dialog-border-radius: 10px;
   &:hover {
     opacity: 0.9;
   }
+}
+
+.info__data__image {
+  margin: auto auto;
+}
+
+.info__data__image,
+.info__data__table {
+  @include large-screen() {
+    grid-column: span 12;
+  }
+}
+
+.section__title {
+  color: rgba(73, 73, 73, 1);
+  font-size: 1.125rem;
+  font-weight: bold;
+  border-bottom: 0.5px solid rgba(225, 225, 225, 1);
+}
+
+.no__data__hint {
+  color: rgba(128, 128, 128, 1);
+  font-weight: bold;
+}
+
+.map__section {
+  height: 300px;
+}
+
+.normal__muscle__data {
+  @include medium-screen() {
+    grid-column: span 12;
+  }
+}
+
+.optional__title {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.optional__button {
+  font-size: 1.5rem;
+}
+
+.media__full {
+  @include medium-screen() {
+    grid-column: span 12;
+  }
+}
+
+.row__divide__line {
+  width: 100%;
+  margin: 0;
 }

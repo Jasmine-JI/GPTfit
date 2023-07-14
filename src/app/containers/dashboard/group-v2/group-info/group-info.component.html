@@ -249,7 +249,7 @@
                   class="icon-svg_web-icon_p1_069-about warn__icon"
                   *ngIf="
                     _page === GroupChildPage.commercePlan &&
-                    (currentGroupInfo.groupDetail.expired ||
+                    (currentGroupInfo.commerceInfo.expired ||
                       +currentGroupInfo.commerceInfo.commerceStatus !== 1)
                   "
                 ></i>
@@ -275,7 +275,7 @@
                 class="icon-svg_web-icon_p1_069-about warn__icon"
                 *ngIf="
                   currentGroupInfo.groupLevel === 30 &&
-                  (currentGroupInfo.groupDetail.expired ||
+                  (currentGroupInfo.commerceInfo.expired ||
                     +currentGroupInfo.commerceInfo.commerceStatus !== 1)
                 "
               ></i>

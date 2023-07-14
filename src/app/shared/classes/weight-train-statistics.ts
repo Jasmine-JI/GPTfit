@@ -1,4 +1,4 @@
-import { WeightTrainingInfo } from '../../core/models/api/api-21xx';
+import { WeightTrainingInfo } from '../../core/models/api/api-common';
 import { mathRounding } from '../../core/utils';
 import { getCorrespondingMuscleGroup } from '../../core/utils/sports';
 import { MuscleCode, MuscleGroup } from '../../core/enums/sports';
@@ -60,7 +60,7 @@ export class WeightTrainStatistics {
    */
   countMuscleGroupData(info: WeightTrainingInfo) {
     const { muscle, totalWeightKg, totalSets, totalReps } = info;
-    const muscleGroup = getCorrespondingMuscleGroup(muscle);
+    const muscleGroup = getCorrespondingMuscleGroup(+muscle);
     const [weight, reps, sets] = this._muscleGroupData[muscleGroup];
     this._muscleGroupData[muscleGroup] = [
       weight + totalWeightKg,

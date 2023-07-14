@@ -163,7 +163,7 @@ export class LineCompareChartComponent implements OnInit, OnChanges, OnDestroy {
    * 將比較的數據轉為圖表用數據
    */
   getCompareSeriesData(compareData: any | null) {
-    const result = [];
+    const result: any = [];
     const { data, lineColor, compareName } = this;
     let compareIndex = 0;
     data.forEach((_data) => {

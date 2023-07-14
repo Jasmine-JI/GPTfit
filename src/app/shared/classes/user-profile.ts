@@ -1,21 +1,19 @@
 import { UserProfile, SignInInfo } from '../../core/models/api/api-10xx';
 import dayjs from 'dayjs';
-import { DataUnitType } from '../../core/enums/common';
+import { DataUnitType, AccessRight, BenefitTimeStartZone } from '../../core/enums/common';
 import { HrBase, WeightTrainingLevel } from '../../core/enums/sports';
-import { deepCopy } from '../../core/utils/index';
-import { AccessRight } from '../../core/enums/common';
+import { deepCopy, getUserHrRange } from '../../core/utils';
 import { BehaviorSubject } from 'rxjs';
 import { ThirdParty } from '../../core/enums/personal';
-import { BenefitTimeStartZone } from '../../core/enums/common';
 
 const guestProfile: UserProfile = {
   avatarUrl: '/assets/images/user2.png',
   birthday: +dayjs().subtract(30, 'year').format('YYYYMMDD'), // 訪客預設30歲
   bodyHeight: 175,
-  bodyWeight: 75,
+  bodyWeight: 60,
   description: '',
   heartRateBase: HrBase.max,
-  heartRateMax: 195,
+  heartRateMax: 190,
   heartRateResting: 60,
   nickname: 'Guest',
   unit: DataUnitType.metric,
@@ -41,7 +39,7 @@ export class User {
   /**
    * api 1003 或 1010 內的 signIn 物件
    */
-  private _signInfo: SignInInfo;
+  private _signInfo: SignInInfo | undefined;
 
   /**
    * api 1010 內的 thirdPartyAgency 物件
@@ -52,7 +50,6 @@ export class User {
 
   /**
    * 使用者登出
-   * @author kidin-1110314
    */
   logout() {
     this.initUser();
@@ -60,7 +57,6 @@ export class User {
 
   /**
    * 更新 userProfile
-   * @author kidin-1110311
    */
   set userProfile(userProfile: UserProfile) {
     this._userProfile = userProfile;
@@ -69,7 +65,6 @@ export class User {
 
   /**
    * 取得 userProfile
-   * @author kidin-1110314
    */
   get userProfile() {
     return this._userProfile;
@@ -98,7 +93,7 @@ export class User {
    * 更新登入資訊
    * @author kidin-1110314
    */
-  set signInfo(info: SignInInfo) {
+  set signInfo(info: SignInInfo | undefined) {
     this._signInfo = info;
   }
 
@@ -155,7 +150,7 @@ export class User {
    * 取得使用者重訓程度
    */
   get weightTrainingStrengthLevel(): WeightTrainingLevel {
-    return this._userProfile.weightTrainingStrengthLevel;
+    return this._userProfile.weightTrainingStrengthLevel as WeightTrainingLevel;
   }
 
   /**
@@ -194,6 +189,17 @@ export class User {
     const birthDay = dayjs(`${this._userProfile.birthday}`, 'YYYYMMDD');
     const age = currentDay.diff(birthDay, 'year');
     return age;
+  }
+
+  /**
+   * 取得使用者心率區間
+   */
+  get userHrRange() {
+    const {
+      age,
+      _userProfile: { heartRateBase, heartRateMax, heartRateResting },
+    } = this;
+    return getUserHrRange(heartRateBase, age, heartRateMax, heartRateResting);
   }
 
   /**

@@ -1,37 +1,68 @@
-.header__row {
+@import 'overflow-scroll.scss';
+@import 'z-index.scss';
+@import 'color.scss';
+
+$boc-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.33);
+$header-height: 70px;
+
+@mixin info-row() {
+  border-radius: 4px;
+  background: rgba(230, 230, 230, 1);
+  padding: 2px 5px;
+  margin-bottom: 2px;
+}
+
+@mixin time-title($bg-color, $border-color) {
+  width: 100%;
+  text-align: center;
+  background-color: $bg-color;
+  border-bottom: 3px solid $border-color;
+}
+
+.header__card {
+  position: relative;
+  border-radius: 6px;
+  box-shadow: $boc-shadow;
+  padding: 2px;
+  max-width: 500px;
+  min-height: $header-height;
+}
+
+.align__center {
   align-items: center;
 }
 
-.sport__type__icon {
-  $size: 50px;
-  font-size: 30px;
-  color: rgba(100, 100, 100, 1);
-  border: 2px solid rgba(200, 200, 200, 1);
-  border-radius: 50%;
-  height: $size;
-  width: $size;
-  min-width: $size;
-  margin-right: 0.5rem;
+.info__row {
+  @include info-row();
+  justify-content: space-between;
 }
 
-.header__remark {
-  align-items: center;
-  flex-wrap: wrap;
+.info__row__compare {
+  @include info-row();
 }
 
-.activiy__start__time {
+.half__grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.activity__date__time {
   font-size: 0.75rem;
-  color: rgba(150, 150, 150, 1);
   line-height: 1;
   margin-right: 0.5rem;
 }
 
 .user__info {
+  display: inline;
   align-items: center;
+  max-width: 135px;
+  overflow-x: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .user__icon {
-  $size: 1rem;
+  $size: 20px;
   border-radius: 50%;
   height: $size;
   width: $size;
@@ -57,8 +88,121 @@
   }
 }
 
+.activity__start__time {
+  font-weight: bold;
+}
+
+.file__name__row {
+  display: grid;
+  grid-template-columns: 35px 1fr 35px;
+  align-items: center;
+}
+
+.sport__type__icon {
+  grid-column: 1 / 2;
+  font-size: 30px;
+  color: rgba(100, 100, 100, 1);
+  margin-right: 0.5rem;
+}
+
 .file__title {
+  grid-column: 2 / 3;
   font-size: 1.5rem;
   font-weight: bold;
   color: rgba(115, 115, 115, 1);
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.base__time__title {
+  @include time-title($file-base-bg, $file-base-color);
+}
+
+.compare__time__title {
+  @include time-title($file-compare-bg, $file-compare-color);
+}
+
+.about__button {
+  grid-column: 3 / 4;
+  font-size: 2rem;
+  color: rgba(89, 89, 89, 1);
+  padding: 0;
+}
+
+.drop__info {
+  position: absolute;
+  top: $header-height;
+  right: 0px;
+  height: fit-content;
+  max-height: 70vh;
+  width: 100%;
+  z-index: $drop-menu;
+  background-color: white;
+  border-radius: 6px;
+  padding: 1rem 5px 5px 5px;
+  box-shadow: $boc-shadow;
+  overflow: hidden;
+  @include overflow-y-scroll();
+}
+
+.close__button {
+  position: absolute;
+  right: 0px;
+  top: 0px;
+  font-size: 32px;
+}
+
+.one__info__type {
+  margin: 5px 0;
+  align-items: center;
+}
+
+.image__container {
+  $size: 48px;
+  min-width: $size;
+  width: $size;
+  height: $size;
+  margin: 0 1rem 0 0;
+  border-radius: 50%;
+  background-color: rgb(217, 217, 217, 1);
+}
+
+.round__icon {
+  $size: 48px;
+  min-width: $size;
+  width: $size;
+  height: $size;
+  border-radius: 50%;
+}
+
+.product__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.row__title {
+  color: #898989;
+  font-size: 0.8rem;
+  margin-right: 0.5rem;
+  white-space: nowrap;
+}
+
+.row__value {
+  font-size: 0.95rem;
+  font-weight: bold;
+  white-space: nowrap;
+}
+
+.class__group__root {
+  font-size: 0.8rem;
+  white-space: nowrap;
+}
+
+.debug__info {
+  background-color: rgba(245, 245, 245, 1);
+  padding: 0.5rem;
+  border-radius: 0.5rem;
 }

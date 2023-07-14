@@ -11,3 +11,4 @@ export * from './i18n.model';
 export * from './sports-report.model';
 export * from './lifetracking-merge-type.model';
 export * from './lifetracking-chart.model';
+export * from './google-map-style.model';

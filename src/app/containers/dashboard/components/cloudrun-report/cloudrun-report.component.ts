@@ -44,6 +44,7 @@ import { CloudrunMapComponent } from '../../../../shared/components/cloudrun-map
 import { ReportFilterComponent } from '../../../../shared/components/report-filter/report-filter.component';
 import { NgIf, DecimalPipe } from '@angular/common';
 import { LoadingBarComponent } from '../../../../components/loading-bar/loading-bar.component';
+import { MapSource } from '../../../../core/enums/compo';
 
 @Component({
   selector: 'app-cloudrun-report',
@@ -171,15 +172,7 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
   /**
    * 使用者心率法與各心率區間
    */
-  hrZoneRange = <HrZoneRange>{
-    hrBase: HrBase.max,
-    z0: 'Z0',
-    z1: 'Z1',
-    z2: 'Z2',
-    z3: 'Z3',
-    z4: 'Z4',
-    z5: 'Z5',
-  };
+  hrZoneRange: HrZoneRange;
 
   allData = [];
   allMapList: any;
@@ -191,7 +184,7 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
   currentMapId = 1; // 另外設定map id 變數，避免污染子組件ngOnChanges event
   progress = 0;
   previewUrl = '';
-  mapSource = 'google';
+  mapSource = MapSource.google;
   compare = {
     urlList: [],
     clickList: [],
@@ -274,7 +267,7 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
             this.uiFlag.haveUrlCondition = true;
             break;
           case 'source':
-            this.mapSource = _value;
+            this.mapSource = +_value;
             break;
           case 'compare':
             this.compare.urlList = _value.split('p').map((_value) => _value);
@@ -885,10 +878,9 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
 
   /**
    * 變更地圖來源
-   * @param e {'google' | 'baidu'}
-   * @author kidin-1100331
+   * @param e
    */
-  mapSourceChange(e: 'google' | 'baidu') {
+  mapSourceChange(e: MapSource) {
     this.mapSource = e;
     this.updateUrl();
   }

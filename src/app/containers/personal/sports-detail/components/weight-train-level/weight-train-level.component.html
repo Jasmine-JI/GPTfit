@@ -1,0 +1,56 @@
+<div style="position: relative">
+  <button
+    class="flexCenter optional__button"
+    (click)="toggleSetting($event)"
+    (click)="$event.stopPropagation()"
+  >
+    <i class="icon-svg_web-icon_p1_001-setting"></i>
+  </button>
+  <section class="flexCol drop__menu" (click)="$event.stopPropagation()" *ngIf="displaySetting">
+    <button
+      *ngTemplateOutlet="
+        levelButton;
+        context: {
+          level: WeightTrainingLevel.novice
+        }
+      "
+    ></button>
+    <button
+      *ngTemplateOutlet="
+        levelButton;
+        context: {
+          level: WeightTrainingLevel.metacarpus
+        }
+      "
+    ></button>
+    <button
+      *ngTemplateOutlet="
+        levelButton;
+        context: {
+          level: WeightTrainingLevel.adept
+        }
+      "
+    ></button>
+  </section>
+</div>
+
+<ng-template #levelButton let-level="level">
+  <button
+    [ngSwitch]="level"
+    [class]="{
+      level__button: true,
+      'level__button--active': currentLevel === level
+    }"
+    (click)="setLevel($event, level)"
+  >
+    <ng-container *ngSwitchCase="WeightTrainingLevel.novice">
+      {{ 'universal_activityData_beginner' | translate }}
+    </ng-container>
+    <ng-container *ngSwitchCase="WeightTrainingLevel.metacarpus">
+      {{ 'universal_activityData_advanced' | translate }}
+    </ng-container>
+    <ng-container *ngSwitchCase="WeightTrainingLevel.adept">
+      {{ 'universal_activityData_highRanker' | translate }}
+    </ng-container>
+  </button>
+</ng-template>

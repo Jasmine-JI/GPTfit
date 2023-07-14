@@ -1,0 +1,11 @@
+@import 'color.scss';
+
+$border-style: 5px solid;
+
+.base__line {
+  border-bottom: $border-style $file-base-color;
+}
+
+.compare__line {
+  border-bottom: $border-style $file-compare-color;
+}

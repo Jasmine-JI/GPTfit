@@ -20,10 +20,10 @@ import { TrinomialChartComponent } from '../chart/trinomial-chart/trinomial-char
 import { LeafletMapComponent } from '../../../components/leaflet-map/leaflet-map.component';
 import { GoogleMapComponent } from '../../../components/google-map/google-map.component';
 import { NgIf } from '@angular/common';
+import { MapSource } from '../../../core/enums/compo';
 
 declare let google: any;
 
-type MapSource = 'google' | 'OSM';
 type MapKind = 'normal' | 'heat';
 type CompareDataOpt =
   | 'hr'
@@ -76,7 +76,7 @@ export class MapChartCompareComponent implements OnInit, OnChanges, OnDestroy {
    */
   mapOpt = {
     showMapSourceSelector: true,
-    mapSource: <MapSource>'google', // 地圖來源
+    mapSource: MapSource.google, // 地圖來源
     mapKind: <MapKind>'normal', // 街道圖/熱力圖
     compareA: {
       type: <CompareDataOpt | null>null,
@@ -97,6 +97,8 @@ export class MapChartCompareComponent implements OnInit, OnChanges, OnDestroy {
   clickEvent: Subscription;
 
   focusPosition = 0;
+
+  readonly MapSource = MapSource;
 
   constructor(
     private hintDialogService: HintDialogService,
@@ -130,7 +132,7 @@ export class MapChartCompareComponent implements OnInit, OnChanges, OnDestroy {
     // 判斷leaflet map是否可以載入
     if ('L' in window) {
       this.uiFlag.showMap = true;
-      this.mapOpt.mapSource = 'OSM';
+      this.mapOpt.mapSource = MapSource.osm;
     } else {
       this.mapOpt.showMapSourceSelector = false;
     }
@@ -138,7 +140,7 @@ export class MapChartCompareComponent implements OnInit, OnChanges, OnDestroy {
     // 判斷google map是否可以載入
     if ('google' in window && typeof google === 'object' && typeof google.maps === 'object') {
       this.uiFlag.showMap = true;
-      this.mapOpt.mapSource = 'google';
+      this.mapOpt.mapSource = MapSource.google;
     } else {
       this.mapOpt.showMapSourceSelector = false;
     }
@@ -159,7 +161,7 @@ export class MapChartCompareComponent implements OnInit, OnChanges, OnDestroy {
           value = query[1];
         switch (key) {
           case 'mapSource':
-            this.changeMapSource(value as MapSource);
+            this.changeMapSource(+value as MapSource);
             break;
           case 'compareA':
             this.uiFlag.showDataSelector = 'compareA';

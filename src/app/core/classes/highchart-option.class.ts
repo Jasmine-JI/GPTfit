@@ -58,6 +58,20 @@ export class HighchartOption {
   }
 
   /**
+   * 設定圖表左側留白寬度
+   */
+  set marginLeft(left: number) {
+    this._option.chart.marginLeft = left;
+  }
+
+  /**
+   * 設定圖表右側留白寬度
+   */
+  set marginRight(right: number) {
+    this._option.chart.marginRight = right;
+  }
+
+  /**
    * 變更標題相關設定
    * @param setting {HighchartSettingTitle}-標題設定
    */
@@ -71,6 +85,13 @@ export class HighchartOption {
    */
   set legend(setting: HighchartSettingLegend) {
     this._option.legend = setting;
+  }
+
+  /**
+   * 取得圖表繪製相關設定
+   */
+  get plotOptions() {
+    return this._option.plotOptions as HighchartPlotOptions;
   }
 
   /**

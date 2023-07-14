@@ -108,9 +108,7 @@ export class MyGroupListComponent implements OnInit {
     };
     this.api11xxService.fetchGroupList(body).subscribe((res) => {
       this.isLoading = false;
-      this.logSource.data = res.info.groupList.filter(
-        (_group) => _group.groupStatus !== 4 && _group.joinStatus === 2
-      );
+      this.logSource.data = res.info.groupList.filter((_group) => _group.groupStatus !== 4);
       this.totalCount = res.info.totalCounts;
       this.isEmpty = this.logSource.data.length === 0;
     });

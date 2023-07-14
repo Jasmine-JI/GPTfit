@@ -73,7 +73,7 @@ import { SportsDataTableComponent } from '../../../../../components/sports-data-
 import { CompareColumnTrendComponent } from '../../../../../shared/components/chart/compare-column-trend/compare-column-trend.component';
 import { CompareHrzoneTrendComponent } from '../../../../../shared/components/chart/compare-hrzone-trend/compare-hrzone-trend.component';
 import { HrzoneInfoComponent } from '../../../../../shared/components/chart/hrzone-info/hrzone-info.component';
-import { TreeMapChartComponent } from '../../../../../shared/components/chart/tree-map-chart/tree-map-chart.component';
+import { TreeMapChartComponent } from '../../../../../components/tree-map-chart/tree-map-chart.component';
 import { HrzoneChartComponent } from '../../../../../shared/components/chart/hrzone-chart/hrzone-chart.component';
 import { DistributionCanvasChartComponent } from '../../../../../shared/components/chart/distribution-canvas-chart/distribution-canvas-chart.component';
 import { TipDialogComponent } from '../../../../../components/tip-dialog/tip-dialog.component';

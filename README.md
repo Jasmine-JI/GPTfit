@@ -138,7 +138,7 @@ unmount
 目前 device error log 代碼由研發定義，web 開發者負責文件維護與顯示，若有變更再一併更新下列檔案
 
 > Excel：Q:\APP+CLOUD\05-翻譯管理\錯誤代碼查找表\_{{date}}.xlsx
-> GPTfit：src/app/containers/dashboard/pipes/product-error-log.pipe.ts
+> GPTfit：src/app/core/pipes/product-error-log.pipe.ts
 
 ## 資料夾結構
 
@@ -175,7 +175,7 @@ web
 |       ├─ index.uat.html // 234測試環境替換index.html（自動替換），以解決測試網域seo過前的問題
 |       └─ index.web.html // 235開發環境替換index.html（自動替換）(測試用)
 │   ├─ styles/ // 各頁面共用的css樣式，包含主題顏色等等
-|       ├─ model/ // 一些基本scss模塊可供其他scss檔進行@import，以方便開發
+|       ├─ model/ // 一些基本scss模塊可供其他scss檔進行@import，以方便開發，或是將某些變數集中管理方便修改。
 |       ├─ module/ // 風格相近的頁面，其共用css樣式，方便直接引用
 |       ├─ theme/ // 網站主題顏色（目前僅light/dark樣式，故顏色命名是以此為基礎）
 |           ├─ light.scss // 清亮主題
@@ -233,8 +233,8 @@ app
 │   ├─ custom-material.module.ts // 專案會用到的material component自成一個專屬module
 │   └─ version.ts // GPTfit版本號
 ├─ components/  // 全域共用組件
-├─ containers/
-│   ├─ dashboard/ // 需登入後的頁面，皆為舊有非符合single component angular module(scam)格式
+├─ containers/  // 內容多為route頁面或較大型的組件
+│   ├─ dashboard/ // 需登入後的頁面
 |   |  ├─ components/ // 專屬dashboard模組的元件
 |   |  ├─ group/ // 群組的pages(裏頭有群組資訊、群組編輯、我的群組列表...等)
 |   |  ├─ group-v2/ // 群組v2的pages(裏頭有群組資訊、群組編輯、我的群組列表...等)
@@ -248,7 +248,7 @@ app
 |   |  ├─ dashboard.component.html
 │   |  └─ dashboard.module // 需登入後的內部模組
 |   |
-│   ├─ portal/ // 不用登入也可使用的頁面，皆為舊有非符合single component angular module(scam)格式
+│   ├─ portal/ // 不用登入也可使用的頁面
 |       ├─ components/ // 專屬外部模組的元件
 |       ├─ models/ // 有關typescript定義資料型態
 |       ├─ services/ // 專屬外部模組的服務
@@ -258,7 +258,7 @@ app
 |       ├─ portal.component.ts
 |       ├─ portal.component.html
 │       └─ portal.module // 需登入後的內部模組
-│   ├─ official-activity/ // 官方活動頁，皆為舊有非符合single component angular module(scam)格式
+│   ├─ official-activity/ // 官方活動頁相關
 |   |  ├─ guards/ // 專屬dashboard模組的守衛
 |   |  ├─ models/ // 有關typescript定義資料型態
 |   |  ├─ pipes/ // 專屬official-activity模組的通道
@@ -269,7 +269,7 @@ app
 |   |  ├─ official-activity.component.ts
 |   |  ├─ official-activity.component.html
 │   |  └─ official-activity.module // 官方活動頁的內部模組
-│   ├─ station-mail/ // 站內信，皆為舊有非符合single component angular module(scam)格式
+│   ├─ station-mail/ // 站內信相關
 |   |  ├─ guards/ // 專屬dashboard模組的守衛
 |   |  ├─ models/ // 有關typescript定義資料型態
 |   |  ├─ pipes/ // 專屬official-activity模組的通道
@@ -285,8 +285,8 @@ app
 │   ├─ admin-manage/ // 系統管理員操作頁面(後台)
 │   └─ device-manage/ // 產品裝置相關頁面（暫定）
 |
-├─ shared/ // 所有測試 code
-│   ├─ components/ // 共用元件，為舊有非standalone格式元件
+├─ shared/ // 舊有共用元件
+│   ├─ components/ // 共用元件
 │   ├─ classes/  // 多為用於 shared/components/ ，故不合併至core資料夾中
 │   └─ shared.module.ts // 共用module
 │
@@ -302,7 +302,7 @@ app
 ## Dependency notes
 
 | Dependency Name                                                                                                                | 版本        | 筆記                                                                                                                          | 專案範例連結                                                                                                                                                           |
-| ------------------------------------------------------------------------------------------------------------------------------ | ----------- | ----------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --- |
+| ------------------------------------------------------------------------------------------------------------------------------ | ----------- | ----------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **[@angular/pwa](https://angular.io/guide/service-worker-getting-started)**                                                    | 0.8.7       | pwa 模組，`但目前center還沒啟用，連結是註解掉的部分`                                                                          | [Link](https://gitlab.com/alatech_cloud/web/blob/master/src/app/app.module.ts#L48)                                                                                     |
 | **[@angular/service-worker](https://angular.io/guide/service-worker-getting-started)**                                         | 6.1.6       | service-worker 模組，`但目前center還沒啟用，連結是註解掉的部分`                                                               | [Link](https://gitlab.com/alatech_cloud/web/blob/master/src/app/app.module.ts#L48)                                                                                     |
 | **[@ckeditor/ckeditor5-angular](https://ckeditor.com/docs/ckeditor5/latest/)**                                                 | 6.0.1       | 適用於 angular 的文字編輯器套件                                                                                               | none                                                                                                                                                                   |
@@ -324,5 +324,5 @@ app
 | **[mapbox](https://github.com/mapbox/mapbox-sdk-js)**                                                                          | 1.0.0-beta9 | 是一些開放原始碼地圖函式庫                                                                                                    | None                                                                                                                                                                   |
 | **[material-design-icons](https://github.com/google/material-design-icons)**                                                   | 3.0.1       | Material Design icons by Google 是目前與 rex 自定 icon 大量使用於 center 的庫。                                               | [Link](https://gitlab.com/alatech_cloud/web/blob/release_internal_server/src/app/containers/portal/components/leaderboard/leaderboard.component.html#L98)              |
 | **[dayjs](https://day.js.org)**                                                                                                | 1.10.8      | 處理時間格式的函式庫                                                                                                          | None                                                                                                                                                                   |
-| **normalize.css**                                                                                                              | 8.0.1       | css 正規化                                                                                                                    | [Link](https://www.npmjs.com/package/normalize.css)                                                                                                                    |     |
+| **normalize.css**                                                                                                              | 8.0.1       | css 正規化                                                                                                                    | [Link](https://www.npmjs.com/package/normalize.css)                                                                                                                    |
 | **[ml-regression-simple-linear](https://www.npmjs.com/package/ml-regression-simple-linear)**                                   | 2.0.2       | 用来做群組 report 的簡單回歸分析                                                                                              | [Link](https://gitlab.com/alatech_cloud/web/blob/master/src/app/dashboard/group/group-info/com-life-tracking/com-life-tracking.component.ts#L3)                        |

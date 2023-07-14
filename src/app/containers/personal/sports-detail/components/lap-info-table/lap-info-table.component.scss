@@ -1,10 +1,15 @@
 @import 'overflow-scroll.scss';
+@import 'color.scss';
+@import 'z-index.scss';
+@import 'transition.scss';
+@import 'transform.scss';
 
-@mixin table-column($width: 120px) {
-  display: inline-block;
+@mixin table-column($width: 80px) {
+  display: flex;
   min-width: $width;
   width: $width;
-  text-align: center;
+  justify-content: center;
+  align-items: center;
 }
 
 @mixin table-content-row($color) {
@@ -46,6 +51,7 @@
 }
 
 .table__column__header {
+  padding: 2px 0;
   background: rgba(217, 217, 217, 1);
 }
 
@@ -62,16 +68,23 @@
 
 .base__row {
   background-color: rgba(254, 202, 87, 0.5);
-  @include table-content-row(rgba(254, 202, 87, 1));
+  @include table-content-row($file-base-color);
 }
 
 .compare__row {
   background-color: rgba(154, 135, 249, 0.5);
-  @include table-content-row(rgba(154, 135, 249, 1));
+  @include table-content-row($file-compare-color);
 }
 
 .lap__column {
   @include table-column(60px);
+}
+
+.lap__display__name {
+  font-size: 0.8rem;
+  font-weight: bold;
+  color: rgba(128, 128, 128, 1);
+  letter-spacing: 2px;
 }
 
 .lap__content {
@@ -79,12 +92,43 @@
   width: 100%;
 }
 
+.lap__content__title {
+  margin-right: 5px;
+}
+
 .one__column {
   @include table-column();
 }
 
+.one__title__column {
+  position: relative;
+  cursor: pointer;
+  user-select: none;
+}
+
+.column__title {
+  line-height: 1;
+  text-align: center;
+}
+
 .table__unit {
   font-size: 0.75rem;
+  line-height: 1;
+  text-align: center;
+}
+
+.unfold__icon {
+  display: inline-block;
+  position: relative;
+  font-size: 0.8rem;
+  font-weight: bold;
+  transform: translateY(3px);
+  @include transition(transform);
+}
+
+.unfold__icon--active {
+  @include transition(transform);
+  @include el-rotate(180deg);
 }
 
 .diff__value {
@@ -94,11 +138,31 @@
 }
 
 .positive__value {
-  background-color: rgba(255, 210, 210, 1);
-  color: rgba(207, 0, 0, 1);
+  background-color: $positive-bg-color;
+  color: $positive-color;
 }
 
 .negative__value {
-  background-color: rgba(210, 255, 217, 1);
-  color: rgba(4, 154, 37, 1);
+  background-color: $negative-bg-color;
+  color: $negative-color;
+}
+
+.column__type__menu {
+  position: absolute;
+  list-style: none;
+  padding: 3px 5px;
+  border-radius: 5px;
+  background-color: white;
+  z-index: $drop-menu;
+  top: 30px;
+  box-shadow: 1px 1px 5px, -1px 1px 5px;
+}
+
+.column__type__item {
+  padding: 2px;
+  text-align: center;
+  &:hover {
+    color: white;
+    background-color: $primary-blue;
+  }
 }

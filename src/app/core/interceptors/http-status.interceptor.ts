@@ -15,7 +15,6 @@ import { MessageBoxComponent } from '../../shared/components/message-box/message
 
 /**
  * 偵測所有http request，若任何response返回401就進行登出
- * @author kidin-1090817
  */
 @Injectable()
 export class HttpStatusInterceptor implements HttpInterceptor {

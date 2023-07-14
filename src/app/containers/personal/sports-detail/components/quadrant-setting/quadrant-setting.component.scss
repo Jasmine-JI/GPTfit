@@ -1,0 +1,148 @@
+@import 'color.scss';
+@import 'z-index.scss';
+@import 'drop-triangle.scss';
+
+$drop-padding: 2px 0.9rem 2px 2px;
+$type-font-size: 0.9rem;
+$border-color: rgba(120, 120, 120, 1);
+
+@mixin setting-label() {
+  margin: 5px 0 0 0;
+}
+
+@mixin button() {
+  font-size: 0.9rem;
+  border-radius: 5px;
+  width: 45%;
+  padding: 0.5rem 0;
+}
+
+@mixin input() {
+  padding: 2px;
+  font-size: 0.9rem;
+}
+
+.drop__menu {
+  position: absolute;
+  right: 0;
+  background-color: white;
+  z-index: $drop-menu;
+  padding: 0.5rem;
+  border: 1px solid rgb(150, 150, 150);
+  box-shadow: -2px 2px 2px rgba(0, 0, 0, 0.5);
+}
+
+.axis__setting__row {
+  justify-content: space-between;
+}
+
+.axis__type__setting {
+  width: 160px;
+  margin-right: 1rem;
+}
+
+.type__menu {
+  position: relative;
+  font-weight: initial;
+  color: initial;
+}
+
+.current__type {
+  display: flex;
+  justify-content: flex-end;
+  width: 100%;
+  text-align: right;
+  border: 1px solid $border-color;
+  padding: $drop-padding;
+  font-size: $type-font-size;
+  user-select: none;
+  @include drop-triangle(8px, 5px);
+}
+
+.current__type--active {
+  @include drop-triangle-active;
+}
+
+.type__drop__menu {
+  position: absolute;
+  background-color: white;
+  list-style: none;
+  margin: 0;
+  padding: 2px;
+  z-index: $drop-menu;
+  border: 1px solid $border-color;
+  border-top: none;
+  width: 100%;
+  text-align: right;
+}
+
+.type__drop__item {
+  padding: $drop-padding;
+  font-size: $type-font-size;
+  cursor: pointer;
+
+  &:hover {
+    color: white;
+    background-color: $primary-blue;
+  }
+}
+
+.origin__setting {
+  width: 100px;
+}
+
+.menu__label,
+.origin__label,
+.quadrant__label {
+  margin: 10px 0 0 0;
+  white-space: nowrap;
+}
+
+.origin__input {
+  @include input();
+  text-align: right;
+}
+
+.quadrant__first {
+  color: rgba(234, 87, 87, 1);
+}
+
+.quadrant__second {
+  color: rgba(207, 239, 75, 1);
+}
+
+.quadrant__third {
+  color: rgba(107, 235, 249, 1);
+}
+
+.quadrant__fourth {
+  color: rgba(114, 232, 176, 1);
+}
+
+.symbol__input {
+  @include input();
+}
+
+.button__section {
+  justify-content: space-between;
+  margin: 10px 0 5px 0;
+}
+
+.restore__button {
+  @include button();
+  color: rgba(241, 129, 129, 1);
+
+  &:hover {
+    background-color: rgba(245, 245, 245, 1);
+  }
+}
+
+.confirm__button {
+  @include button();
+  color: white;
+  background-color: $primary-blue;
+
+  &:hover {
+    opacity: 0.9;
+  }
+}

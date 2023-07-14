@@ -1,12 +1,12 @@
 import { mi, ft } from '../models/const/bs-constant.model';
 import { mathRounding } from './index';
-import { asept, metacarpus, novice } from '../models/const/weight-train.model';
-import { HrBase } from '../../core/enums/sports';
-import { HrZoneRange } from '../models/compo/chart-data.model';
+import { adept, metacarpus, novice } from '../models/const/weight-train.model';
+import { HrBase, Proficiency } from '../../core/enums/sports';
 import { BenefitTimeStartZone, DataUnitType } from '../enums/common';
 import { paiCofficient, dayPaiTarget } from '../models/const/sports-report.model';
-import { sportTypeColor } from '../models/represent-color';
+import { sportTypeColor, weightTrainColor } from '../models/represent-color';
 import { MuscleCode, MuscleGroup, WeightTrainingLevel, SportType } from '../../core/enums/sports';
+import { paceReg } from '../models/regex';
 
 /**
  * 根據運動類型將速度轉成配速(若為bs英制則公里配速轉英哩配速)
@@ -22,14 +22,14 @@ export function speedToPaceSecond(value: number, sportType: SportType, unit: Dat
     case SportType.run: {
       // 跑步配速
       const valueConversion = isMetric ? value : value / mi;
-      result = (60 / valueConversion) * 60;
+      result = Math.round((60 / valueConversion) * 60);
       break;
     }
     case SportType.swim: // 游泳配速
-      result = ((60 / value) * 60) / 10;
+      result = Math.round(((60 / value) * 60) / 10);
       break;
     case SportType.row: // 划船配速
-      result = ((60 / value) * 60) / 2;
+      result = Math.round(((60 / value) * 60) / 2);
       break;
     default:
       // 其他運動類別直接回傳速度
@@ -89,6 +89,36 @@ export function speedToPace(data: number | string, sportType: SportType, unit: D
 }
 
 /**
+ * 根據公英制將配速轉速度
+ * @param pace 配速
+ * @param sportType {SportType}-運動類別
+ * @param unit {DataUnitType}-使用者所使用的單位
+ */
+export function paceToSpeed(pace: string, sportType: SportType, unit: DataUnitType) {
+  if (!paceReg.test(pace)) return 0;
+  const [min, secondText] = pace.split(`'`);
+  const totalSecond = +min * 60 + +secondText.split(`"`)[0];
+  const coefficient = {
+    [SportType.run]: unit === DataUnitType.metric ? 1 : mi,
+    [SportType.swim]: 0.1,
+    [SportType.row]: 0.5,
+  };
+
+  return mathRounding((60 * 60 * coefficient[sportType]) / totalSecond, 1);
+}
+
+/**
+ * 將配速轉配速秒
+ * @param pace 配速
+ */
+export function paceToPaceSecond(pace: string) {
+  if (!paceReg.test(pace)) return 0;
+  const [min, secondText] = pace.split(`'`);
+  const totalSecond = +min * 60 + +secondText.split(`"`)[0];
+  return totalSecond;
+}
+
+/**
  * 根據運動類別與使用者使用單位取得配速單位
  * @param sportType {SportType}-運動類別
  * @param unit {DataUnitType}-使用者所使用的單位
@@ -125,31 +155,21 @@ export function isAvgData(key: string) {
  */
 export function getSportsTypeKey(code: number | string) {
   if (code === '') return '';
+  const key = {
+    [SportType.run]: 'universal_activityData_run',
+    [SportType.cycle]: 'universal_activityData_cycle',
+    [SportType.weightTrain]: 'universal_activityData_weightTraining',
+    [SportType.swim]: 'universal_activityData_swin',
+    [SportType.aerobic]: 'universal_activityData_aerobic',
+    [SportType.row]: 'universal_sportsName_boating',
+    [SportType.ball]: 'universal_activityData_ballSports',
+    [SportType.all]: 'universal_adjective_all',
+    [SportType.complex]: 'universal_activityData_complex',
+    [SportType.translate]: 'universal_app_transfer',
+    [SportType.rest]: 'universal_activityData_restSection',
+  };
   const sportsCode = `${code}`.includes('s') ? +(code as string).split('s')[1] : +code;
-  switch (sportsCode) {
-    case SportType.run:
-      return 'universal_activityData_run';
-    case SportType.cycle:
-      return 'universal_activityData_cycle';
-    case SportType.weightTrain:
-      return 'universal_activityData_weightTraining';
-    case SportType.swim:
-      return 'universal_activityData_swin';
-    case SportType.aerobic:
-      return 'universal_activityData_aerobic';
-    case SportType.row:
-      return 'universal_sportsName_boating';
-    case SportType.ball:
-      return 'universal_activityData_ballSports';
-    case SportType.all:
-      return 'universal_adjective_all';
-    case SportType.complex:
-      return 'universal_activityData_complex';
-    case SportType.rest:
-      return 'universal_activityData_restSection';
-    default:
-      return 'universal_userAccount_otherTypes';
-  }
+  return key[sportsCode] ?? 'universal_userAccount_otherTypes';
 }
 
 /**
@@ -157,31 +177,21 @@ export function getSportsTypeKey(code: number | string) {
  * @param code {string}-cjson運動類別代碼
  */
 export function translateSportsCode(code: string) {
+  const name = {
+    [SportType.run]: 'run',
+    [SportType.cycle]: 'cycle',
+    [SportType.weightTrain]: 'weightTraining',
+    [SportType.swim]: 'swim',
+    [SportType.aerobic]: 'aerobic',
+    [SportType.row]: 'row',
+    [SportType.ball]: 'ball',
+    [SportType.all]: 'all',
+    [SportType.complex]: 'complex',
+    [SportType.rest]: 'rest',
+  };
+
   const sportsCode = +code.split('s')[1];
-  switch (sportsCode) {
-    case SportType.run:
-      return 'run';
-    case SportType.cycle:
-      return 'cycle';
-    case SportType.weightTrain:
-      return 'weightTraining';
-    case SportType.swim:
-      return 'swim';
-    case SportType.aerobic:
-      return 'aerobic';
-    case SportType.row:
-      return 'row';
-    case SportType.ball:
-      return 'ball';
-    case SportType.all:
-      return 'all';
-    case SportType.complex:
-      return 'complex';
-    case SportType.rest:
-      return 'rest';
-    default:
-      return 'other';
-  }
+  return name[sportsCode] ?? 'other';
 }
 
 /**
@@ -200,18 +210,14 @@ export function assignSportsTypeColor(code: number | string) {
  * @param sportType {SportType}-運動類別
  */
 export function getCadenceI18nKey(sportType: SportType) {
-  switch (sportType) {
-    case SportType.run:
-      return 'universal_activityData_stepCadence';
-    case SportType.cycle:
-      return 'universal_activityData_CyclingCadence';
-    case SportType.swim:
-      return 'universal_activityData_swimCadence';
-    case SportType.row:
-      return 'universal_activityData_rowCadence';
-    default:
-      return 'universal_activityData_trend';
-  }
+  const key = {
+    [SportType.run]: 'universal_activityData_stepCadence',
+    [SportType.cycle]: 'universal_activityData_CyclingCadence',
+    [SportType.swim]: 'universal_activityData_swimCadence',
+    [SportType.row]: 'universal_activityData_rowCadence',
+  };
+
+  return key[sportType] ?? 'universal_activityData_trend';
 }
 
 /**
@@ -219,18 +225,14 @@ export function getCadenceI18nKey(sportType: SportType) {
  * @param sportType {SportType}-運動類別
  */
 export function getAvgCadenceI18nKey(sportType: SportType) {
-  switch (sportType) {
-    case SportType.run:
-      return 'universal_activityData_avgStepCadence';
-    case SportType.cycle:
-      return 'universal_activityData_avgCyclingCadence';
-    case SportType.swim:
-      return 'universal_activityData_avgSwimReps';
-    case SportType.row:
-      return 'universal_activityData_avgRowCadence';
-    default:
-      return 'universal_adjective_avg';
-  }
+  const key = {
+    [SportType.run]: 'universal_activityData_avgStepCadence',
+    [SportType.cycle]: 'universal_activityData_avgCyclingCadence',
+    [SportType.swim]: 'universal_activityData_avgSwimReps',
+    [SportType.row]: 'universal_activityData_avgRowCadence',
+  };
+
+  return key[sportType] ?? 'universal_adjective_avg';
 }
 
 /**
@@ -238,18 +240,14 @@ export function getAvgCadenceI18nKey(sportType: SportType) {
  * @param sportType {SportType}-運動類別
  */
 export function getMaxCadenceI18nKey(sportType: SportType) {
-  switch (sportType) {
-    case SportType.run:
-      return 'universal_activityData_liveMaxStepCadence';
-    case SportType.cycle:
-      return 'universal_activityData_liveMaxCycleCadence';
-    case SportType.swim:
-      return 'universal_activityData_baetSwimReps';
-    case SportType.row:
-      return 'universal_activityData_baetRowReps';
-    default:
-      return 'universal_adjective_maxBest';
-  }
+  const key = {
+    [SportType.run]: 'universal_activityData_liveMaxStepCadence',
+    [SportType.cycle]: 'universal_activityData_liveMaxCycleCadence',
+    [SportType.swim]: 'universal_activityData_baetSwimReps',
+    [SportType.row]: 'universal_activityData_baetRowReps',
+  };
+
+  return key[sportType] ?? 'universal_adjective_maxBest';
 }
 
 /**
@@ -327,7 +325,7 @@ export function getCorrespondingMuscleGroup(muscleCode: MuscleCode) {
     case MuscleCode.gastrocnemius:
       return MuscleGroup.legMuscle;
     default:
-      return;
+      return MuscleGroup.armMuscle;
   }
 }
 
@@ -337,14 +335,13 @@ export function getCorrespondingMuscleGroup(muscleCode: MuscleCode) {
 export function getWeightTrainingLevelText(
   weightTrainingStrengthLevel: WeightTrainingLevel = WeightTrainingLevel.metacarpus
 ) {
-  switch (weightTrainingStrengthLevel) {
-    case WeightTrainingLevel.asept:
-      return asept;
-    case WeightTrainingLevel.metacarpus:
-      return metacarpus;
-    case WeightTrainingLevel.novice:
-      return novice;
-  }
+  const percentage = {
+    [WeightTrainingLevel.adept]: adept,
+    [WeightTrainingLevel.metacarpus]: metacarpus,
+    [WeightTrainingLevel.novice]: novice,
+  };
+
+  return percentage[weightTrainingStrengthLevel] ?? percentage[WeightTrainingLevel.metacarpus];
 }
 
 /**
@@ -355,67 +352,36 @@ export function getWeightTrainingLevelText(
  * @param userRestHR {number}-使用者休息心率
  */
 export function getUserHrRange(
-  userHRBase: HrBase,
-  userAge: number,
-  userMaxHR: number,
-  userRestHR: number
+  userHRBase = HrBase.max,
+  userAge = 30,
+  userMaxHR = 190,
+  userRestHR = 60
 ) {
-  const userHrInfo = <HrZoneRange>{
-    hrBase: userHRBase,
-    z0: 0,
-    z1: 0,
-    z2: 0,
-    z3: 0,
-    z4: 0,
-    z5: 0,
-  };
-
-  if (userAge !== null) {
-    if (userMaxHR && userRestHR) {
-      if (userHRBase === HrBase.max) {
-        // 區間數值採無條件捨去法
-        userHrInfo['z0'] = Math.floor((220 - userAge) * 0.5 - 1);
-        userHrInfo['z1'] = Math.floor((220 - userAge) * 0.6 - 1);
-        userHrInfo['z2'] = Math.floor((220 - userAge) * 0.7 - 1);
-        userHrInfo['z3'] = Math.floor((220 - userAge) * 0.8 - 1);
-        userHrInfo['z4'] = Math.floor((220 - userAge) * 0.9 - 1);
-        userHrInfo['z5'] = Math.floor((220 - userAge) * 1);
-      } else {
-        userHrInfo['z0'] = Math.floor((userMaxHR - userRestHR) * 0.55) + userRestHR;
-        userHrInfo['z1'] = Math.floor((userMaxHR - userRestHR) * 0.6) + userRestHR;
-        userHrInfo['z2'] = Math.floor((userMaxHR - userRestHR) * 0.65) + userRestHR;
-        userHrInfo['z3'] = Math.floor((userMaxHR - userRestHR) * 0.75) + userRestHR;
-        userHrInfo['z4'] = Math.floor((userMaxHR - userRestHR) * 0.85) + userRestHR;
-        userHrInfo['z5'] = Math.floor((userMaxHR - userRestHR) * 1) + userRestHR;
-      }
-    } else {
-      if (userHRBase === HrBase.max) {
-        // 區間數值採無條件捨去法
-        userHrInfo['z0'] = Math.floor((220 - userAge) * 0.5 - 1);
-        userHrInfo['z1'] = Math.floor((220 - userAge) * 0.6 - 1);
-        userHrInfo['z2'] = Math.floor((220 - userAge) * 0.7 - 1);
-        userHrInfo['z3'] = Math.floor((220 - userAge) * 0.8 - 1);
-        userHrInfo['z4'] = Math.floor((220 - userAge) * 0.9 - 1);
-        userHrInfo['z5'] = Math.floor((220 - userAge) * 1);
-      } else {
-        userHrInfo['z0'] = Math.floor((220 - userAge - userRestHR) * 0.55) + userRestHR;
-        userHrInfo['z1'] = Math.floor((220 - userAge - userRestHR) * 0.6) + userRestHR;
-        userHrInfo['z2'] = Math.floor((220 - userAge - userRestHR) * 0.65) + userRestHR;
-        userHrInfo['z3'] = Math.floor((220 - userAge - userRestHR) * 0.75) + userRestHR;
-        userHrInfo['z4'] = Math.floor((220 - userAge - userRestHR) * 0.85) + userRestHR;
-        userHrInfo['z5'] = Math.floor((220 - userAge - userRestHR) * 1) + userRestHR;
-      }
-    }
-  } else {
-    userHrInfo['z0'] = 'Z0';
-    userHrInfo['z1'] = 'Z1';
-    userHrInfo['z2'] = 'Z2';
-    userHrInfo['z3'] = 'Z3';
-    userHrInfo['z4'] = 'Z4';
-    userHrInfo['z5'] = 'Z5';
+  if (userHRBase === HrBase.max) {
+    const maxHrByAge = 220 - userAge;
+    const getZoneValue = (coefficient: number) => Math.floor(maxHrByAge * coefficient);
+    return {
+      hrBase: userHRBase,
+      z0: getZoneValue(0.5) - 1,
+      z1: getZoneValue(0.6) - 1,
+      z2: getZoneValue(0.7) - 1,
+      z3: getZoneValue(0.8) - 1,
+      z4: getZoneValue(0.9) - 1,
+      z5: getZoneValue(1),
+    };
   }
 
-  return userHrInfo;
+  const effectRange = userMaxHR - userRestHR;
+  const getZoneValue = (coefficient: number) => Math.floor(effectRange * coefficient) + userRestHR;
+  return {
+    hrBase: userHRBase,
+    z0: getZoneValue(0.55),
+    z1: getZoneValue(0.6),
+    z2: getZoneValue(0.65),
+    z3: getZoneValue(0.75),
+    z4: getZoneValue(0.85),
+    z5: getZoneValue(1),
+  };
 }
 
 /**
@@ -454,38 +420,21 @@ export function countBenefitTime(hrZoneTime: Array<number>, startZone: BenefitTi
  * @param type {number}-運動類別
  */
 export function handleSceneryImg(type: number, subtype = 0) {
-  let sportType: string;
-  switch (type) {
-    case SportType.run:
-      sportType = 'run';
-      break;
-    case SportType.cycle:
-      sportType = 'cycle';
-      break;
-    case SportType.weightTrain:
-      sportType = 'weightTraining';
-      break;
-    case SportType.swim:
-      sportType = 'swim';
-      break;
-    case SportType.aerobic:
-      sportType = 'aerobic';
-      break;
-    case SportType.row:
-      sportType = 'rowing';
-      break;
-    case SportType.ball:
-      sportType = 'ball';
-      break;
-    case SportType.complex:
-      sportType = 'combined';
-      break;
-    case SportType.rest:
-      sportType = 'rest';
-      break;
-  }
+  const key = {
+    [SportType.run]: 'run',
+    [SportType.cycle]: 'cycle',
+    [SportType.weightTrain]: 'weightTraining',
+    [SportType.swim]: 'swim',
+    [SportType.aerobic]: 'aerobic',
+    [SportType.row]: 'rowing',
+    [SportType.ball]: 'ball',
+    [SportType.complex]: 'combined',
+    [SportType.rest]: 'rest',
+    [SportType.translate]: 'transition',
+  };
 
-  return `/app/public_html/img/${sportType}_${subtype}.jpg`;
+  const typeString = key[+type] ?? key[SportType.aerobic];
+  return `/app/public_html/img/${typeString}_${subtype}.jpg`;
 }
 
 /**
@@ -499,4 +448,44 @@ export function countPai(hrZone: Array<number>, weekNum: number) {
   const [zone0, zone1, zone2, zone3, zone4, zone5] = hrZone.map((_zone) => _zone ?? 0);
   const weightedValue = z0 * zone0 + z1 * zone1 + z2 * zone2 + z3 * zone3 + z4 * zone4 + z5 * zone5;
   return parseFloat((((weightedValue / (dayPaiTarget * 7)) * 100) / weekNum).toFixed(1));
+}
+
+/**
+ * 取得重訓程度顏色係數
+ * @param level 重訓程度
+ */
+export function getWeightProficiency(level: WeightTrainingLevel) {
+  const proficiency = {
+    [WeightTrainingLevel.novice]: Proficiency.novice,
+    [WeightTrainingLevel.metacarpus]: Proficiency.metacarpus,
+    [WeightTrainingLevel.adept]: Proficiency.adept,
+  };
+
+  return proficiency[level] ?? proficiency[WeightTrainingLevel.metacarpus];
+}
+
+/**
+ * 根據使用者設定訓練程度與重訓重量取得呈現顏色
+ * @param weight 重量
+ */
+export function getWeightTrainingColor(
+  weight: number,
+  args?: {
+    bodyWeight?: number;
+    proficiency?: number;
+    coverTransparency?: number;
+    isAvgWeight?: boolean;
+  }
+) {
+  const { saturation, brightnessFor1RM, brightnessForAvgWeight, transparency } = weightTrainColor;
+  const bodyWeight = args?.bodyWeight ?? 60;
+  const proficiency = args?.proficiency ?? Proficiency.metacarpus;
+  const opacity = args?.coverTransparency ?? transparency;
+  const brightness = args?.isAvgWeight ?? false ? brightnessFor1RM : brightnessForAvgWeight;
+
+  let hue = Math.round(200 - (weight / bodyWeight) * 100 * proficiency);
+  if (hue < 0) hue = 0;
+  if (hue > 200) hue = 200;
+
+  return `hsla(${hue}, ${saturation}, ${brightness}, ${opacity})`;
 }

@@ -1,7 +1,7 @@
 import { ResultCode } from '../../../enums/common/result-code.enum';
 import { DateUnit } from '../../../enums/common/date-unit.enum';
 import { SportType } from '../../../enums/sports/sports-type.enum';
-import { MuscleCode } from '../../../enums/sports/muscle-code.enum';
+import { WeightTrainingInfo } from '../api-common';
 
 export interface Api2104Post {
   token: string;
@@ -100,15 +100,4 @@ export interface SportsReportData {
   ];
   startTime: string; // YYYY-MM-DDTHH:mm:ss.SSSZ
   endTime: string; // YYYY-MM-DDTHH:mm:ss.SSSZ
-}
-
-/**
- * api 2104 response weightTrainingInfo[]內的資訊
- */
-export interface WeightTrainingInfo {
-  muscle: MuscleCode;
-  max1RmWeightKg: number;
-  totalWeightKg: number;
-  totalSets: number;
-  totalReps: number;
 }

@@ -31,7 +31,7 @@ export interface SignInInfo {
 export interface UserProfile {
   userId?: number;
   nickname?: string;
-  themeImgUrl?: string;
+  themeImgUrl?: string | null;
   avatarUrl?: string;
   unit?: DataUnitType;
   email?: string;
