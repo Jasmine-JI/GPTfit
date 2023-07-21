@@ -1,8 +1,8 @@
 import { Component, OnInit, OnChanges, OnDestroy, SimpleChanges, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TranslateModule } from '@ngx-translate/core';
-import { Subject, Subscription, fromEvent } from 'rxjs';
-import { takeUntil, debounceTime } from 'rxjs/operators';
+import { Subject, Subscription, fromEvent, of } from 'rxjs';
+import { takeUntil, debounceTime, map } from 'rxjs/operators';
 import {
   SportTimePipe,
   SportPaceSibsPipe,
@@ -13,30 +13,12 @@ import {
   TimeRangeStringPipe,
   SwimPosturePipe,
   DataTypeUnitPipe,
+  PaceSecondToPacePipe,
 } from '../../../../../core/pipes';
 import { SportType } from '../../../../../core/enums/sports';
 import { DataUnitType } from '../../../../../core/enums/common';
 import { UserService } from '../../../../../core/services';
-import {
-  mathRounding,
-  transformDistance,
-  speedToPaceSecond,
-  paceSecondTimeFormat,
-  getPaceUnit,
-  deepCopy,
-} from '../../../../../core/utils';
-import { mi } from '../../../../../core/models/const';
-
-/**
- * 分段中單一欄位數據所需資訊
- */
-interface ValueContext {
-  value: number | string;
-  unit?: string;
-  diffValue?: number | string;
-  isPositiveDiff?: boolean;
-  displayDiff?: boolean; // 用來對齊基準與比較分段列表
-}
+import { mathRounding, speedToPaceSecond } from '../../../../../core/utils';
 
 @Component({
   selector: 'app-lap-info-table',
@@ -53,6 +35,7 @@ interface ValueContext {
     DataTypeUnitPipe,
     TimeRangeStringPipe,
     WeightSibsPipe,
+    PaceSecondToPacePipe,
   ],
   templateUrl: './lap-info-table.component.html',
   styleUrls: ['./lap-info-table.component.scss'],
@@ -106,9 +89,9 @@ export class LapInfoTableComponent implements OnInit, OnChanges, OnDestroy {
   dataIndex: { [key: string]: number } = {};
 
   /**
-   * 瀏覽器寬度
+   * 運動檔案詳細頁面內容寬度
    */
-  screenSize = window.innerWidth;
+  containerSize = window.innerWidth;
 
   /**
    * 顯示欄位
@@ -122,6 +105,7 @@ export class LapInfoTableComponent implements OnInit, OnChanges, OnDestroy {
 
   readonly SportType = SportType;
   readonly DataUnitType = DataUnitType;
+  readonly paceSecondKey = 'paceSecond';
 
   constructor(private userService: UserService) {}
 
@@ -186,7 +170,7 @@ export class LapInfoTableComponent implements OnInit, OnChanges, OnDestroy {
         'lapTotalDistanceMeters',
         'lapSwimAvgCadence',
         'lapTotalStrokes',
-        'lapSwolf',
+        // 'lapSwolf', 目前裝置幾乎不支援，故先隱藏
       ],
       [SportType.aerobic]: ['lapTotalSecond', 'lapAvgHeartRateBpm'],
       [SportType.row]: [
@@ -210,6 +194,7 @@ export class LapInfoTableComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   ngOnInit(): void {
+    this.handleContainerSize();
     this.subscribeResizeEvent();
   }
 
@@ -224,32 +209,45 @@ export class LapInfoTableComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   /**
+   * 處理運動詳細頁容器寬度
+   */
+  handleContainerSize() {
+    of('')
+      .pipe(
+        debounceTime(0), // 確保頁面先渲染再取得容器寬度
+        map(() => this.getColumnNumber())
+      )
+      .subscribe((num) => {
+        this.changeColumnNumber(num);
+      });
+  }
+
+  /**
    * 訂閱螢幕寬度變更事件
    */
   subscribeResizeEvent() {
     fromEvent(window, 'resize')
       .pipe(debounceTime(100), takeUntil(this._ngUnsubscribe))
       .subscribe(() => {
-        this.screenSize = window.innerWidth;
-        this.changeColumnNumber();
+        this.handleContainerSize();
       });
   }
 
   /**
    * 根據頁面寬度變更現在的欄位數目
+   * @param columnNum 此容器寬度下能顯示的欄位數
    */
-  changeColumnNumber() {
-    const columnNumber = this.getColumnNumber();
+  changeColumnNumber(columnNum: number) {
     const currentLength = this.displayColumn.length;
-    if (currentLength < columnNumber) {
+    if (currentLength < columnNum) {
       const set = new Set(this.displayColumn);
       this.getEffectKey().forEach((_key) => {
         set.add(_key);
       });
 
       this.displayColumn = Array.from(set);
-    } else if (currentLength > columnNumber) {
-      this.displayColumn = this.displayColumn.slice(0, columnNumber);
+    } else if (currentLength > columnNum) {
+      this.displayColumn = this.displayColumn.slice(0, columnNum);
     }
   }
 
@@ -257,11 +255,11 @@ export class LapInfoTableComponent implements OnInit, OnChanges, OnDestroy {
    * 取得現在頁面寬度可顯示的欄位數
    */
   getColumnNumber() {
-    const columWidth = 80;
+    const containerWidth =
+      document.querySelector('.file__content')?.clientWidth ?? window.innerWidth;
+    const columWidth = 90;
     const lapColumnWidth = 60;
-    const minPadding = 20;
-    const { screenSize } = this;
-    return Math.floor((screenSize - minPadding - lapColumnWidth) / columWidth);
+    return Math.floor((containerWidth - lapColumnWidth) / columWidth);
   }
 
   /**
@@ -348,8 +346,10 @@ export class LapInfoTableComponent implements OnInit, OnChanges, OnDestroy {
    */
   countLapDiff(baseLap: Array<any>) {
     const effectKey = this.getEffectKey();
+    const { dataIndex, isPaceType, sportsType, userUnit, paceSecondKey } = this;
     const result: Map<string, Array<number>> = new Map(effectKey.map((_key) => [_key, []]));
-    const { dataIndex } = this;
+    if (isPaceType) result.set(paceSecondKey, []);
+
     baseLap.forEach((_baseLap, _index) => {
       if (_index <= 1) return;
       effectKey.forEach((_key) => {
@@ -357,8 +357,19 @@ export class LapInfoTableComponent implements OnInit, OnChanges, OnDestroy {
         const _baseVal = _baseLap ? _baseLap[_valIndex] ?? 0 : 0;
         const _prevLap = baseLap[_index - 1];
         const _prevVal = _prevLap[_valIndex] ?? 0;
-        const diffValue = mathRounding(_baseVal - _prevVal, 2);
-        result.get(_key)?.push(diffValue); // 不用重set(call by reference)
+        const _diffValue = mathRounding(_baseVal - _prevVal, 2);
+        result.get(_key)?.push(_diffValue); // 不用重set(call by reference)
+
+        if (_key === 'lapAvgSpeed' && this.isPaceType) {
+          const _basePaceSeond = speedToPaceSecond(_baseVal, sportsType, userUnit);
+          const _prevPaceSeond = speedToPaceSecond(_prevVal, sportsType, userUnit);
+          if (_basePaceSeond >= 3600 || _prevPaceSeond >= 3600) {
+            result.get(paceSecondKey)?.push(3601); // 不用重set(call by reference){
+          } else {
+            const _diffPace = mathRounding(_basePaceSeond - _prevPaceSeond, 2);
+            result.get(paceSecondKey)?.push(_diffPace); // 不用重set(call by reference)
+          }
+        }
       });
     });
 
@@ -372,8 +383,9 @@ export class LapInfoTableComponent implements OnInit, OnChanges, OnDestroy {
    */
   countCompareDiff(baseLap: Array<any>, compareLap: Array<any>) {
     const effectKey = this.getEffectKey();
+    const { dataIndex, isPaceType, sportsType, userUnit, paceSecondKey } = this;
     const result: Map<string, Array<number>> = new Map(effectKey.map((_key) => [_key, []]));
-    const { dataIndex } = this;
+    if (isPaceType) result.set(paceSecondKey, []);
     baseLap.forEach((_baseLap, _index) => {
       if (_index === 0) return;
       effectKey.forEach((_key) => {
@@ -382,7 +394,18 @@ export class LapInfoTableComponent implements OnInit, OnChanges, OnDestroy {
         const _compareLap = compareLap[_index];
         const _compareVal = _compareLap ? _compareLap[_valIndex] ?? 0 : 0;
         const diffValue = mathRounding(_baseVal - _compareVal, 2);
-        result.get('_key')?.push(diffValue); // 不用重set(call by reference)
+        result.get(_key)?.push(diffValue); // 不用重set(call by reference)
+
+        if (effectKey === 'lapAvgSpeed' && this.isPaceType) {
+          const _basePaceSeond = speedToPaceSecond(_baseVal, sportsType, userUnit);
+          const _comparePaceSeond = speedToPaceSecond(_compareVal, sportsType, userUnit);
+          if (_basePaceSeond >= 3600 || _comparePaceSeond >= 3600) {
+            result.get(paceSecondKey)?.push(3601); // 不用重set(call by reference){
+          } else {
+            const _diffPace = mathRounding(_basePaceSeond - _comparePaceSeond, 2);
+            result.get(paceSecondKey)?.push(_diffPace); // 不用重set(call by reference)
+          }
+        }
       });
     });
 
@@ -452,6 +475,16 @@ export class LapInfoTableComponent implements OnInit, OnChanges, OnDestroy {
     } else {
       displayColumn[index] = type;
     }
+  }
+
+  /**
+   * 根據是否為比較模式，回應對應的差值索引
+   * @param lapIndex 目前分段數據的索引
+   */
+  getDiffIndex(lapIndex: number) {
+    const { compareLapData } = this;
+    // 比較模式從第一個分段就顯示差值，非比較模式則從第二個分段開始顯示
+    return compareLapData ? lapIndex - 1 : lapIndex - 2;
   }
 
   /**

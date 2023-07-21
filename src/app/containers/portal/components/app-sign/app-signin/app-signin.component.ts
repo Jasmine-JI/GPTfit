@@ -4,7 +4,7 @@ import { AuthService, GlobalEventsService } from '../../../../../core/services';
 import { MessageBoxComponent } from '../../../../../shared/components/message-box/message-box.component';
 import { Subject, Subscription, fromEvent, merge } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { Router, RouterLink } from '@angular/router';
+import { Router, RouterLink, ActivatedRoute } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { formTest } from '../../../../../core/models/regex/form-test';
 import { getLocalStorageObject } from '../../../../../core/utils';
@@ -75,6 +75,7 @@ export class AppSigninComponent implements OnInit, AfterViewInit, OnDestroy {
     private authService: AuthService,
     private dialog: MatDialog,
     private router: Router,
+    private route: ActivatedRoute,
     private globalEventsService: GlobalEventsService
   ) {
     // 當語系變換就重新取得翻譯-kidin-1090720
@@ -327,41 +328,56 @@ export class AppSigninComponent implements OnInit, AfterViewInit, OnDestroy {
         if (res.processResult.resultCode === 200) {
           this.cue.signResult = '';
           this.loginStatus = 'success';
-          const {
-            dashboard: { home: dashboardHome },
-            personal,
-          } = appPath;
-          if (res.signIn.counter <= 1) {
-            this.router.navigateByUrl(`/${dashboardHome}/${personal.userSettings}`);
-          } else if (this.authService.backUrl.length > 0) {
-            location.href = this.authService.backUrl;
-          } else {
-            location.href = `/${dashboardHome}`; // 為了讓登入的api request payload清除掉
-          }
+          this.navigateDashboard(res);
         } else {
-          switch (res.processResult.apiReturnMessage) {
-            case 'Sign in fail, found error mobile number or country code.':
-            case 'Sign in fail, found error email.':
-            case 'Sign in fail, found error password.':
-              this.cue.signResult = 'universal_userAccount_errorAccountPassword';
-              break;
-            default:
-              this.dialog.open(MessageBoxComponent, {
-                hasBackdrop: true,
-                data: {
-                  title: 'Message',
-                  body: `Error.<br />Please try again later.`,
-                  confirmText: this.translate.instant('universal_operating_confirm'),
-                  onConfirm: this.turnBack.bind(this),
-                },
-              });
-
-              break;
-          }
-
+          this.handleLoginError(res);
           this.loginStatus = 'check';
         }
       });
+    }
+  }
+
+  /**
+   * 轉導至登入後頁面
+   * @param res api 1003 res
+   */
+  navigateDashboard(res: any) {
+    const {
+      dashboard: { home: dashboardHome },
+      personal,
+    } = appPath;
+    if (res.signIn.counter <= 1) {
+      this.router.navigateByUrl(`/${dashboardHome}/${personal.userSettings}`);
+    } else if (this.authService.backUrl.length > 0) {
+      location.replace(this.authService.backUrl);
+    } else {
+      location.replace(`/${dashboardHome}`); // 為了讓登入的api request payload清除掉
+    }
+  }
+
+  /**
+   * 處理登入失敗
+   * @param res api 1003 res
+   */
+  handleLoginError(res: any) {
+    switch (res.processResult.apiReturnMessage) {
+      case 'Sign in fail, found error mobile number or country code.':
+      case 'Sign in fail, found error email.':
+      case 'Sign in fail, found error password.':
+        this.cue.signResult = 'universal_userAccount_errorAccountPassword';
+        break;
+      default:
+        this.dialog.open(MessageBoxComponent, {
+          hasBackdrop: true,
+          data: {
+            title: 'Message',
+            body: `Error.<br />Please try again later.`,
+            confirmText: this.translate.instant('universal_operating_confirm'),
+            onConfirm: this.turnBack.bind(this),
+          },
+        });
+
+        break;
     }
   }
 

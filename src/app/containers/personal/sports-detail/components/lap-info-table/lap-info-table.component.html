@@ -192,6 +192,17 @@
                 }
               "
             ></div>
+            <div
+              *ngTemplateOutlet="
+                columnHeaderUnit;
+                context: {
+                  title: 'Swing',
+                  unit: '',
+                  display: _column === 'totalSwingCount',
+                  columnIndex: _columnIndex
+                }
+              "
+            ></div>
           </ng-container>
         </div>
       </li>
@@ -220,7 +231,7 @@
             <div
               class="flexRow lap__content diff__row"
               *ngIf="
-                (compareLapData && sportsType !== SportType.weightTrain) ||
+                (compareLapData && _lapIndex > 0 && _lapIndex < lapData.length) ||
                 (!compareLapData && _lapIndex > 1)
               "
             >
@@ -228,21 +239,21 @@
                 [class]="{
                   one__column: true,
                   diff__value: true,
-                  positive__value: diffLapData.get(_column)[_lapIndex - 2] >= 0,
-                  negative__value: diffLapData.get(_column)[_lapIndex - 2] < 0
+                  positive__value: diffLapData.get(_column)[getDiffIndex(_lapIndex)] >= 0,
+                  negative__value: diffLapData.get(_column)[getDiffIndex(_lapIndex)] < 0
                 }"
                 [ngSwitch]="_column"
                 *ngFor="let _column of displayColumn"
               >
                 <ng-container *ngSwitchCase="'lapTotalSecond'">
                   {{
-                    diffLapData.get(_column)[_lapIndex - 2]
+                    diffLapData.get(_column)[getDiffIndex(_lapIndex)]
                       | timeRangeString: { showZeroHour: false, hideSecond: false }
                   }}
                 </ng-container>
                 <ng-container *ngSwitchCase="'lapTotalDistanceMeters'">
                   {{
-                    diffLapData.get(_column)[_lapIndex - 2]
+                    diffLapData.get(_column)[getDiffIndex(_lapIndex)]
                       | distanceSibs
                         : { unitType: userUnit, showUnit: false, convertKiloAlways: true }
                   }}
@@ -250,39 +261,36 @@
                 <ng-container *ngSwitchCase="'lapAvgSpeed'">
                   <ng-container *ngIf="!isPaceType">
                     {{
-                      diffLapData.get(_column)[_lapIndex - 2]
+                      diffLapData.get(_column)[getDiffIndex(_lapIndex)]
                         | speedSibs: { unitType: userUnit, showUnit: false }
                     }}
                   </ng-container>
                   <ng-container *ngIf="isPaceType">
-                    {{
-                      diffLapData.get(_column)[_lapIndex - 2]
-                        | sportPaceSibs: { sportType: sportsType, userUnit, showUnit: false }
-                    }}
+                    {{ diffLapData.get(paceSecondKey)[getDiffIndex(_lapIndex)] | paceSecondToPace }}
                   </ng-container>
                 </ng-container>
                 <ng-container *ngSwitchCase="setOneRepMax">
                   {{
-                    diffLapData.get(_column)[_lapIndex - 2]
+                    diffLapData.get(_column)[getDiffIndex(_lapIndex)]
                       | weightSibs: { unitType: userUnit, showUnit: false }
                   }}
                 </ng-container>
                 <ng-container *ngSwitchCase="lapElevGain">
                   {{
-                    diffLapData.get(_column)[_lapIndex - 2]
+                    diffLapData.get(_column)[getDiffIndex(_lapIndex)]
                       | distanceSibs
                         : { unitType: userUnit, showUnit: false, convertKiloAlways: false }
                   }}
                 </ng-container>
                 <ng-container *ngSwitchCase="lapElevLoss">
                   {{
-                    diffLapData.get(_column)[_lapIndex - 2]
+                    diffLapData.get(_column)[getDiffIndex(_lapIndex)]
                       | distanceSibs
                         : { unitType: userUnit, showUnit: false, convertKiloAlways: false }
                   }}
                 </ng-container>
                 <ng-container *ngSwitchDefault>
-                  {{ diffLapData.get(_column)[_lapIndex - 2] }}
+                  {{ diffLapData.get(_column)[getDiffIndex(_lapIndex)] }}
                 </ng-container>
               </div>
             </div>
@@ -390,6 +398,9 @@
         </ng-container>
         <ng-container *ngSwitchCase="'lapCycleAvgWatt'">
           {{ 'Power' }}
+        </ng-container>
+        <ng-container *ngSwitchCase="'totalSwingCount'">
+          {{ 'Swing' }}
         </ng-container>
       </li>
     </ul>

@@ -36,8 +36,17 @@ export class SportsFilePoint {
    */
   unit = DataUnitType.metric;
 
-  constructor(unit?: DataUnitType) {
-    this.unit = unit as DataUnitType;
+  /**
+   * 心率區間
+   */
+  hrZone?: Array<number>;
+
+  constructor(args?: any) {
+    if (args) {
+      const { unit, hrZone } = args;
+      this.unit = (unit as DataUnitType) ?? DataUnitType.metric;
+      this.hrZone = hrZone;
+    }
   }
 
   /**

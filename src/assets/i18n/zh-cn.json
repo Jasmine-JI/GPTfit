@@ -2824,4 +2824,6 @@
  "universal_popUpMessage_wt02ConnectFail": "此装置不支持中途加入，请退出运动于开始前加入",
  "universal_message_dataCollection": "运动资料收集",
  "universal_message_classManage": "运动课程管理",
- "universal_message_dataAnalysis": "运动资料分析"}
+ "universal_message_dataAnalysis": "运动资料分析",
+ "universal_system_selectComparison": "选择比较运动档案",
+ "universal_activityData_strokePer100m": "平均百米划水数"}

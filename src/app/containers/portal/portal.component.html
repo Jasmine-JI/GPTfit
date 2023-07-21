@@ -2,6 +2,7 @@
   [isAlphaVersion]="uiFlag.isAlphaVersion"
   [activePage]="activePage"
   (selectPage)="switchPage($event)"
+  *ngIf="!uiFlag.isPreviewMode && !uiFlag.hideNavbar"
 ></app-navbar>
 <div class="routeroutlet main__container">
   <router-outlet></router-outlet>

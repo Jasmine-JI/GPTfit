@@ -2824,4 +2824,6 @@
  "universal_popUpMessage_wt02ConnectFail": "This device can't connect now, please connect before start",
  "universal_message_dataCollection": "Data Collection",
  "universal_message_classManage": "Class Management",
- "universal_message_dataAnalysis": "Data Analysis"}
+ "universal_message_dataAnalysis": "Data Analysis",
+ "universal_system_selectComparison": "Select comparison",
+ "universal_activityData_strokePer100m": "Strokes/100m"}

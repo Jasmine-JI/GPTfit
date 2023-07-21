@@ -293,7 +293,7 @@ export class InfoDataCompareRwdComponent implements OnChanges {
     const compareAvgStrokes = countAvgStroke(compareStrokes, compareDistance);
     const diffAvgStrokes = mathRounding(baseAvgStorkes - compareAvgStrokes, 2);
     return {
-      title: '平均百米划水數',
+      title: 'universal_activityData_strokePer100m',
       icon: 'icon-svg_web-icon_p2_062-open_water_swim',
       baseValue: baseAvgStorkes,
       compareValue: compareAvgStrokes,

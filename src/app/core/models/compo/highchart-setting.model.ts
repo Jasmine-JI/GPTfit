@@ -138,6 +138,7 @@ export interface HighchartSettingAxis {
   };
   min?: number;
   max?: number;
+  softMax?: number;
   minPadding?: number; // 數據最小值距離軸線的距離，適用數據最小值距離軸線很遠的狀況
   maxPadding?: number; // 數據最大值距離頂部的距離，適用數據最大值距離軸線很遠的狀況
   offset?: number; // 位置偏移
@@ -158,6 +159,7 @@ export interface HighchartSettingAxis {
   opposite?: boolean; // 軸線是否放置於另一邊
   pointPlacement?: PointPlacement;
   reversed?: boolean; // 是否反轉軸線
+  plotLines?: Array<PlotLine>; // 軸線提示線
 }
 
 /**
@@ -227,6 +229,8 @@ export interface SeriesOption {
   data: Array<number | Array<number> | DataSetting>;
   name?: string;
   color?: string | LinearGradient;
+  zoneAxis?: 'x' | 'y';
+  zones?: Array<AreaZoneColor>;
   marker?: {
     // 可用'url(imagePath)'自定義marker圖形
     symbol?: 'circle' | 'square' | 'diamond' | 'triangle' | 'triangle-down' | string;
@@ -281,9 +285,19 @@ export interface DataSetting {
 }
 
 /**
- * 區域圖y軸各區間顏色設定
+ * 區域圖x軸或y軸各區間顏色設定
  */
 export interface AreaZoneColor {
   value?: number;
   color: string;
+}
+
+/**
+ * 軸線提示線設定
+ */
+export interface PlotLine {
+  width: number;
+  color: string;
+  value: number;
+  dashStyle?: string; // 線樣式
 }

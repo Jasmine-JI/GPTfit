@@ -1,16 +1,17 @@
 import { Component, OnInit, OnDestroy, AfterViewInit } from '@angular/core';
 import { TranslateService, TranslateModule } from '@ngx-translate/core';
 import { DetectInappService } from '../../core/services';
-import { Subject } from 'rxjs';
+import { Subject, combineLatest } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { langList } from '../../core/models/const';
 import { setLocalStorageObject, getLocalStorageObject } from '../../core/utils';
-import { EnvironmentCheckService } from '../../core/services';
 import { QueryString } from '../../core/enums/common';
 import { NavbarComponent } from '../../shared/components/navbar/navbar.component';
 import { NgIf, NgClass } from '@angular/common';
 import { IntroductionComponent } from './components/introduction/introduction.component';
 import { RouterOutlet } from '@angular/router';
+import { GlobalEventsService, EnvironmentCheckService } from '../../core/services';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'portal',
@@ -37,7 +38,9 @@ export class PortalComponent implements OnInit, OnDestroy, AfterViewInit {
   constructor(
     public translateService: TranslateService,
     private detectInappService: DetectInappService,
-    private environmentCheckService: EnvironmentCheckService
+    private environmentCheckService: EnvironmentCheckService,
+    private globalEventsService: GlobalEventsService,
+    private route: ActivatedRoute
   ) {
     if (location.search.indexOf(`${QueryString.printMode}=s`) > -1) {
       this.uiFlag.isPreviewMode = true;
@@ -51,6 +54,9 @@ export class PortalComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   ngAfterViewInit() {
+    // 使用setTimeout處理ExpressionChangedAfterItHasBeenCheckedError報錯
+    setTimeout(() => this.checkUiSetting());
+
     window.scrollTo({ top: 0, behavior: 'auto' });
     this.checkLanguage(); // 因應手機平台，故在此生命週期再判斷一次語系
   }
@@ -140,6 +146,30 @@ export class PortalComponent implements OnInit, OnDestroy, AfterViewInit {
   switchPage(page: string) {
     this.activePage = page;
     this.uiFlag.page = page;
+  }
+
+  /**
+   * 確認ui設定（隱藏導行列、暗黑模式等）
+   * @author kidin-1101229
+   */
+  checkUiSetting() {
+    combineLatest([
+      this.globalEventsService.getHideNavbarStatus(),
+      this.globalEventsService.getDarkModeStatus(),
+    ])
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe((result) => {
+        const [rxHideNavbar, rxDarkMode] = result;
+        const hideNavbarQuery = this.route.snapshot.queryParamMap.get('navbar') === '0';
+        this.uiFlag.hideNavbar = hideNavbarQuery || rxHideNavbar;
+        this.uiFlag.darkMode = rxDarkMode;
+        const target = document.querySelector('body');
+        if (rxDarkMode) {
+          target.style.backgroundColor = 'black';
+        } else {
+          target.style.backgroundColor = 'white';
+        }
+      });
   }
 
   /**
