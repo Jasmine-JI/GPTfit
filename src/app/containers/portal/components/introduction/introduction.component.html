@@ -27,14 +27,14 @@
               </figure>
             </a>
           </li>
-          <li>
+          <!-- <li>
             <a>
               <figure class="flexCol">
                 <img src="/app/public_html/img/introduction/one/intro_class.png" />
                 <figcaption>{{ 'universal_message_classManage' | translate }}</figcaption>
               </figure>
             </a>
-          </li>
+          </li> -->
           <li (click)="srollToElement($event, 'analysis')">
             <a>
               <figure class="flexCol">
@@ -126,7 +126,7 @@
     </div>
     <!-- 探索產品 -->
     <div class="exploreProducts">
-      <button (click)="handleNavigation(2)">
+      <button (click)="handleNavigation('products')">
         <span>{{ 'universal_app_exploreProducts' | translate }}</span>
       </button>
     </div>
