@@ -139,7 +139,9 @@ export class AppQrcodeLoginComponent implements OnInit, AfterViewInit, OnDestroy
    * @author kidin-1090720
    */
   checkPage(pathname: string): void {
-    if (pathname.indexOf('-web') > -1) {
+    const [, firstPath] = pathname.split('/');
+    const { signInQrcode, signInQrcodeWeb, signIn } = appPath.portal;
+    if (firstPath === signInQrcode || firstPath === signInQrcodeWeb) {
       this.displayPage = 'showQrcode';
       if (this.checkFrequency()) {
         this.createLoginQrcode();
@@ -157,7 +159,7 @@ export class AppQrcodeLoginComponent implements OnInit, AfterViewInit, OnDestroy
       this.displayPage = 'login';
       if (this.loginBody.token.length === 0) {
         this.auth.backUrl = location.href;
-        this.router.navigateByUrl(`/${appPath.portal.signIn}`);
+        this.router.navigateByUrl(`/${signIn}`);
       } else {
         this.getUrlString(location.search);
         this.getUserInfo();

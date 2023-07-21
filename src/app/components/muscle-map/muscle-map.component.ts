@@ -87,7 +87,8 @@ export class MuscleMapComponent implements OnChanges {
     setTimeout(() => {
       this.clearColor();
       const { useViceMuscle, data } = this;
-      if (useViceMuscle) this.fillViceMuscleColor(useViceMuscle);
+      // 因api規格因素無法知道哪個重訓動作訓練哪些副部位，易使使用者混淆，故副部位先不填色
+      // if (useViceMuscle) this.fillViceMuscleColor(useViceMuscle);
       this.fillMainMuscleColor(data);
     });
   }

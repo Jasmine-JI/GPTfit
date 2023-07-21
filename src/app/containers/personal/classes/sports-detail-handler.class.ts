@@ -128,7 +128,12 @@ export class SportsDetailHandler {
    */
   constructor(
     data: Api2103Response,
-    args: { unit: DataUnitType; bodyWeight?: number; weightTrainLevel?: WeightTrainingLevel }
+    args: {
+      unit: DataUnitType;
+      bodyWeight?: number;
+      weightTrainLevel?: WeightTrainingLevel;
+      hrRange?: Array<number>;
+    }
   ) {
     if (args) {
       const { unit, bodyWeight, weightTrainLevel } = args;
@@ -325,9 +330,9 @@ export class SportsDetailHandler {
     this._latLngPath = new SportsFileGpsPoint();
     this._hr = new SportsFilePoint();
     this._speedPace = this.getPointClass(data, _unit);
-    this._altitude = new SportsFileAltitudePoint(_unit);
+    this._altitude = new SportsFileAltitudePoint({ unit: _unit });
     this._runCadence = new SportsFilePoint();
-    this._temp = new SportsFileTempPoint(_unit);
+    this._temp = new SportsFileTempPoint({ unit: _unit });
     this._cycleCadence = new SportsFilePoint();
     this._cycleWatt = new SportsFilePoint();
     this._moveRepetitions = new SportsFilePoint();
@@ -348,7 +353,7 @@ export class SportsDetailHandler {
       [SportType.row]: SportsFileRunPacePoint,
     };
     const type = +data.activityInfoLayer.type;
-    return new (handler[type] ?? SportsFileSpeedPoint)(unit);
+    return new (handler[type] ?? SportsFileSpeedPoint)({ unit });
   }
 
   /**

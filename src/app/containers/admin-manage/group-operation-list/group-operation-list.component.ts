@@ -337,19 +337,19 @@ export class GroupOperationListComponent implements OnInit {
   changeCondition(condition: OperationConditionResult) {
     const { conditionList, sortDirection, sortType } = condition;
     conditionList.forEach((_list) => {
-      const { conditionCode, selectedCode, keyword } = _list;
+      const { conditionCode, selectedCode, keyword, value } = _list;
       switch (conditionCode) {
         case CondtionType.commerceStatus:
-          this.post.filter.commerceStatus = selectedCode as number;
+          this.post.filter.commerceStatus = (value ?? selectedCode) as number;
           break;
         case CondtionType.brandType:
-          this.post.filter.brandType = selectedCode as number;
+          this.post.filter.brandType = (value ?? selectedCode) as number;
           break;
         case CondtionType.planType:
-          this.post.filter.plan = selectedCode as number;
+          this.post.filter.plan = (value ?? selectedCode) as number;
           break;
         case CondtionType.expiredStatus:
-          this.post.filter.expiredStatus = selectedCode as number;
+          this.post.filter.expiredStatus = (value ?? selectedCode) as number;
           break;
         case CondtionType.keyword:
           this.post.filter.brandKeyword = keyword as string;

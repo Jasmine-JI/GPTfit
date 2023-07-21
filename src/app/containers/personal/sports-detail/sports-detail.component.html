@@ -67,35 +67,37 @@
     *ngIf="complexInfoList"
   ></app-sports-file-road>
 
-  <app-header
+  <div
     [ngClass]="{
-      'grid-col-12': !compareFileData || !isLargeScreen,
-      'grid-col-6': compareFileData && isLargeScreen
+      flexCol: true,
+      'grid-col-12': !isLargeScreen,
+      'grid-col-6': isLargeScreen
     }"
-    [file]="baseFileData"
-    [compareFile]="!isLargeScreen ? compareFileData : undefined"
-    [isLargeScreen]="isLargeScreen"
-  ></app-header>
-  <ng-container *ngIf="compareFileData && isLargeScreen">
-    <app-header class="grid-col-6" [file]="compareFileData"></app-header>
-  </ng-container>
-
-  <ng-container *ngIf="isLargeScreen || !compareFileData">
+  >
+    <app-header
+      [file]="baseFileData"
+      [compareFile]="!isLargeScreen ? compareFileData : undefined"
+      [isLargeScreen]="isLargeScreen"
+    ></app-header>
     <app-info-data-image
       [ngClass]="{
-        'grid-col-6': true,
         info__data__image: !compareFileData
       }"
       [imagePath]="baseFileData.fileInfo.photo"
       [activityInfo]="baseFileData.activityInfoLayer"
+      *ngIf="!compareFileData || isLargeScreen"
     ></app-info-data-image>
-    <ng-container *ngIf="compareFileData">
-      <app-info-data-image
-        class="grid-col-6"
-        [imagePath]="compareFileData.fileInfo.photo"
-        [activityInfo]="compareFileData.activityInfoLayer"
-      ></app-info-data-image>
-    </ng-container>
+  </div>
+  <div class="flexCol grid-col-6" *ngIf="compareFileData && isLargeScreen">
+    <app-header [file]="compareFileData"></app-header>
+    <app-info-data-image
+      class="grid-col-6"
+      [imagePath]="compareFileData.fileInfo.photo"
+      [activityInfo]="compareFileData.activityInfoLayer"
+    ></app-info-data-image>
+  </div>
+
+  <ng-container *ngIf="isLargeScreen || !compareFileData">
     <app-all-info-data
       [ngClass]="{
         'grid-col-6': true,
@@ -122,7 +124,12 @@
     *ngIf="!isLargeScreen && compareFileData"
   ></app-info-data-compare-rwd>
 
-  <ng-container *ngIf="baseFileData.activityLapLayer?.length > 0">
+  <ng-container
+    *ngIf="
+      baseFileData.activityLapLayer?.length > 0 &&
+      (!compareFileData || sportsType !== SportType.weightTrain)
+    "
+  >
     <app-lap-info-table
       class="grid-col-12"
       [sportsType]="sportsType"
@@ -291,8 +298,9 @@
         [unit]="'bpm'"
         [data]="baseFileData.hr.data"
         [compareData]="compareFileData?.hr.data"
-        [zoneColor]="hrZoneColor"
-        [yAxisTickPosition]="hrYAxisTickPosition"
+        [yAxisMax]="190"
+        [tickInterval]="50"
+        [yAxisPlotLine]="hrPlotLine"
       >
       </app-line-area-compare-chart>
     </div>
@@ -301,7 +309,7 @@
       *ngIf="baseFileData.speedPace.hasEffectValue || compareFileData?.speedPace.hasEffectValue"
     >
       <app-trend-chart-info
-        [titleKey]="'speed' | dataTypeTranslate: { sportsType }"
+        [titleKey]="'speed' | dataTypeTranslate: { sportsType, unitType: unit }"
         [isPaceData]="isIncluded([SportType.run, SportType.swim, SportType.row])"
         [unit]="'pace' | dataTypeUnit: { sportsType, unitType: unit }"
         [baseDate]="baseFileData.activityInfoLayer.startTime"
@@ -328,7 +336,7 @@
         "
       ></app-trend-chart-info>
       <app-line-area-compare-chart
-        [tooltipTranslateKey]="'speed' | dataTypeTranslate: { sportsType }"
+        [tooltipTranslateKey]="'speed' | dataTypeTranslate: { sportsType, unitType: unit }"
         [unit]="'pace' | dataTypeUnit: { sportsType: sportsType, unitType: unit }"
         [data]="baseFileData.speedPace.data"
         [compareData]="compareFileData?.speedPace.data"
@@ -377,6 +385,7 @@
         [unit]="'spm'"
         [data]="baseFileData.runCadence.data"
         [compareData]="compareFileData?.runCadence.data"
+        [tickInterval]="50"
       >
       </app-line-area-compare-chart>
     </div>
@@ -401,6 +410,7 @@
         [unit]="'rpm'"
         [data]="baseFileData.cycleCadence.data"
         [compareData]="compareFileData?.cycleCadence.data"
+        [tickInterval]="50"
       >
       </app-line-area-compare-chart>
     </div>
@@ -423,6 +433,7 @@
         [unit]="'spm'"
         [data]="baseFileData.swimCadence.data"
         [compareData]="compareFileData?.swimCadence.data"
+        [tickInterval]="50"
       >
       </app-line-area-compare-chart>
     </div>
@@ -445,6 +456,7 @@
         [unit]="'rpm'"
         [data]="baseFileData.rowCadence.data"
         [compareData]="compareFileData?.rowCadence.data"
+        [tickInterval]="50"
       >
       </app-line-area-compare-chart>
     </div>

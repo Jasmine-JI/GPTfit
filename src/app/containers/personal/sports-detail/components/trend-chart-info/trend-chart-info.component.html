@@ -1,4 +1,10 @@
-<div class="row__grid">
+<div
+  [ngClass]="{
+    row__grid: true,
+    row__grid__template: !compareDate,
+    'row__grid__template--compare': compareDate
+  }"
+>
   <span class="trend__title">{{ titleKey | translate }}</span>
   <div
     *ngTemplateOutlet="
@@ -40,8 +46,10 @@
   <div
     [ngClass]="{
       flexRow: true,
-      base__info__card: type === 'base',
-      compare__info__card: type === 'compare'
+      base__info: true,
+      base__info__column: type === 'base' && !compareDate,
+      'base__info__column--compare': type === 'base' && compareDate,
+      compare__info: type === 'compare'
     }"
   >
     <div class="flexCol">
