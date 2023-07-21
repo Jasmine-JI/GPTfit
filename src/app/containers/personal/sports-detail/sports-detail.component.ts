@@ -178,16 +178,6 @@ export class SportsDetailComponent implements OnInit, OnDestroy {
   mapType = MapType.normal;
 
   /**
-   * 心率區間顏色範圍（用於趨勢圖）
-   */
-  hrZoneColor: Array<AreaZoneColor>;
-
-  /**
-   * 心率趨勢y軸軸線呈現位置
-   */
-  hrYAxisTickPosition: Array<number>;
-
-  /**
    * 複合式運動檔案目前瀏覽索引
    */
   complexFileIndex = 0;
@@ -310,14 +300,30 @@ export class SportsDetailComponent implements OnInit, OnDestroy {
   }
 
   /**
+   * 取得心率趨勢圖y軸心率區間提示限
+   */
+  get hrPlotLine() {
+    const width = 2;
+    const dashStyle = 'shortdash';
+    const { z0, z1, z2, z3, z4 } = this.userService.getUser().userHrRange;
+    const [, color1, color2, color3, color4, color5] = zoneColor;
+    // 心率區間值為該區間最大值，故顏色對應需向下偏移
+    return [
+      { color: color1, width, value: z0, dashStyle },
+      { color: color2, width, value: z1, dashStyle },
+      { color: color3, width, value: z2, dashStyle },
+      { color: color4, width, value: z3, dashStyle },
+      { color: color5, width, value: z4, dashStyle },
+    ];
+  }
+
+  /**
    * 初始化時即載入基本運動檔案資訊
    */
   ngOnInit(): void {
     this.subscribeResizeEvent();
     this.checkPathName();
     this.checkUrlParam();
-    this.hrZoneColor = this.getHrZoneColor();
-    this.hrYAxisTickPosition = this.getHrYAxisTickPosition();
     this.getBaseFileData();
   }
 
@@ -353,61 +359,6 @@ export class SportsDetailComponent implements OnInit, OnDestroy {
           break;
       }
     });
-  }
-
-  /**
-   * 取得心率區間趨勢圖顏色設定
-   */
-  getHrZoneColor() {
-    const {
-      userHrRange: { z0, z1, z2, z3, z4 },
-    } = this.userService.getUser();
-
-    return [
-      {
-        value: z0 as number,
-        color: zoneColor[0],
-      },
-      {
-        value: z1 as number,
-        color: zoneColor[1],
-      },
-      {
-        value: z2 as number,
-        color: zoneColor[2],
-      },
-      {
-        value: z3 as number,
-        color: zoneColor[3],
-      },
-      {
-        value: z4 as number,
-        color: zoneColor[4],
-      },
-      {
-        color: zoneColor[5],
-      },
-    ];
-  }
-
-  /**
-   * 取得心率趨勢圖y軸標線呈現位置
-   */
-  getHrYAxisTickPosition() {
-    const {
-      userHrRange: { z0, z1, z2, z3, z4, z5 },
-    } = this.userService.getUser();
-
-    return [
-      60,
-      z0 as number,
-      z1 as number,
-      z2 as number,
-      z3 as number,
-      z4 as number,
-      z5 as number,
-      220,
-    ];
   }
 
   /**
@@ -466,7 +417,8 @@ export class SportsDetailComponent implements OnInit, OnDestroy {
    * @param sportsType 運動類別
    */
   getFileHandlerArgs(sportsType: SportType) {
-    let args: any = { unit: this.unit as DataUnitType };
+    const { z0, z1, z2, z3, z4, z5 } = this.userService.getUser().userHrRange;
+    let args: any = { unit: this.unit as DataUnitType, hrRange: [z0, z1, z2, z3, z4, z5] };
     if (sportsType === SportType.weightTrain) {
       const { bodyWeight, weightTrainLevel } = this;
       args = { ...args, bodyWeight, weightTrainLevel };

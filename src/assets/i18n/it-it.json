@@ -2821,7 +2821,9 @@
  "universal_group_userTotalClassCounts": "Conteggio totale delle classi",
  "universal_group_userTotalClassTime": "Tempo totale di lezione",
  "universal_group_userLastClassDate": "Data dell'ultima lezione",
- "universal_popUpMessage_wt02ConnectFail": "This device can't connect now, please connect before start",
- "universal_message_dataCollection": "Data Collection",
- "universal_message_classManage": "Class Management",
- "universal_message_dataAnalysis": "Data Analysis"}
+ "universal_popUpMessage_wt02ConnectFail": "Questo dispositivo non può connettersi ora, si prega di connettersi prima di iniziare",
+ "universal_message_dataCollection": "Raccolta dati",
+ "universal_message_classManage": "Gestione della classe",
+ "universal_message_dataAnalysis": "Analisi dei dati",
+ "universal_system_selectComparison": "Selezionare il confronto",
+ "universal_activityData_strokePer100m": "Corse/100m"}

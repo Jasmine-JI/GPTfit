@@ -10,7 +10,6 @@ import {
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import { HighchartSetting, AreaZoneColor } from '../../core/models/compo';
 import { HighchartOption } from '../../core/classes';
 import { chart } from 'highcharts';
 import * as Highcharts from 'highcharts';
@@ -23,6 +22,7 @@ import {
   paceSecondTimeFormat,
   paceYAxisFormatter,
 } from '../../core/utils';
+import { PlotLine } from '../../core/models/compo';
 
 @Component({
   selector: 'app-line-area-compare-chart',
@@ -55,11 +55,6 @@ export class LineAreaCompareChartComponent implements OnInit, OnChanges, OnDestr
   @Input() compareData: Array<number>;
 
   /**
-   * 區域圖各區間顏色設定
-   */
-  @Input() zoneColor: Array<AreaZoneColor>;
-
-  /**
    * 是否為配速數據
    */
   @Input() isPaceData = false;
@@ -75,9 +70,19 @@ export class LineAreaCompareChartComponent implements OnInit, OnChanges, OnDestr
   @Input() compareLineColor = 'rgba(154, 135, 249, 1)';
 
   /**
-   * y軸軸線標示位置
+   * y軸上限
    */
-  @Input() yAxisTickPosition: Array<number>;
+  @Input() yAxisMax: number;
+
+  /**
+   * y軸軸線間距
+   */
+  @Input() tickInterval: number;
+
+  /**
+   * y軸提示線
+   */
+  @Input() yAxisPlotLine: Array<PlotLine>;
 
   private ngUnsubscribe = new Subject();
   private _option: HighchartOption;
@@ -147,7 +152,7 @@ export class LineAreaCompareChartComponent implements OnInit, OnChanges, OnDestr
    * 設定圖表
    */
   getChartOption() {
-    const { isPaceData, zoneColor, baseBorderColor, yAxisTickPosition } = this;
+    const { isPaceData, baseBorderColor } = this;
     const chartOption = new HighchartOption('area', 200);
     chartOption.marginLeft = 60;
     chartOption.zoomType = 'x';
@@ -158,23 +163,21 @@ export class LineAreaCompareChartComponent implements OnInit, OnChanges, OnDestr
         lineWidth: 3,
         fillOpacity: 0.5,
         ...(isPaceData ? { threshold: 3600 } : {}),
-        ...(zoneColor
-          ? { zones: zoneColor }
-          : {
-              color: baseBorderColor,
-              fillColor: {
-                linearGradient: {
-                  x1: 0,
-                  y1: 0,
-                  x2: 0,
-                  y2: 1,
-                },
-                stops: [
-                  [0, baseBorderColor],
-                  [1, changeOpacity(baseBorderColor, 0)],
-                ],
-              },
-            }),
+        ...{
+          color: baseBorderColor,
+          fillColor: {
+            linearGradient: {
+              x1: 0,
+              y1: 0,
+              x2: 0,
+              y2: 1,
+            },
+            stops: [
+              [0, baseBorderColor],
+              [1, changeOpacity(baseBorderColor, 0)],
+            ],
+          },
+        },
       },
     };
 
@@ -191,8 +194,10 @@ export class LineAreaCompareChartComponent implements OnInit, OnChanges, OnDestr
       endOnTick: true,
       reversed: isPaceData,
       min: 0,
+      ...(this.tickInterval ? { tickInterval: this.tickInterval } : {}),
+      ...(this.yAxisMax ? { softMax: this.yAxisMax } : {}),
+      ...(this.yAxisPlotLine ? { plotLines: this.yAxisPlotLine } : {}),
       ...this.getPaceYAxisFormatter(isPaceData),
-      ...(yAxisTickPosition ? { tickPositions: yAxisTickPosition } : {}),
     };
 
     chartOption.tooltip = {

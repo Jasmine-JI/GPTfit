@@ -349,7 +349,7 @@ export class AllInfoDataComponent implements OnChanges {
     const compareAvgStrokes = countAvgStroke(compareStrokes, compareDistance);
     const diffAvgStrokes = mathRounding(baseAvgStorkes - compareAvgStrokes, 2);
     return {
-      title: '平均百米划水數',
+      title: 'universal_activityData_strokePer100m',
       value: baseAvgStorkes,
       unit: 'spm',
       diff: diffAvgStrokes,

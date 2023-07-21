@@ -24,8 +24,9 @@ $header-height: 70px;
   border-radius: 6px;
   box-shadow: $boc-shadow;
   padding: 2px;
-  max-width: 500px;
+  margin: 0 auto 10px auto;
   min-height: $header-height;
+  max-width: 600px;
 }
 
 .align__center {
@@ -111,9 +112,6 @@ $header-height: 70px;
   font-weight: bold;
   color: rgba(115, 115, 115, 1);
   margin: 0;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
 
 .base__time__title {

@@ -49,8 +49,8 @@ export function paceSecondTimeFormat(second: number) {
   const costminperkm = Math.floor(absoluteSecond / 60);
   const costsecondperkm = Math.round(absoluteSecond - costminperkm * 60);
 
-  // 配速超過60一律以60計。
-  if (costminperkm > 60) return `${valuePrefix}60'00"`;
+  // 配速超過60顯示NA。
+  if (costminperkm >= 60) return `NA`;
 
   let timeMin = `${costminperkm}`.padStart(2, '0');
   let timeSecond = `${costsecondperkm}`.padStart(2, '0');
@@ -77,9 +77,9 @@ export function speedToPace(data: number | string, sportType: SportType, unit: D
   // 其他運動類別則直接返回速度值
   if (!converseType.includes(sportType)) return result;
 
-  // 速度為0則配速一律顯示60'00"
-  if (value === 0) {
-    result.value = `60'00"`;
+  // 速度為0則配速一律顯示NA
+  if (value < 1) {
+    result.value = 'NA';
     return result;
   }
 

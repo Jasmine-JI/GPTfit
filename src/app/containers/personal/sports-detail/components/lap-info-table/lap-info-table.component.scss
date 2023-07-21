@@ -4,7 +4,7 @@
 @import 'transition.scss';
 @import 'transform.scss';
 
-@mixin table-column($width: 80px) {
+@mixin table-column($width: 90px) {
   display: flex;
   min-width: $width;
   width: $width;
@@ -13,13 +13,15 @@
 }
 
 @mixin table-content-row($color) {
+  $width: 5px;
   position: relative;
 
   &:before {
     content: '';
     display: inline-block;
     position: absolute;
-    width: 5px;
+    left: -$width;
+    width: $width;
     height: 100%;
     border-radius: 2px;
     background-color: $color;
@@ -88,7 +90,7 @@
 }
 
 .lap__content {
-  justify-content: space-between;
+  justify-content: space-around;
   width: 100%;
 }
 
@@ -104,6 +106,7 @@
   position: relative;
   cursor: pointer;
   user-select: none;
+  left: 5px;
 }
 
 .column__title {
