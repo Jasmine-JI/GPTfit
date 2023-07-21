@@ -31,17 +31,6 @@
 @mixin btn() {
 }
 
-// @mixin home-image($image) {
-//   background-image: $image;
-//   background-position: center;
-//   background-repeat: no-repeat;
-//   background-size: cover;
-//   height: 45vw;
-//   min-height: 400px;
-//   width: 100%;
-//   position: relative;
-// }
-
 @mixin header-title($min-width: 257px) {
   padding: 9px 35px;
   min-width: $min-width;
@@ -120,11 +109,15 @@
       }
     }
     .start {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      margin: 20px;
       @include l() {
-        display: flex;
-        justify-content: center;
         gap: 55px;
-        margin: 20px;
+        // display: flex;
+        // justify-content: center;
+        // margin: 20px;
       }
       ul {
         padding: 10px;
@@ -132,19 +125,23 @@
         align-items: center;
         justify-content: space-between;
         gap: 10px;
+        padding: 0;
+        gap: 20px;
         @include l() {
-          padding: 0;
           gap: 55px;
+          // padding: 10px;
+          // margin: 0;
+          // align-items: center;
+          // justify-content: space-between;
+          // gap: 10px;
+          // padding: 0;
         }
         li {
           list-style: none;
+          box-sizing: border-box;
           cursor: pointer;
           &:hover figure {
             box-shadow: 2px 3px 5px 2px rgb(233 117 117 / 40%);
-          }
-          @include l() {
-            list-style: none;
-            box-sizing: border-box;
           }
           a {
             color: black;
@@ -216,10 +213,12 @@
   cursor: auto;
   list-style: none;
   box-sizing: border-box;
-  @include l() {
-    width: 178px;
-    max-height: 226px;
-  }
+  width: 178px;
+  max-height: 226px;
+  // @include l() {
+  //   width: 178px;
+  //   max-height: 226px;
+  // }
   button {
     margin: 20px auto;
     padding: 10px 30%;
@@ -229,11 +228,15 @@
     background-clip: padding-box;
     border-radius: 10px;
     background: $btn-gradient;
-    @include l() {
-      width: 100%;
-      height: 100%;
-      margin: 0;
-    }
+    color: black;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    // @include l() {
+    //   width: 100%;
+    //   height: 100%;
+    //   margin: 0;
+    // }
     &:before {
       content: '';
       position: absolute;
@@ -308,7 +311,11 @@
         height: 20vh;
       }
       img {
-        @include img();
+        @include img() {
+          @include m() {
+            object-fit: contain;
+          }
+        }
       }
     }
     .content {
@@ -316,8 +323,6 @@
       @include l() {
       }
       width: 80%;
-      // p {
-      // }
     }
   }
   .exploreProducts {
@@ -342,6 +347,9 @@
         margin: -$border;
         border-radius: inherit;
         background: $border-gradient;
+      }
+      span {
+        color: black;
       }
       &:hover {
         background: $border-gradient;
@@ -415,34 +423,6 @@
   margin: 20px;
   text-align: center;
 }
-
-// .system__t2 {
-//   @include home-image(url('/app/public_html/img/introduction/one/intro_wearable.png'));
-// }
-
-// .system__t3 {
-//   @include home-image(url('/app/public_html/img/introduction/system/T3.jpg'));
-// }
-
-// .system__t4 {
-//   @include home-image(url('/app/public_html/img/introduction/system/T4.jpg'));
-// }
-
-// .analysis__t1 {
-//   @include home-image(url('/app/public_html/img/introduction/analysis/T1.jpg'));
-// }
-
-// .analysis__t2 {
-//   @include home-image(url('/app/public_html/img/introduction/analysis/T2.jpg'));
-// }
-
-// .analysis__t3 {
-//   @include home-image(url('/app/public_html/img/introduction/analysis/T3.jpg'));
-// }
-
-// .analysis__t4 {
-//   @include home-image(url('/app/public_html/img/introduction/analysis/T4.jpg'));
-// }
 
 .app-link-container {
   display: flex;

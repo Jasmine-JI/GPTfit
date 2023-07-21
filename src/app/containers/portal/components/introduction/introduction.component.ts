@@ -62,9 +62,9 @@ export class IntroductionComponent implements OnInit, OnDestroy {
 
   /**
    * 根據語系轉導至指定網址
-   * @param code {number} 1: 了解更多 2:探索產品 3:取得應用 4:與我們聯絡
+   * @param code {string} 1: 了解更多 products:探索產品 3:取得應用 4:與我們聯絡
    */
-  handleNavigation(code: number) {
+  handleNavigation(code: string) {
     const currentLang = getLocalStorageObject('locale');
     let lang: string;
     switch (currentLang) {
@@ -87,9 +87,9 @@ export class IntroductionComponent implements OnInit, OnDestroy {
       //     'noopener=yes,noreferrer=yes'
       //   );
       //   break;
-      case 2:
+      case 'products':
         window.open(
-          `https://www.attacusfitness.com/products/${lang}/id/3`,
+          `https://www.attacusfitness.com/products/lang/${lang}`,
           '_blank',
           'noopener=yes,noreferrer=yes'
         );

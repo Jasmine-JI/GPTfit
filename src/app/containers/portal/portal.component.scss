@@ -1,9 +1,11 @@
 @import 'overflow-scroll';
+
 * {
   font-family: 'Noto Sans TC', sans-serif;
   letter-spacing: 1px;
   line-height: 1.5;
 }
+
 .routeroutlet {
   height: 100vh;
   padding-top: 60px;
@@ -15,6 +17,9 @@
 }
 
 @media print {
+  app-navbar {
+    display: none;
+  }
   .routeroutlet {
     overflow: visible;
     height: fit-content;
