@@ -14,6 +14,7 @@ import { appPath } from '../../../app-path.const';
 import { NgIf, NgTemplateOutlet, AsyncPipe } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { FormsModule } from '@angular/forms';
+import { UserProfile } from '../../../core/models/api/api-10xx';
 
 @Component({
   selector: 'app-navbar',
@@ -40,7 +41,6 @@ export class NavbarComponent implements OnInit, OnDestroy {
   isShowMask = false;
   href: string;
   deviceWidth: number;
-  navItemStr = '';
   login$: Observable<boolean>;
   langName: string;
   showActivityEntry = false;
@@ -48,12 +48,11 @@ export class NavbarComponent implements OnInit, OnDestroy {
   menu = {
     MainNav: false,
     memberMenu: false,
+    showLanguage: false,
   };
-  avatarUrl: string;
-  nickname: string;
-  readonly dashboardHomeUrl = `/${appPath.dashboard.home}`;
+  userProfile = <UserProfile>{};
+  accountStatus = this.userService.getUser().signInfo?.accountStatus;
   @Input() isAlphaVersion = false;
-  @Input() activePage = '';
 
   constructor(
     private router: Router,
@@ -81,9 +80,8 @@ export class NavbarComponent implements OnInit, OnDestroy {
     this.userService
       .getUser()
       .rxUserProfile.pipe(takeUntil(this._ngUnsubscirbe))
-      .subscribe((userProfile) => {
-        this.avatarUrl = userProfile.avatarUrl;
-        this.nickname = userProfile.nickname;
+      .subscribe((res) => {
+        this.userProfile = res;
       });
   }
 
@@ -114,7 +112,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * 點擊選單 hamber時，判斷 ckecked 狀態顯示遮罩
+   * 點擊選單 hamber 時，判斷 ckecked 狀態顯示遮罩
    * @param ifchecked
    */
   toggleMenu(ifchecked: boolean) {
@@ -123,25 +121,49 @@ export class NavbarComponent implements OnInit, OnDestroy {
     this.menu.memberMenu = false;
   }
 
+  /**
+   * 點擊收合選單
+   * @param str
+   */
   toggle(str: string) {
     switch (str) {
       case 'memberMenu':
         this.menu.memberMenu = !this.menu.memberMenu;
         this.menu.MainNav = false;
         this.isShowMask = this.menu.memberMenu ? true : false;
+        this.menu.showLanguage = false;
+        break;
+      case 'showLanguage':
+        this.menu.showLanguage = !this.menu.showLanguage;
         break;
     }
   }
 
+  /**
+   * 登出
+   */
   logout() {
     this.authService.logout();
   }
 
+  /**
+   * 轉導至啟用帳號頁面
+   * @author kidin-1090513
+   */
+  toEnableAccount(): void {
+    const { portal } = appPath;
+    window.open(`/${portal.enableAccount}`, '', 'height=700,width=375,resizable=no');
+  }
+
+  /**
+   * 頁面跳轉
+   * @param string
+   */
   chooseNavItem(string: string) {
     const { officialActivity, portal } = appPath;
-    this.navItemStr = string;
     this.isShowMask = false;
-    this.globalEventsService.setShowMaskStatus(this.isShowMask);
+    this.menu.memberMenu = false;
+    window.scrollTo(0, 0);
     switch (string) {
       case 'home':
         this.router.navigateByUrl(`/`);
@@ -152,6 +174,10 @@ export class NavbarComponent implements OnInit, OnDestroy {
       case 'signIn':
         this.router.navigateByUrl(`/${portal.signInWeb}`);
         break;
+      case 'logout':
+        this.logout();
+        this.router.navigateByUrl(`/${portal.signInWeb}`);
+        break;
     }
   }
 
@@ -159,6 +185,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
     this.langName = langData[lang];
     this.translateService.use(lang);
     setLocalStorageObject('locale', lang);
+    this.chooseNavItem(lang);
   }
 
   /**

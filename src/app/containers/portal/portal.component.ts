@@ -9,9 +9,8 @@ import { QueryString } from '../../core/enums/common';
 import { NavbarComponent } from '../../shared/components/navbar/navbar.component';
 import { NgIf, NgClass } from '@angular/common';
 import { IntroductionComponent } from './components/introduction/introduction.component';
-import { RouterOutlet } from '@angular/router';
 import { GlobalEventsService, EnvironmentCheckService } from '../../core/services';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, RouterOutlet } from '@angular/router';
 
 @Component({
   selector: 'portal',
@@ -23,16 +22,13 @@ import { ActivatedRoute } from '@angular/router';
 export class PortalComponent implements OnInit, OnDestroy, AfterViewInit {
   private ngUnsubscribe = new Subject();
   uiFlag = {
-    page: 'system',
     isAlphaVersion: false,
+    showActivityEntry: false,
     isPreviewMode: false,
     hideNavbar: false,
-    showMask: false,
     darkMode: false,
-    showActivityEntry: false,
   };
 
-  activePage = '';
   isIntroductionPage: boolean;
 
   constructor(
@@ -137,15 +133,6 @@ export class PortalComponent implements OnInit, OnDestroy, AfterViewInit {
     } else {
       return 'en-us';
     }
-  }
-
-  /**
-   * 根據點擊切換頁面
-   * @param page {string}-點擊的頁面
-   */
-  switchPage(page: string) {
-    this.activePage = page;
-    this.uiFlag.page = page;
   }
 
   /**

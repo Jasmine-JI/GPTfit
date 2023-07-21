@@ -9,7 +9,7 @@
   <div class="header_box">
     <!-- logo -->
     <div class="logo webTitle">
-      <a [routerLink]="['']">
+      <a [routerLink]="['/']" (click)="chooseNavItem('home')">
         <img src="/assets/icons/logo2.svg" alt="GPTfit" />
         <span class="alpha-text" *ngIf="isAlphaVersion">alpha</span>
       </a>
@@ -19,7 +19,7 @@
       <ul class="main">
         <!-- 個人 -->
         <li class="main_list">
-          <a [routerLink]="['/signIn-web']">
+          <a [routerLink]="['/signIn-web']" (click)="chooseNavItem('signIn')">
             <i class="icon-svg_web-icon_p4_023-dashboard"></i>
             {{ 'universal_userProfile_personal' | translate }}</a
           >
@@ -27,40 +27,58 @@
       </ul>
     </nav>
     <div class="main_nav_member">
-      <img class="avatar" (click)="toggle('memberMenu')" [src]="avatarUrl" alt="avatar" />
+      <!-- 頭像 -->
+      <div class="member_avatar" (click)="toggle('memberMenu')">
+        <img
+          class="avatar"
+          [src]="userProfile.avatarUrl"
+          (error)="this.userProfile.avatarUrl = '/assets/images/user2.png'"
+          alt="avatar"
+        />
+        <i
+          class="icon-svg_web-icon_p1_069-about alert__icon__enable"
+          *ngIf="!accountStatus || accountStatus === 1 | async"
+        ></i>
+      </div>
       <ul [class.member_activ]="menu.memberMenu" class="member">
-        <p class="member_list member-name">{{ nickname }}</p>
+        <p class="member_list member-name">{{ userProfile.nickname }}</p>
+        <!-- 啟用帳號 -->
+        <li class="member_list enableAccount" *ngIf="!accountStatus || accountStatus === 1 | async">
+          <a [routerLink]="['']" (click)="toEnableAccount()">
+            <i class="icon-svg_web-icon_p1_069-about alert__icon__enable list_icon"></i>
+            <span
+              >{{ 'universal_deviceSetting_switch' | translate
+              }}{{ 'universal_userAccount_account' | translate }}</span
+            >
+          </a>
+        </li>
         <!-- 登入 -->
         <li *ngIf="!(login$ | async)" class="member_list">
-          <a [routerLink]="['/signIn-web']" routerLinkActive="active">
-            <mat-icon>person</mat-icon>
-            {{ 'universal_userAccount_logIn' | translate }}
+          <a (click)="chooseNavItem('signIn')">
+            <mat-icon class="list_icon">person</mat-icon>
+            <span>{{ 'universal_userAccount_logIn' | translate }}</span>
           </a>
         </li>
         <!-- 登出 -->
         <li class="member_list">
-          <a *ngIf="login$ | async" [routerLink]="['/signIn-web']" (click)="logout()">
-            <mat-icon>close</mat-icon>
-            {{ 'universal_userAccount_logOut' | translate }}
+          <a *ngIf="login$ | async" (click)="chooseNavItem('logout')">
+            <mat-icon class="list_icon">close</mat-icon>
+            <span>{{ 'universal_userAccount_logOut' | translate }}</span>
           </a>
         </li>
         <!-- 語言 -->
         <li class="member_list">
           <a
-            class="dropdown-toggle ala-btn__lang"
-            type="a"
-            id="dropdownMenu2"
-            data-toggle="dropdown"
-            aria-haspopup="true"
-            aria-expanded="false"
+            class="ala-btn__lang dropdown-toggle"
+            (click)="toggle('showLanguage')"
             style="background-color: transparent; border-color: transparent"
           >
-            <mat-icon>language</mat-icon>
+            <mat-icon class="list_icon">language</mat-icon>
             <span>{{ langName }}</span>
+            <div class="showLanguage dropdown-menu" [class.show]="menu.showLanguage">
+              <ng-container *ngTemplateOutlet="langList"></ng-container>
+            </div>
           </a>
-          <div class="dropdown-menu dropdown-menu-lang" aria-labelledby="dropdownMenu2">
-            <ng-container *ngTemplateOutlet="langList"></ng-container>
-          </div>
         </li>
       </ul>
     </div>
