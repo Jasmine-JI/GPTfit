@@ -103,7 +103,7 @@ export class LineAreaCompareChartComponent implements OnInit, OnChanges, OnDestr
   ngOnChanges(changes: SimpleChanges): void {
     const { data, compareData } = changes;
     if (data?.currentValue) this.initChart(data.currentValue);
-    if (compareData && !compareData.firstChange) this.handleCompareData(compareData?.currentValue);
+    if (compareData) this.handleCompareData(compareData?.currentValue);
   }
 
   /**
@@ -137,7 +137,8 @@ export class LineAreaCompareChartComponent implements OnInit, OnChanges, OnDestr
    * @param data 圖表數據
    */
   initChart(data: Array<number>) {
-    if (data?.length === 0) return (this.noData = true);
+    const dataLength = data?.length ?? 0;
+    if (dataLength === 0) return (this.noData = true);
     this.noData = false;
     this._option = this.getChartOption();
     setTimeout(() => {
@@ -210,7 +211,7 @@ export class LineAreaCompareChartComponent implements OnInit, OnChanges, OnDestr
       {
         name: 'Base',
         type: 'area',
-        data: this.data,
+        data: this.data ?? [],
       },
     ];
 
@@ -247,19 +248,24 @@ export class LineAreaCompareChartComponent implements OnInit, OnChanges, OnDestr
 
   /**
    * 處理比較數據
+   * @param compareData 比較數據
    */
   handleCompareData(compareData: Array<number>) {
-    if (this._chart?.series.length === 2) this._chart.series.at(-1).remove();
-    if (compareData)
-      this._chart.addSeries({
-        name: 'compare',
-        type: 'line',
-        data: this.compareData,
-        color: this.compareLineColor,
-        marker: {
-          enabled: false,
-        },
-      });
+    // 確保先生成 this._chart
+    setTimeout(() => {
+      const seriesLength = this._chart?.series.length ?? 0;
+      if (seriesLength === 2) this._chart.series.at(-1)?.remove();
+      if (compareData)
+        this._chart.addSeries({
+          name: 'compare',
+          type: 'line',
+          data: this.compareData,
+          color: this.compareLineColor,
+          marker: {
+            enabled: false,
+          },
+        });
+    });
   }
 
   ngOnDestroy(): void {

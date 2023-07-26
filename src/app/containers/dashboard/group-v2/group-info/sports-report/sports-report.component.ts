@@ -161,7 +161,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
     pageType: 'sportsReport',
     baseTime: new DateRange(),
     compareTime: null,
-    dateUnit: new ReportDateUnit(DateUnit.week),
+    dateUnit: new ReportDateUnit(DateUnit.day),
     includeAdmin: this.localStorageService.getAdminInclusion(),
     group: {
       brandType: BrandType.brand,
@@ -433,8 +433,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
    * 取得預設時間
    */
   getDefaultDate() {
-    const isMondayFirst = this.localStorageService.getIsoWeekStatus();
-    const { startTime, endTime } = DefaultDateRange.getThisWeek(isMondayFirst);
+    const { startTime, endTime } = DefaultDateRange.getSevenDay();
     this.initReportCondition.baseTime.startTimestamp = startTime;
     this.initReportCondition.baseTime.endTimestamp = endTime;
     return;

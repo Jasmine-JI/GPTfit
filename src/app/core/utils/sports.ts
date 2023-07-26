@@ -77,8 +77,14 @@ export function speedToPace(data: number | string, sportType: SportType, unit: D
   // 其他運動類別則直接返回速度值
   if (!converseType.includes(sportType)) return result;
 
-  // 速度為0則配速一律顯示NA
-  if (value < 1) {
+  // 速度過小則配速一律顯示NA
+  const minValue = {
+    [SportType.run]: 1, // 公里配速
+    [SportType.swim]: 0.5, // 500米配速
+    [SportType.row]: 0.1, // 100米配速
+  };
+
+  if (value < minValue[sportType]) {
     result.value = 'NA';
     return result;
   }
@@ -281,6 +287,24 @@ export function transformDistance(distance: number, unit: DataUnitType, convertK
   }
 
   return transfrom.result;
+}
+
+/**
+ * 將公里或英哩轉換為公尺或英呎
+ * @param distance 距離
+ * @param args.userUnit 使用者使用單位
+ * @param args.alwaysRevertMeter 是否不管使用者使用單位，皆轉為公尺
+ */
+export function revertKiloDistance(
+  distance: number,
+  args?: { userUnit?: DataUnitType; alwaysRevertMeter?: boolean }
+) {
+  const isMetric = (args?.userUnit ?? DataUnitType.metric) === DataUnitType.metric;
+  const alwaysRevertMeter = args?.alwaysRevertMeter ?? false;
+  const meter = distance * (isMetric ? 1 : mi) * 1000;
+  return alwaysRevertMeter || isMetric
+    ? { value: meter, unit: 'm' }
+    : { value: mathRounding(meter / ft, 2), unit: 'ft' };
 }
 
 /**
