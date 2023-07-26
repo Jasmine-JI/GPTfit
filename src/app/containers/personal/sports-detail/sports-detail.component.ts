@@ -352,13 +352,35 @@ export class SportsDetailComponent implements OnInit, OnDestroy {
   checkUrlParam() {
     const { search } = location;
     const param = getUrlQueryStrings(search);
-    Object.entries(param).forEach(([_value, _key]) => {
+    Object.entries(param).forEach(([_key, _value]) => {
       switch (_key) {
         case QueryString.printMode:
-          this.isPreviewPrint = true;
+          this.handlePrintPage();
           break;
       }
     });
+  }
+
+  /**
+   * 處理列印頁面，讓頁面列印時可以分頁
+   */
+  handlePrintPage() {
+    const mainBody = document.querySelector('.main-body') as HTMLDivElement;
+    if (mainBody) {
+      mainBody.style.overflowY = 'initial';
+      mainBody.style.padding = '0';
+    }
+
+    const body = document.querySelector('body');
+    if (body) body.style.overflowY = 'initial';
+
+    const html = document.querySelector('html');
+    if (html) {
+      html.style.overflowX = 'initial';
+      html.style.overflowY = 'scroll';
+    }
+
+    this.isPreviewPrint = true;
   }
 
   /**
@@ -659,6 +681,13 @@ export class SportsDetailComponent implements OnInit, OnDestroy {
   changeLevel(level: WeightTrainingLevel) {
     this.baseFileData.weightTrainData.changeWeightTrainLevel(level);
     this.compareFileData?.weightTrainData.changeWeightTrainLevel(level);
+  }
+
+  /**
+   * 列印頁面
+   */
+  printPage() {
+    window.print();
   }
 
   ngOnDestroy(): void {

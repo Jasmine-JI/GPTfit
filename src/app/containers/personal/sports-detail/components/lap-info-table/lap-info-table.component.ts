@@ -18,7 +18,12 @@ import {
 import { SportType } from '../../../../../core/enums/sports';
 import { DataUnitType } from '../../../../../core/enums/common';
 import { UserService } from '../../../../../core/services';
-import { mathRounding, speedToPaceSecond } from '../../../../../core/utils';
+import {
+  mathRounding,
+  speedToPaceSecond,
+  transformDistance,
+  revertKiloDistance,
+} from '../../../../../core/utils';
 
 @Component({
   selector: 'app-lap-info-table',
@@ -186,7 +191,7 @@ export class LapInfoTableComponent implements OnInit, OnChanges, OnDestroy {
         'lapAvgHeartRateBpm',
         'lapAvgSpeed',
         'lapTotalDistanceMeters',
-        'totalSwingCount',
+        // 'totalSwingCount', 目前裝置幾乎不支援，故先隱藏
       ],
     };
 
@@ -346,7 +351,7 @@ export class LapInfoTableComponent implements OnInit, OnChanges, OnDestroy {
    */
   countLapDiff(baseLap: Array<any>) {
     const effectKey = this.getEffectKey();
-    const { dataIndex, isPaceType, sportsType, userUnit, paceSecondKey } = this;
+    const { dataIndex, isPaceType, paceSecondKey } = this;
     const result: Map<string, Array<number>> = new Map(effectKey.map((_key) => [_key, []]));
     if (isPaceType) result.set(paceSecondKey, []);
 
@@ -357,18 +362,12 @@ export class LapInfoTableComponent implements OnInit, OnChanges, OnDestroy {
         const _baseVal = _baseLap ? _baseLap[_valIndex] ?? 0 : 0;
         const _prevLap = baseLap[_index - 1];
         const _prevVal = _prevLap[_valIndex] ?? 0;
-        const _diffValue = mathRounding(_baseVal - _prevVal, 2);
+        const _diffValue = this.getDiffValue(_baseVal, _prevVal, _key);
         result.get(_key)?.push(_diffValue); // 不用重set(call by reference)
 
         if (_key === 'lapAvgSpeed' && this.isPaceType) {
-          const _basePaceSeond = speedToPaceSecond(_baseVal, sportsType, userUnit);
-          const _prevPaceSeond = speedToPaceSecond(_prevVal, sportsType, userUnit);
-          if (_basePaceSeond >= 3600 || _prevPaceSeond >= 3600) {
-            result.get(paceSecondKey)?.push(3601); // 不用重set(call by reference){
-          } else {
-            const _diffPace = mathRounding(_basePaceSeond - _prevPaceSeond, 2);
-            result.get(paceSecondKey)?.push(_diffPace); // 不用重set(call by reference)
-          }
+          const diffPaceSecond = this.getDiffPaceSecond(_baseVal, _prevVal);
+          result.get(paceSecondKey)?.push(diffPaceSecond); // 不用重set(call by reference){
         }
       });
     });
@@ -383,7 +382,7 @@ export class LapInfoTableComponent implements OnInit, OnChanges, OnDestroy {
    */
   countCompareDiff(baseLap: Array<any>, compareLap: Array<any>) {
     const effectKey = this.getEffectKey();
-    const { dataIndex, isPaceType, sportsType, userUnit, paceSecondKey } = this;
+    const { dataIndex, isPaceType, paceSecondKey } = this;
     const result: Map<string, Array<number>> = new Map(effectKey.map((_key) => [_key, []]));
     if (isPaceType) result.set(paceSecondKey, []);
     baseLap.forEach((_baseLap, _index) => {
@@ -393,23 +392,55 @@ export class LapInfoTableComponent implements OnInit, OnChanges, OnDestroy {
         const _baseVal = _baseLap ? _baseLap[_valIndex] ?? 0 : 0;
         const _compareLap = compareLap[_index];
         const _compareVal = _compareLap ? _compareLap[_valIndex] ?? 0 : 0;
-        const diffValue = mathRounding(_baseVal - _compareVal, 2);
-        result.get(_key)?.push(diffValue); // 不用重set(call by reference)
+        const _diffValue = this.getDiffValue(_baseVal, _compareVal, _key);
+        result.get(_key)?.push(_diffValue); // 不用重set(call by reference)
 
-        if (effectKey === 'lapAvgSpeed' && this.isPaceType) {
-          const _basePaceSeond = speedToPaceSecond(_baseVal, sportsType, userUnit);
-          const _comparePaceSeond = speedToPaceSecond(_compareVal, sportsType, userUnit);
-          if (_basePaceSeond >= 3600 || _comparePaceSeond >= 3600) {
-            result.get(paceSecondKey)?.push(3601); // 不用重set(call by reference){
-          } else {
-            const _diffPace = mathRounding(_basePaceSeond - _comparePaceSeond, 2);
-            result.get(paceSecondKey)?.push(_diffPace); // 不用重set(call by reference)
-          }
+        if (_key === 'lapAvgSpeed' && isPaceType) {
+          const diffPaceSecond = this.getDiffPaceSecond(_baseVal, _compareVal);
+          result.get(paceSecondKey)?.push(diffPaceSecond); // 不用重set(call by reference)
         }
       });
     });
 
     return result;
+  }
+
+  /**
+   * 根據數據類型取得差值
+   * @param baseVal 基準檔案數據
+   * @param compareVal 比較檔案數據
+   * @param key 數據鍵名
+   */
+  getDiffValue(baseVal: number, compareVal: number, key: string) {
+    if (key === 'lapTotalDistanceMeters') {
+      const userUnit = this.userUnit as DataUnitType;
+      const _baseDistance = transformDistance(baseVal, userUnit, true).value;
+      const _compareDistance = transformDistance(compareVal, userUnit, true).value;
+      const _diffDistance = _baseDistance - _compareDistance;
+      return revertKiloDistance(_diffDistance, {
+        userUnit,
+        alwaysRevertMeter: true,
+      }).value;
+    } else {
+      return mathRounding(baseVal - compareVal, 2);
+    }
+  }
+
+  /**
+   * 取得配速秒差
+   * @param baseVal 基準檔案平均速度
+   * @param compareVal 比較檔案平均速度
+   */
+  getDiffPaceSecond(baseVal: number, compareVal: number) {
+    const { sportsType, userUnit } = this;
+    const _basePaceSeond = speedToPaceSecond(baseVal, sportsType, userUnit as DataUnitType);
+    const _comparePaceSeond = speedToPaceSecond(compareVal, sportsType, userUnit as DataUnitType);
+
+    if (_basePaceSeond >= 3600 || _comparePaceSeond >= 3600) {
+      return 9999; // 秒數超過3600顯示NA
+    } else {
+      return mathRounding(_basePaceSeond - _comparePaceSeond, 2);
+    }
   }
 
   /**

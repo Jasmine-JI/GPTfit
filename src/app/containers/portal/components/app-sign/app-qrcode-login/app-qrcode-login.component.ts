@@ -141,6 +141,8 @@ export class AppQrcodeLoginComponent implements OnInit, AfterViewInit, OnDestroy
   checkPage(pathname: string): void {
     const [, firstPath] = pathname.split('/');
     const { signInQrcode, signInQrcodeWeb, signIn } = appPath.portal;
+
+    // qrcode 顯示畫面
     if (firstPath === signInQrcode || firstPath === signInQrcodeWeb) {
       this.displayPage = 'showQrcode';
       if (this.checkFrequency()) {
@@ -155,6 +157,7 @@ export class AppQrcodeLoginComponent implements OnInit, AfterViewInit, OnDestroy
           });
       }
     } else {
+      // 掃描 qrcode 後的顯示畫面
       this.setPageStyle(true);
       this.displayPage = 'login';
       if (this.loginBody.token.length === 0) {
@@ -222,7 +225,7 @@ export class AppQrcodeLoginComponent implements OnInit, AfterViewInit, OnDestroy
   // 創建qrcode並發送guid給server進行長輪詢
   createLoginQrcode() {
     this.createGuid();
-    const pathName = `${location.origin}/${appPath.portal.signInQrcode}`;
+    const pathName = `${location.origin}/${appPath.portal.qrSignIn}`;
     const query = `?${QueryString.qrSignInFlow}=1&${QueryString.guid}=${this.guid}`;
     this.qrURL = pathName + query;
   }
