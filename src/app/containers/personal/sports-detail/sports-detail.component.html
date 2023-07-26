@@ -58,6 +58,9 @@
       *ngIf="compareFileData && isMainFile"
     ></app-return-button>
   </div>
+  <button class="start__print__btn" (click)="printPage()" *ngIf="isPreviewPrint">
+    {{ 'universal_operating_print' | translate }}
+  </button>
 
   <app-sports-file-road
     class="grid-col-12"

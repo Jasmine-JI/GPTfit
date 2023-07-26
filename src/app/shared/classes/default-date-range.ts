@@ -25,8 +25,8 @@ export class DefaultDateRange {
    */
   static getSevenDay() {
     const dateRange = {
-      startTime: dayjs().subtract(7, 'day').startOf('day').valueOf(),
-      endTime: dayjs().subtract(1, 'day').endOf('day').valueOf(),
+      startTime: dayjs().subtract(6, 'day').startOf('day').valueOf(),
+      endTime: dayjs().endOf('day').valueOf(),
     };
 
     return dateRange;
@@ -37,8 +37,8 @@ export class DefaultDateRange {
    */
   static getThirtyDay() {
     const dateRange = {
-      startTime: dayjs().subtract(30, 'day').startOf('day').valueOf(),
-      endTime: dayjs().subtract(1, 'day').endOf('day').valueOf(),
+      startTime: dayjs().subtract(29, 'day').startOf('day').valueOf(),
+      endTime: dayjs().endOf('day').valueOf(),
     };
 
     return dateRange;
@@ -49,8 +49,8 @@ export class DefaultDateRange {
    * @param isMondayFirst {boolean}-一週開始日是否為週一
    */
   static getSixMonth(isMondayFirst: boolean | undefined = undefined) {
-    const firstDayByMonth = dayjs().subtract(6, 'month').startOf('month');
-    const endDayByMonth = dayjs().subtract(1, 'month').endOf('month');
+    const firstDayByMonth = dayjs().subtract(5, 'month').startOf('month');
+    const endDayByMonth = dayjs().endOf('month');
     return this.getDateRange(firstDayByMonth, endDayByMonth, isMondayFirst);
   }
 

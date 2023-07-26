@@ -118,6 +118,10 @@ const routes: Routes = [
     component: AppQrcodeLoginComponent,
   },
   {
+    path: portal.qrSignIn,
+    component: AppQrcodeLoginComponent,
+  },
+  {
     path: portal.firstLogin,
     component: AppFirstLoginComponent,
   },
@@ -156,6 +160,10 @@ const routes: Routes = [
   },
   {
     path: portal.signInQrcodeWeb,
+    component: AppQrcodeLoginComponent,
+  },
+  {
+    path: portal.qrSignInWeb,
     component: AppQrcodeLoginComponent,
   },
   {
