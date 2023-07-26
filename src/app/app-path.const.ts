@@ -137,7 +137,8 @@ export const appPath = {
     resetPassword: 'resetPassword', // 用於 app webview，此路徑如需變動需跟後端一起變動，否則影響簡訊與電子郵件帳號忘記密碼流程
     editPassword: 'editPassword', // 用於 app webview
     changeAccount: 'changeAccount', // 用於 app webview
-    signInQrcode: 'signInQrcode', // 此路徑如需變動，可能影響其他app webview使用qrcode登入
+    signInQrcode: 'signInQrcode', // 顯示qrcode，此路徑如需變動，可能影響其他app webview使用qrcode登入
+    qrSignIn: 'qrSignIn', // 掃描Qrcode後的顯示頁面，此路徑如需變動，可能影響其他app webview使用qrcode登入
     firstLogin: 'firstLogin', // 用於 app webview
     compressData: 'compressData',
     destroyAccount: 'destroyAccount',
@@ -147,7 +148,8 @@ export const appPath = {
     resetPasswordWeb: 'resetPassword-web', // 用於 gptfit
     editPasswordWeb: 'editPassword-web', // 用於 gptfit
     changeAccountWeb: 'changeAccount-web', // 用於 gptfit
-    signInQrcodeWeb: 'signInQrcode-web', // 用於 gptfit
+    signInQrcodeWeb: 'signInQrcode-web', // 用於 gptfit 顯示qrcode
+    qrSignInWeb: 'qrSignIn-web', // 用於 gptfit 掃描 Qrcode 後的顯示頁面
     firstLoginWeb: 'firstLogin-web', // 用於 gptfit
   },
 

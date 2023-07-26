@@ -121,7 +121,7 @@ export class PrivacySettingButtonComponent implements OnChanges {
    * 批次變更隱私權設定
    */
   batchChangePrivacy() {
-    const isAddingAll = !this.setting.has(PrivacyObj.anyone);
+    const isAddingAll = !this.setting.has(PrivacyObj.onlyGroupAdmin);
     if (isAddingAll) {
       this.setting.add(PrivacyObj.onlyGroupAdmin);
       this.setting.add(PrivacyObj.myGroup);
