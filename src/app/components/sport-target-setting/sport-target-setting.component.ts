@@ -18,6 +18,8 @@ import { SportTargetSymbols } from '../../core/enums/sports';
 import { formTest } from '../../core/models/regex/form-test';
 import { TranslateKeyPipe, TranslateUnitKeyPipe } from '../../core/pipes';
 
+const defaultScrollElement = 'main__container';
+
 @Component({
   selector: 'app-sport-target-setting',
   templateUrl: './sport-target-setting.component.html',
@@ -26,10 +28,11 @@ import { TranslateKeyPipe, TranslateUnitKeyPipe } from '../../core/pipes';
   imports: [CommonModule, TranslateModule, TranslateKeyPipe, TranslateUnitKeyPipe],
 })
 export class SportTargetSettingComponent implements OnInit, OnDestroy {
+  @Input() index: number;
   @Input() cycle: DateUnit;
   @Input() condition: Map<TargetField, { symbols: number; filedValue: number }>;
   @Input() isEditMode = false;
-  @Input() scrollElement = 'main__container';
+  @Input() scrollElement = defaultScrollElement;
   @Output() changeCondition = new EventEmitter();
   @ViewChild('conditionValueInput') conditionValueInput: ElementRef;
 
@@ -47,6 +50,11 @@ export class SportTargetSettingComponent implements OnInit, OnDestroy {
    * 新目標條件的數值
    */
   newFiledValue: number | null = null;
+
+  /**
+   * 視界觀察Api
+   */
+  intersectionObserver: IntersectionObserver;
 
   readonly DateUnit = DateUnit;
 
@@ -86,6 +94,7 @@ export class SportTargetSettingComponent implements OnInit, OnDestroy {
   unfoldFiledNameList() {
     this.showFiledNameList = true;
     this.subscribePluralEvent();
+    this.createIntersectionObserver();
   }
 
   /**
@@ -99,14 +108,18 @@ export class SportTargetSettingComponent implements OnInit, OnDestroy {
    * 偵測全域點擊事件，以收納"群組狀態"選單
    */
   subscribePluralEvent() {
-    const element = document.querySelector(`.${this.scrollElement}`) as Element;
-    const clickEvent = fromEvent(document, 'click');
-    const scrollEvent = fromEvent(element, 'scroll');
-    this.pluralEventSubscription = merge(clickEvent, scrollEvent)
-      .pipe(takeUntil(this.ngUnsubscribe))
-      .subscribe((e) => {
-        this.unsubscribePluralEvent();
-      });
+    const target =
+      this.scrollElement === defaultScrollElement
+        ? document
+        : (document.querySelector('.dialog-box') as Element);
+    if (target) {
+      const clickEvent = fromEvent(target, 'click');
+      this.pluralEventSubscription = clickEvent
+        .pipe(takeUntil(this.ngUnsubscribe))
+        .subscribe((e) => {
+          this.unsubscribePluralEvent();
+        });
+    }
   }
 
   /**
@@ -115,6 +128,41 @@ export class SportTargetSettingComponent implements OnInit, OnDestroy {
   unsubscribePluralEvent() {
     this.showFiledNameList = false;
     this.pluralEventSubscription.unsubscribe();
+  }
+
+  /**
+   * 當開啟目標項目選單時，建立 IntersectionObserver，讓選單超出視界時關閉選單
+   */
+  createIntersectionObserver() {
+    this.intersectionObserver?.disconnect();
+    const scrollElement = document.querySelector(`.${this.scrollElement}`);
+    const options = {
+      root: scrollElement,
+      rootMargin: '0px',
+      threshold: 1,
+    };
+
+    setTimeout(() => {
+      this.intersectionObserver = new IntersectionObserver(
+        this.handleCloseList.bind(this),
+        options
+      );
+      const targetElementList = document.getElementById(`list__${this.index}`) as Element;
+      if (targetElementList) this.intersectionObserver.observe(targetElementList);
+    });
+  }
+
+  /**
+   * 若選單超出上方畫面，則隱藏選單
+   * @param entries 觀察清單
+   */
+  handleCloseList(entries: Array<IntersectionObserverEntry>) {
+    entries.forEach((_entries) => {
+      const { intersectionRect, rootBounds } = _entries;
+      const listTop = intersectionRect?.top;
+      const containerTop = rootBounds?.top;
+      if (containerTop && listTop <= containerTop) this.unsubscribePluralEvent();
+    });
   }
 
   /**
@@ -172,6 +220,7 @@ export class SportTargetSettingComponent implements OnInit, OnDestroy {
    * 解除rxjs訂閱與事件訂閱
    */
   ngOnDestroy(): void {
+    this.intersectionObserver?.disconnect();
     this.unsubscribePluralEvent();
     this.ngUnsubscribe.next(null);
     this.ngUnsubscribe.complete();
