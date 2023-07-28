@@ -141,34 +141,31 @@
     ></app-lap-info-table>
   </ng-container>
 
-  <div
-    [ngClass]="{
-      flexCol: true,
-      'grid-col-12': !compareFileData,
-      'grid-col-6': compareFileData
-    }"
-  >
-    <h6 class="section__title">{{ 'universal_activityData_hrZone' | translate }}</h6>
+  <ng-container>
+    <h6 class="grid-col-12 flexRow section__title">
+      {{ 'universal_activityData_hrZone' | translate }}
+      <app-hr-zone-hint [isPageOwner]="isFileOwner || compareFileData"></app-hr-zone-hint>
+    </h6>
     <app-tree-map-chart
+      [ngClass]="{
+        'grid-col-12': !compareFileData,
+        'grid-col-6': compareFileData
+      }"
       [zoneInfo]="{
         type: 'hrZone',
         data: baseFileData.hrZoneArray
       }"
       [reflowCount]="reflowCount"
     ></app-tree-map-chart>
-  </div>
-
-  <div class="flexCol grid-col-6" *ngIf="compareFileData">
-    <h6 class="section__title optional__title">
-      {{ 'universal_activityData_hrZone' | translate }}
-    </h6>
     <app-tree-map-chart
+      class="grid-col-6"
       [zoneInfo]="{
         type: 'hrZone',
         data: compareFileData.hrZoneArray
       }"
+      *ngIf="compareFileData"
     ></app-tree-map-chart>
-  </div>
+  </ng-container>
 
   <ng-container *ngIf="isIncluded([SportType.run, SportType.cycle, SportType.swim, SportType.row])">
     <h6 class="section__title optional__title grid-col-12">

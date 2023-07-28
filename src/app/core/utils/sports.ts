@@ -72,10 +72,8 @@ export function paceSecondTimeFormat(second: number) {
 export function speedToPace(data: number | string, sportType: SportType, unit: DataUnitType) {
   const value = +data;
   const converseType = [SportType.run, SportType.swim, SportType.row];
+  const turnPace = converseType.includes(sportType);
   const result = { value: <number | string>value, unit: getPaceUnit(sportType, unit) };
-
-  // 其他運動類別則直接返回速度值
-  if (!converseType.includes(sportType)) return result;
 
   // 速度過小則配速一律顯示NA
   const minValue = {
@@ -84,13 +82,13 @@ export function speedToPace(data: number | string, sportType: SportType, unit: D
     [SportType.row]: 0.1, // 100米配速
   };
 
-  if (value < minValue[sportType]) {
+  if (turnPace && value < minValue[sportType]) {
     result.value = 'NA';
     return result;
   }
 
   const paceSecond = speedToPaceSecond(value, sportType, unit);
-  result.value = paceSecondTimeFormat(paceSecond);
+  result.value = turnPace ? paceSecondTimeFormat(paceSecond) : paceSecond;
   return result;
 }
 

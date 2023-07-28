@@ -1,6 +1,5 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { HttpErrorResponse } from '@angular/common/http';
 import { ActivatedRoute, Router } from '@angular/router';
 import { SportsDetailService } from './sports-detail.service';
 import { Subject, of, fromEvent } from 'rxjs';
@@ -16,13 +15,7 @@ import {
   ConnectionErrorComponent,
   LineAreaCompareChartComponent,
 } from '../../../components';
-import {
-  Api2103Response,
-  SportsFileInfo,
-  ActivityInfo,
-  ActivityLap,
-  ActivityPoint,
-} from '../../../core/models/api/api-21xx';
+import { Api2103Response } from '../../../core/models/api/api-21xx';
 import {
   HeaderComponent,
   EditButtonComponent,
@@ -56,15 +49,11 @@ import {
   SportsFileRoadComponent,
   MuscleMapComponent,
   MuscleInfoCardComponent,
+  HrZoneHintComponent,
 } from '../../../components';
 import { SportsDetailHandler } from '../classes';
 import { zoneColor } from '../../../core/models/represent-color';
-import {
-  AreaZoneColor,
-  FileSimpleInfo,
-  QuadrantSetting,
-  QuadrantData,
-} from '../../../core/models/compo';
+import { FileSimpleInfo, QuadrantSetting, QuadrantData } from '../../../core/models/compo';
 import {
   DataTypeTranslatePipe,
   DataTypeUnitPipe,
@@ -115,6 +104,7 @@ declare let google;
     MuscleInfoCardComponent,
     WeightTrainLevelComponent,
     InfoDataCompareRwdComponent,
+    HrZoneHintComponent,
   ],
   templateUrl: './sports-detail.component.html',
   styleUrls: ['./sports-detail.component.scss'],

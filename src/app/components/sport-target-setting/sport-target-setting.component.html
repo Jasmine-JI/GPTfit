@@ -83,7 +83,7 @@
             [class.fold__icon]="showFiledNameList"
           ></i>
         </span>
-        <ul class="filed__name__list" *ngIf="showFiledNameList">
+        <ul [id]="'list__' + index" class="filed__name__list" *ngIf="showFiledNameList">
           <li class="drop__list__item" (click)="selectNewConditionFiled('totalActivities')">
             {{ 'universal_activityData_reps' | translate }}
           </li>
