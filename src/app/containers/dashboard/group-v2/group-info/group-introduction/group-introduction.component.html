@@ -309,30 +309,35 @@
       </div>
       <div class="flexRow target__card__section" *ngIf="sportsTarget">
         <app-sport-target-setting
+          [index]="0"
           [cycle]="DateUnit.day"
           [condition]="cycleCondition.day"
           [isEditMode]="uiFlag.editMode !== 'close'"
           (changeCondition)="changeCondition($event, DateUnit.day)"
         ></app-sport-target-setting>
         <app-sport-target-setting
+          [index]="1"
           [cycle]="DateUnit.week"
           [condition]="cycleCondition.week"
           [isEditMode]="uiFlag.editMode !== 'close'"
           (changeCondition)="changeCondition($event, DateUnit.week)"
         ></app-sport-target-setting>
         <app-sport-target-setting
+          [index]="2"
           [cycle]="DateUnit.month"
           [condition]="cycleCondition.month"
           [isEditMode]="uiFlag.editMode !== 'close'"
           (changeCondition)="changeCondition($event, DateUnit.month)"
         ></app-sport-target-setting>
         <app-sport-target-setting
+          [index]="3"
           [cycle]="DateUnit.season"
           [condition]="cycleCondition.season"
           [isEditMode]="uiFlag.editMode !== 'close'"
           (changeCondition)="changeCondition($event, DateUnit.season)"
         ></app-sport-target-setting>
         <app-sport-target-setting
+          [index]="4"
           [cycle]="DateUnit.year"
           [condition]="cycleCondition.year"
           [isEditMode]="uiFlag.editMode !== 'close'"
