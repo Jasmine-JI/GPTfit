@@ -1,1 +1,124 @@
-<p>hr-zone-hint works!</p>
+<button
+  class="flexCenter"
+  [title]="'universal_operating_description' | translate"
+  (click)="toggleDialog($event)"
+>
+  <i class="icon-svg_web-icon_p1_070-doubt button__icon"></i>
+</button>
+
+<div class="box__mask" *ngIf="displayDialog" (click)="hideDialog()">
+  <div class="popup__box" (click)="$event.stopPropagation()">
+    <h4 class="box__title">
+      {{ 'universal_activityData_hrZone' | translate }}
+    </h4>
+    <div class="flexCol box__content">
+      <p class="hr__calculation">
+        {{ 'universal_userProfile_hrCalculation' | translate }}：
+        {{
+          userHrZone.hrBase === HrBase.max
+            ? ('universal_userProfile_maximalHeartRate' | translate)
+            : ('universal_userProfile_heartRateReserve' | translate)
+        }}
+      </p>
+      <ul id="hr__zone__info">
+        <li
+          *ngTemplateOutlet="
+            oneZone;
+            context: {
+              title: 'Z5',
+              min: userHrZone.z4,
+              max: userHrZone.z5,
+              labelKey: 'universal_activityData_anaerobicZone',
+              descriptionKey: 'universal_sportsTerm_zone5'
+            }
+          "
+        ></li>
+        <li
+          *ngTemplateOutlet="
+            oneZone;
+            context: {
+              title: 'Z4',
+              min: userHrZone.z3,
+              max: userHrZone.z4,
+              labelKey: 'universal_activityData_marathonZone',
+              descriptionKey: 'universal_sportsTerm_zone4'
+            }
+          "
+        ></li>
+        <li
+          *ngTemplateOutlet="
+            oneZone;
+            context: {
+              title: 'Z3',
+              min: userHrZone.z2,
+              max: userHrZone.z3,
+              labelKey: 'universal_activityData_enduranceZone',
+              descriptionKey: 'universal_sportsTerm_zone3'
+            }
+          "
+        ></li>
+        <li
+          *ngTemplateOutlet="
+            oneZone;
+            context: {
+              title: 'Z2',
+              min: userHrZone.z1,
+              max: userHrZone.z2,
+              labelKey: 'universal_activityData_aerobicZone',
+              descriptionKey: 'universal_sportsTerm_zone2'
+            }
+          "
+        ></li>
+        <li
+          *ngTemplateOutlet="
+            oneZone;
+            context: {
+              title: 'Z1',
+              min: userHrZone.z0,
+              max: userHrZone.z1,
+              labelKey: 'universal_activityData_warmUpZone',
+              descriptionKey: 'universal_sportsTerm_zone1'
+            }
+          "
+        ></li>
+        <li
+          *ngTemplateOutlet="
+            oneZone;
+            context: {
+              title: 'Z0',
+              min: userHrZone.z0 ? 39 : 0,
+              max: userHrZone.z0,
+              labelKey: 'universal_activityData_generalZone',
+              descriptionKey: 'universal_sportsTerm_zone0'
+            }
+          "
+        ></li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<ng-template
+  #oneZone
+  let-title="title"
+  let-min="min"
+  let-max="max"
+  let-labelKey="labelKey"
+  let-descriptionKey="descriptionKey"
+>
+  <li>
+    <div class="flexRow">
+      <span class="item__title">{{ title }}：</span>
+      <ng-container *ngIf="min && max">
+        <span class="range__Value">{{ min + 1 }}</span>
+        <span class="info__content">～</span>
+        <span class="range__Value">{{ max }}</span>
+        <span class="value__unit">bpm</span>
+      </ng-container>
+    </div>
+    <p class="setting__description">
+      {{ labelKey | translate }}:
+      {{ descriptionKey | translate }}
+    </p>
+  </li>
+</ng-template>
