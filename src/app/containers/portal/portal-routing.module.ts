@@ -26,6 +26,7 @@ import { MyLifeTrackingComponent } from '../../shared/components/my-life-trackin
 import { CloudrunReportComponent as PersonCloudrunReport } from '../dashboard/components/cloudrun-report/cloudrun-report.component';
 import { SportsDetailComponent } from '../personal';
 import { appPath } from '../../app-path.const';
+import { ExerciseHabitsComponent } from '../exercise-habits/exercise-habits.component';
 
 const { portal, personal, professional, device, qrcodeUploadData, pageNoPermission, pageNotFound } =
   appPath;
@@ -55,6 +56,10 @@ const routes: Routes = [
       {
         path: personal.sportsReport,
         component: SportsReportComponent,
+      },
+      {
+        path: personal.exerciseHabits,
+        component: ExerciseHabitsComponent, //531
       },
       {
         path: personal.lifeTracking,

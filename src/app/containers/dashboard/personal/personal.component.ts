@@ -446,13 +446,19 @@ export class PersonalComponent implements OnInit, AfterContentInit, OnDestroy {
           childPageList = [
             personal.activityList,
             personal.sportsReport,
+            personal.exerciseHabits, //531,
             personal.lifeTracking,
             personal.cloudrun,
             personal.info,
           ];
         }
       } else {
-        childPageList = [personal.activityList, personal.sportsReport, personal.info];
+        childPageList = [
+          personal.activityList,
+          personal.sportsReport,
+          personal.exerciseHabits, //531
+          personal.info,
+        ];
       }
 
       return childPageList;

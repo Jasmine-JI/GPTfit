@@ -1128,6 +1128,7 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
     if (!this.uiFlag.portalMode) {
       childPageSet.add(GroupChildPage.groupArchitecture);
       childPageSet.add(GroupChildPage.adminList);
+      childPageSet.add(GroupChildPage.exerciseHabits); //531
 
       // 系統管理員或品牌階層管理員可以看到方案管理頁面
       const haveBrandAccessRight = inBrandLevel && (upperMarktingManage || this.user.isGroupAdmin);
@@ -1524,6 +1525,8 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
         return GroupChildPage.classAnalysis;
       case groupDetail.sportsReport:
         return GroupChildPage.sportsReport;
+      case groupDetail.exerciseHabits:
+        return GroupChildPage.exerciseHabits; //531
       case groupDetail.lifeTracking:
         return GroupChildPage.lifeTracking;
       case groupDetail.cloudrunReport:
@@ -1559,6 +1562,8 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
         return groupDetail.classAnalysis;
       case GroupChildPage.sportsReport:
         return groupDetail.sportsReport;
+      case GroupChildPage.exerciseHabits: //531
+        return groupDetail.exerciseHabits;
       case GroupChildPage.lifeTracking:
         return groupDetail.lifeTracking;
       case GroupChildPage.cloudrunReport:

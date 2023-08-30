@@ -1,0 +1,55 @@
+<div class="week_month_chart">
+  <ng-container *ngIf="!ifNoData; else noDataTemplate">
+    <div class="week_value_wrap">
+      <div class="week_value">
+        <!-- canvas -->
+        <canvas id="weeks"></canvas>
+      </div>
+      <!-- 本周數值 -->
+      <div class="this_week_effect">
+        <span class="week_month_text">{{ 'universal_time_thisWeek' | translate }}</span>
+        <div class="week_month_value">
+          <span class="this_wm_value">{{ thisWeekCompletionRate }}</span>
+          <span class="percent">%</span>
+        </div>
+      </div>
+      <!-- 上週數值 -->
+      <div class="last_week_effect">
+        <span class="week_month_text">{{ 'universal_time_lastWeek' | translate }}</span>
+        <div class="week_month_value">
+          <span class="last_wm_value">{{ lastWeekCompletionRate }}</span>
+          <span class="percent">%</span>
+        </div>
+      </div>
+      <div class="week_text">{{ 'universal_time_week' | translate }}</div>
+    </div>
+
+    <div class="month_value_wrap">
+      <div class="month_value">
+        <!-- canvas -->
+        <canvas id="months"></canvas>
+      </div>
+      <!-- 本月數值 -->
+      <div class="this_month_effect">
+        <span class="week_month_text">{{ 'universal_time_thisMonth' | translate }}</span>
+        <div class="week_month_value">
+          <span class="this_wm_value">{{ thisMonthCompletionRate }}</span>
+          <span class="percent">%</span>
+        </div>
+      </div>
+      <!-- 上月數值 -->
+      <div class="lsat_month_effect">
+        <span class="week_month_text">{{ 'universal_time_lastMonth' | translate }}</span>
+        <div class="week_month_value">
+          <span class="last_wm_value">{{ lastMonthCompletionRate }}</span>
+          <span class="percent">%</span>
+        </div>
+      </div>
+      <div class="month_text">{{ 'universal_time_months' | translate }}</div>
+    </div>
+  </ng-container>
+  <ng-template class="week_month_chart" #noDataTemplate>
+    <div class="week_value_wrap no_data">近兩週無運動資料</div>
+    <div class="month_value_wrap no_data">近兩月無運動資料</div>
+  </ng-template>
+</div>
