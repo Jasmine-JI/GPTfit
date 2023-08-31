@@ -325,11 +325,14 @@
   >
     <app-report-filter></app-report-filter>
   </section>
+  <!-- 531 -->
   <article
     id="main__section"
     class="cardSection"
     [ngClass]="{
-      cardSection: uiFlag.currentPage !== GroupChildPage.sportsReport,
+      cardSection:
+        uiFlag.currentPage !== GroupChildPage.sportsReport &&
+        uiFlag.currentPage !== GroupChildPage.exerciseHabits,
       'info-portalMode': uiFlag.portalMode
     }"
   >
@@ -370,6 +373,10 @@
     </ng-container>
     <ng-container *ngSwitchCase="GroupChildPage.sportsReport">
       {{ 'universal_activityData_sportReport' | translate }}
+    </ng-container>
+    <!-- 531 -->
+    <ng-container *ngSwitchCase="GroupChildPage.exerciseHabits">
+      {{ '531' }}
     </ng-container>
     <ng-container *ngSwitchCase="GroupChildPage.lifeTracking">
       {{ 'universal_lifeTracking_lifeTracking' | translate }}

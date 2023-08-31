@@ -55,6 +55,7 @@ import { Page404Component } from '../../shared/components/page404/page404.compon
 import { Page403Component } from '../../shared/components/page403/page403.component';
 import { GroupAnalysisReportComponent } from '../professional';
 import { SportsDetailComponent } from '../personal';
+import { ExerciseHabitsComponent } from '../exercise-habits/exercise-habits.component';
 
 const {
   personal,
@@ -239,6 +240,11 @@ const routes: Routes = [
             path: professional.groupDetail.sportsReport,
             component: GroupSportsReportComponent,
           },
+          //531
+          {
+            path: professional.groupDetail.exerciseHabits,
+            component: ExerciseHabitsComponent,
+          },
           {
             path: professional.groupDetail.lifeTracking,
             component: LifeTrackingV2Component,
@@ -280,6 +286,10 @@ const routes: Routes = [
           {
             path: personal.sportsReport,
             component: SportsReportComponent,
+          },
+          {
+            path: personal.exerciseHabits,
+            component: ExerciseHabitsComponent, //531
           },
           {
             path: personal.lifeTracking,
