@@ -6,6 +6,7 @@ export enum GroupChildPage {
   myclassReport,
   classAnalysis,
   sportsReport,
+  exerciseHabits, //531
   lifeTracking,
   cloudrunReport,
   groupArchitecture,
