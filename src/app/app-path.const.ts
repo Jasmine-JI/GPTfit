@@ -23,6 +23,7 @@ export const appPath = {
       lifeTracking: 'life-tracking',
       cloudrunReport: 'cloudrun-report',
       deviceList: 'device-list',
+      exerciseHabits: 'exercise-habits', //531
     },
     groupSearch: 'group-search',
     myGroupList: 'my-group-list',
@@ -43,6 +44,7 @@ export const appPath = {
     lifeTracking: 'life-tracking',
     cloudrun: 'cloudrun',
     info: 'info',
+    exerciseHabits: 'exercise-habits', //531
   },
 
   /**

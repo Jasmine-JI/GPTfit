@@ -1,0 +1,274 @@
+@import 'screen-size.scss';
+@import 'rod-bar.scss';
+
+.exercise-habits-trend-chart {
+  width: 100%;
+  box-sizing: border-box;
+  border: solid white 1px;
+  border-radius: 10px;
+  box-shadow: 0px 1px 5px 1px rgba(0, 0, 0, 0.25);
+}
+
+.switch_week_month {
+  display: flex;
+  align-items: center;
+}
+
+.rod__bar {
+  @include isoweek-rod-bar();
+  width: 30px;
+  margin: 0 10px;
+}
+
+.rod__bar--active {
+  @include isoweek-rod-bar-acitve();
+}
+
+.adjust_time {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 10px 3px;
+
+  .choose_date {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    .time__icon {
+      font-size: 24px;
+      margin-right: 5px;
+    }
+  }
+}
+
+.select_option {
+  position: relative;
+
+  .date_option {
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translate(-50%, 0%);
+
+    min-width: 100%;
+    max-width: 100%;
+  }
+}
+
+.date_select {
+  min-width: 100px;
+  text-align: center;
+  height: fit-content;
+  border-radius: 10px;
+  padding: 0 6px;
+  border: 1px solid transparent;
+  background: linear-gradient(white, white) padding-box,
+    linear-gradient(180deg, rgb(223, 58, 58) 0%, rgb(197, 73, 184) 100%) border-box;
+  outline: none;
+  cursor: pointer;
+  @media screen and (max-width: 576px) {
+    min-width: 80px;
+    max-width: 80px;
+    > span {
+      overflow-wrap: break-word;
+    }
+  }
+}
+
+.date_option {
+  display: none;
+  &.active {
+    display: block;
+    padding: 5px;
+    border: 1px solid transparent;
+    border-radius: 0 0 10px 10px;
+    border-top: none;
+    background: linear-gradient(white, white) padding-box,
+      linear-gradient(180deg, rgb(223, 58, 58) 0%, rgb(197, 73, 184) 100%) border-box;
+
+    ul {
+      margin: 0;
+      padding: 0;
+    }
+
+    li {
+      list-style: none;
+      text-align: center;
+      cursor: pointer;
+      overflow-wrap: break-word; //外語長度過長
+      &:not(:last-child) {
+        margin-block-end: 5px;
+      }
+      &:hover {
+        background-color: rgb(252, 230, 236);
+        border-radius: 5px;
+      }
+      &.active {
+        background-color: rgb(252, 230, 236);
+        border-radius: 5px;
+      }
+    }
+  }
+}
+
+.filter_start_time,
+.filter_end_time {
+  button {
+    padding: 0;
+  }
+  input {
+    max-width: 85px;
+    text-align: center;
+    height: fit-content;
+    border-radius: 10px;
+    padding: 0 5px;
+    border: 1px solid transparent;
+    background: linear-gradient(white, white) padding-box,
+      linear-gradient(180deg, rgb(223, 58, 58) 0%, rgb(197, 73, 184) 100%) border-box;
+    outline: none;
+    cursor: pointer;
+  }
+}
+
+.sport_type_wrap {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+
+  .type_value {
+    flex: 0 0 14.2%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+}
+
+.chart_wrap {
+  display: flex;
+  flex-direction: column;
+  min-height: 20vh;
+  gap: 15px;
+}
+
+.chart_wrap {
+  .effect_value,
+  .sum_calories,
+  .avg_day_time,
+  .sport_type_wrap {
+    flex-grow: 1;
+    flex-shrink: 1;
+    flex-basis: 200px;
+  }
+
+  .sport_type_wrap {
+    margin-bottom: 25px;
+  }
+}
+
+.type_value {
+  &:nth-child(1) {
+    .value_percent {
+      color: #fc5c7d;
+    }
+  }
+
+  &:nth-child(2) {
+    .value_percent {
+      color: #f7d308;
+    }
+  }
+
+  &:nth-child(3) {
+    .value_percent {
+      color: #717366;
+    }
+  }
+
+  &:nth-child(4) {
+    .value_percent {
+      color: #abcee7;
+    }
+  }
+
+  &:nth-child(5) {
+    .value_percent {
+      color: #02ca8b;
+    }
+  }
+
+  &:nth-child(6) {
+    .value_percent {
+      color: #f48e35;
+    }
+  }
+
+  &:nth-child(7) {
+    .value_percent {
+      color: #d9c3a9;
+    }
+  }
+}
+
+.value_percent {
+  .value {
+    font-size: 22px;
+  }
+
+  .percent {
+    font-size: 12px;
+  }
+}
+
+.no_data {
+  display: flex;
+  margin: auto;
+  align-items: center;
+  color: #888;
+}
+
+// @include s() {
+//   .chart-mobile {
+//     touch-action: auto !important; //使手機在chartJs上可滑動
+//   }
+// }
+
+@include m() {
+  .exercise-habits-trend-chart {
+    display: flex;
+    flex-direction: column;
+    padding-left: 10px;
+
+    .filter_start_time,
+    .filter_end_time {
+      input {
+        max-width: 100px;
+      }
+    }
+
+    .chart_wrap {
+      min-height: unset;
+      max-height: 90%;
+      overflow-y: scroll;
+    }
+  }
+
+  .chart_wrap {
+    .effect_value,
+    .sum_calories,
+    .avg_day_time,
+    .sport_type_wrap {
+      flex-grow: 1;
+      flex-shrink: 1;
+      flex-basis: 200px;
+    }
+  }
+}
+
+@media screen and (min-width: 576px) {
+  .adjust_time {
+    flex-direction: row;
+    justify-content: space-between;
+    gap: 0;
+  }
+}

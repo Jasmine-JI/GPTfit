@@ -70,6 +70,7 @@ import {
   MusclePartIconPipe,
 } from '../../core/pipes';
 import { LoadingBarComponent } from '../../components';
+import { ExerciseHabitsModule } from '../exercise-habits/exercise-habits.module';
 
 @NgModule({
   imports: [
@@ -139,6 +140,7 @@ import { LoadingBarComponent } from '../../components';
     AppFirstLoginComponent,
     AppCompressDataComponent,
     AppDestroyAccountComponent,
+    ExerciseHabitsModule,
   ],
   providers: [
     HashIdService,

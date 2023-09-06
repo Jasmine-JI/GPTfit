@@ -40,6 +40,12 @@ $extra-small: 450px;
   }
 }
 
+@mixin xs() {
+  @media screen and (max-width: 430px) {
+    @content;
+  }
+}
+
 @mixin m() {
   @media screen and (min-width: 768px) {
     @content;

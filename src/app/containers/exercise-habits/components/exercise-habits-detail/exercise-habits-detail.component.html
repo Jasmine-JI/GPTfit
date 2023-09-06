@@ -1,0 +1,163 @@
+<ng-container *ngIf="!ifNoData">
+  <!-- <div class="detailChart_title">{{ 'universal_system_completenessDetail' | translate }}</div> -->
+  <div class="detailChart_wrap">
+    <div class="detailChart_title">詳細列表</div>
+    <div class="detailChart_unit">{{ 'universal_deviceSetting_unit' | translate }} (%)</div>
+  </div>
+
+  <!-- group -->
+  <ng-container *ngIf="subData">
+    <table class="table-container">
+      <thead class="group_data">
+        <tr>
+          <th (click)="sortSubData('last_week')">
+            <div
+              [class]="{
+                descending_order: descendingOrder.last_week,
+                ascending_order: descendingOrder.last_week === false
+              }"
+              class="sort_text"
+            >
+              {{ 'universal_time_lastWeek' | translate }}
+            </div>
+          </th>
+          <th (click)="sortSubData('this_week')">
+            <div
+              [class]="{
+                descending_order: descendingOrder.this_week,
+                ascending_order: descendingOrder.this_week === false
+              }"
+              class="sort_text"
+            >
+              {{ 'universal_time_thisWeek' | translate }}
+            </div>
+          </th>
+          <th (click)="sortSubData('name')">
+            <div
+              [class]="{
+                descending_order: descendingOrder.name,
+                ascending_order: descendingOrder.name === false
+              }"
+              class="sort_text"
+            >
+              {{ 'universal_activityData_limit_name' | translate }}
+            </div>
+          </th>
+          <th (click)="sortSubData('this_month')">
+            <div
+              [class]="{
+                descending_order: descendingOrder.this_month,
+                ascending_order: descendingOrder.this_month === false
+              }"
+              class="sort_text"
+            >
+              {{ 'universal_time_thisMonth' | translate }}
+            </div>
+          </th>
+          <th (click)="sortSubData('last_month')">
+            <div
+              [class]="{
+                descending_order: descendingOrder.last_month,
+                ascending_order: descendingOrder.last_month === false
+              }"
+              class="sort_text"
+            >
+              {{ 'universal_time_lastMonth' | translate }}
+            </div>
+          </th>
+        </tr>
+      </thead>
+      <tbody class="group_data">
+        <tr (click)="routerDetailPage(item.id)" *ngFor="let item of subData">
+          <td
+            class="colored-cell"
+            [ngStyle]="{ 'background-color': getBackgroundColor(item.last_week) }"
+          >
+            {{ roundToInteger(item.last_week) }}
+          </td>
+          <td
+            class="colored-cell"
+            [ngStyle]="{ 'background-color': getBackgroundColor(item.this_week) }"
+          >
+            {{ roundToInteger(item.this_week) }}
+          </td>
+          <td>
+            {{ item.name }}
+          </td>
+          <td
+            class="colored-cell"
+            [ngStyle]="{ 'background-color': getBackgroundColor(item.this_month) }"
+          >
+            {{ roundToInteger(item.this_month) }}
+          </td>
+          <td
+            class="colored-cell"
+            [ngStyle]="{ 'background-color': getBackgroundColor(item.last_month) }"
+          >
+            {{ roundToInteger(item.last_month) }}
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </ng-container>
+
+  <!-- personal -->
+  <ng-container
+    *ngIf="lastWeekValues && thisWeekValues && lastMonthValues && thisMonthValues && !subData"
+  >
+    <div class="combined-table">
+      <table class="table-container">
+        <thead class="personal_data">
+          <tr>
+            <th>{{ 'universal_time_lastWeek' | translate }}</th>
+            <th>{{ 'universal_time_dayOfWeek' | translate }}</th>
+            <th>{{ 'universal_time_thisWeek' | translate }}</th>
+          </tr>
+        </thead>
+        <tbody class="personal_data">
+          <tr *ngFor="let day of dayOfWeekName; let i = index">
+            <td
+              class="colored-cell"
+              [ngStyle]="{ 'background-color': getBackgroundColor(lastWeekValues[i]) }"
+            >
+              {{ roundToInteger(lastWeekValues[i]) || '0' }}
+            </td>
+            <td class="colored-cell">{{ day }}</td>
+            <td
+              class="colored-cell"
+              [ngStyle]="{ 'background-color': getBackgroundColor(thisWeekValues[i]) }"
+            >
+              {{ roundToInteger(thisWeekValues[i]) || '0' }}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <table class="table-container">
+        <thead class="personal_data">
+          <tr>
+            <th>{{ 'universal_time_thisMonth' | translate }}</th>
+            <th>{{ 'universal_time_weeks' | translate }}</th>
+            <th>{{ 'universal_time_lastMonth' | translate }}</th>
+          </tr>
+        </thead>
+        <tbody class="personal_data">
+          <tr *ngFor="let day of WeekOfMonthName; let i = index">
+            <td
+              class="colored-cell"
+              [ngStyle]="{ 'background-color': getBackgroundColor(thisMonthValues[i]) }"
+            >
+              {{ roundToInteger(thisMonthValues[i]) || '0' }}
+            </td>
+            <td class="colored-cell">{{ WeekOfMonthName[i] }}</td>
+            <td
+              class="colored-cell"
+              [ngStyle]="{ 'background-color': getBackgroundColor(lastMonthValues[i]) }"
+            >
+              {{ roundToInteger(lastMonthValues[i]) || '0' }}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </ng-container>
+</ng-container>

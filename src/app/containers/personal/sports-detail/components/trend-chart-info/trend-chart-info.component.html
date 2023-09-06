@@ -69,7 +69,11 @@
           *ngTemplateOutlet="
             oneTrendInfo;
             context: {
-              label: 'max',
+              label:
+                titleKey === 'universal_activityData_kilometerPace' ||
+                titleKey === 'universal_activityData_milePace'
+                  ? 'best pace'
+                  : 'max',
               value: best,
               diff: bestDiff
             }

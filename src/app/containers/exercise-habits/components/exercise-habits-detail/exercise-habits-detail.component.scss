@@ -1,0 +1,209 @@
+@import 'screen-size.scss';
+
+.detailChart_wrap {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  color: #888;
+  letter-spacing: 1px;
+  font-size: 15px;
+}
+
+.detailChart_title {
+  font-weight: 700;
+  margin: 10px;
+  position: relative;
+  &::before {
+    position: absolute;
+    content: '';
+    width: 58px;
+    height: 2px;
+    background-color: #669bbc;
+    top: 100%;
+    left: 0px;
+  }
+}
+
+.colored-cell {
+  text-align: center;
+  border-radius: 10px;
+  /* 添加圓角 */
+  background-color: transparent;
+  color: rgb(55, 72, 71);
+}
+
+th {
+  color: #483535;
+  letter-spacing: 1px;
+  font-weight: 500;
+  font-size: 14px;
+}
+
+.group_data th {
+  cursor: pointer;
+}
+
+.group_data th:not(:nth-child(3)) {
+  .sort_text {
+    position: relative;
+
+    &::before {
+      position: absolute;
+      top: 25%;
+      left: 100%;
+      transform: translate(-100%, -50%);
+      content: '';
+      background-image: url(/app/public_html/img/reports/sort/line.svg);
+      background-repeat: no-repeat;
+      width: 9px;
+      height: 9px;
+    }
+
+    &::after {
+      position: absolute;
+      top: 75%;
+      left: 100%;
+      transform: translate(-100%, -50%) rotate(180deg);
+      content: '';
+      background-image: url(/app/public_html/img/reports/sort/line.svg);
+      background-repeat: no-repeat;
+      width: 9px;
+      height: 9px;
+    }
+
+    &.descending_order {
+      //降冪
+      &::after {
+        background-image: url(/app/public_html/img/reports/sort/fill.svg);
+      }
+    }
+
+    &.ascending_order {
+      //昇冪
+      &::before {
+        background-image: url(/app/public_html/img/reports/sort/fill.svg);
+      }
+    }
+  }
+}
+
+.group_data th:nth-child(3) {
+  .sort_text {
+    position: relative;
+
+    &::before {
+      position: absolute;
+      top: 25%;
+      right: 25%;
+      transform: translate(-50%, -50%);
+      content: '';
+      background-image: url(/app/public_html/img/reports/sort/line.svg);
+      background-repeat: no-repeat;
+      width: 9px;
+      height: 9px;
+    }
+
+    &::after {
+      position: absolute;
+      top: 75%;
+      right: 25%;
+      transform: translate(-50%, -50%) rotate(180deg);
+      content: '';
+      background-image: url(/app/public_html/img/reports/sort/line.svg);
+      background-repeat: no-repeat;
+      width: 9px;
+      height: 9px;
+    }
+
+    &.descending_order {
+      //降冪
+      &::after {
+        background-image: url(/app/public_html/img/reports/sort/fill.svg);
+      }
+    }
+
+    &.ascending_order {
+      //昇冪
+      &::before {
+        background-image: url(/app/public_html/img/reports/sort/fill.svg);
+      }
+    }
+  }
+}
+
+.combined-table {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  .table-container {
+    width: 50%;
+  }
+}
+
+.table-container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 5px;
+  /* 設置行之間的間距 */
+}
+
+thead {
+  display: contents;
+  /* Hide thead from normal flow */
+}
+
+tbody {
+  flex: 1;
+  display: block;
+  overflow-y: auto;
+  max-height: 59vh;
+}
+
+tr {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  /* 每個 <td> 之間的空白均分 */
+}
+
+thead tr {
+  border-bottom: double 3px #5fc889;
+}
+
+tbody tr {
+  padding: 10px 0;
+
+  &:not(:last-child) {
+    border-bottom: dashed 1px #5fc889;
+  }
+}
+
+th,
+td {
+  flex: 1;
+  /* 使 <td> 元素平均分配空間 */
+  text-align: center;
+  align-self: center;
+}
+
+.group_data tr {
+  > :nth-child(3) {
+    flex: 2.5;
+    /* 使 name 之 <td> 元素分配較多空間 */
+    letter-spacing: 1px;
+  }
+}
+
+.group_data:nth-child(2) tr {
+  cursor: pointer;
+
+  &:hover {
+    background-color: rgb(252, 241, 241);
+  }
+}
+
+@include m() {
+}

@@ -1,0 +1,1662 @@
+<div class="exercise-habits-trend-chart">
+  <div class="adjust_time">
+    <div class="switch_week_month">
+      <!-- 周/月單位調整 -->
+      <span>{{ 'universal_time_week' | translate }}</span>
+      <button
+        class="rod__bar"
+        [class.rod__bar--active]="uiFlag.isMonthUnit"
+        (click)="changeWeekMonth()"
+      ></button>
+      <span>{{ 'universal_time_months' | translate }}</span>
+    </div>
+    <div class="choose_date">
+      <i class="time__icon icon-svg_web-icon_p2_019-time"></i>
+      <!-- 預設時間 -->
+      <div #selectOption class="select_option">
+        <div (click)="dateSelect()" class="date_select">
+          <span>{{ uiFlag.dateOption | translate }}</span>
+        </div>
+        <div class="date_option" [class.active]="uiFlag.isDateSelect">
+          <ul>
+            <li
+              class="options"
+              [class.active]="uiFlag.dateOption === dateOptions[option]"
+              *ngFor="let option of getObjectKeys(dateOptions)"
+              (click)="dateOption(option)"
+            >
+              {{ dateOptions[option] | translate }}
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- 自訂日期 -->
+      <!-- startTime -->
+      <div class="filter_start_time">
+        <button mat-raised-button (click)="openStartDatePicker.open()">
+          <input
+            readonly
+            matInput
+            [matDatepicker]="openStartDatePicker"
+            (dateChange)="changeStartTime($event.value)"
+            [value]="FilterStartTime"
+            [max]="FilterEndTime"
+          />
+        </button>
+        <!-- <mat-datepicker touchUi #openStartDatePicker></mat-datepicker> -->
+        <mat-datepicker [touchUi]="isMobile" #openStartDatePicker disabled="false"></mat-datepicker>
+      </div>
+      ~
+      <!-- endTime -->
+      <div class="filter_end_time">
+        <button mat-raised-button (click)="openEndDatePicker.open()">
+          <input
+            readonly
+            matInput
+            [matDatepicker]="openEndDatePicker"
+            (dateChange)="changeEndTime($event.value)"
+            [value]="FilterEndTime"
+            [min]="FilterStartTime"
+          />
+        </button>
+        <!-- <mat-datepicker touchUi #openEndDatePicker></mat-datepicker> -->
+        <mat-datepicker [touchUi]="isMobile" #openEndDatePicker disabled="false"></mat-datepicker>
+      </div>
+    </div>
+  </div>
+  <!-- 趨勢圖 -->
+  <div class="chart_wrap">
+    <ng-container *ngIf="!ifNoData; else noDataTemplate">
+      <div class="effect_value">
+        <canvas class="chart-mobile" id="effect_value"></canvas>
+      </div>
+      <div class="sum_calories">
+        <canvas class="chart-mobile" id="calories"></canvas>
+      </div>
+      <div class="avg_day_time">
+        <canvas class="chart-mobile" id="sport_day_time"></canvas>
+      </div>
+      <div class="sport_type_wrap">
+        <!-- run -->
+        <div class="type_value">
+          <div class="value_percent">
+            <span class="value">{{ getTypePercent('1') }}</span>
+            <span class="per">%</span>
+          </div>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="83"
+            height="132"
+            viewBox="0 0 83 132"
+            fill="none"
+          >
+            <g filter="url(#filter0_f_6034_5684)">
+              <ellipse
+                cx="41.2832"
+                cy="104.918"
+                rx="21.2832"
+                ry="6.37158"
+                fill="#F06A8A"
+                fill-opacity="0.5"
+              />
+            </g>
+            <path
+              opacity="0.65"
+              fill-rule="evenodd"
+              clip-rule="evenodd"
+              d="M58 5H25V105C25 107.761 32.3873 110 41.5 110C50.6127 110 58 107.761 58 105V5Z"
+              fill="#F06A8A"
+              fill-opacity="0.8"
+            />
+            <ellipse cx="41.5" cy="105" rx="16.5" ry="5" fill="#F06A8A" />
+            <rect id="run_bar" x="25" y="55" width="33" height="50" fill="#F06A8A" />
+            <g filter="url(#run_cap_shadow)">
+              <ellipse id="run_cap" cx="41.5" cy="55" rx="16.5" ry="5" fill="#F06A8A" />
+            </g>
+            <path
+              d="M43.2405 96.3923C43.7304 95.3508 44.2073 94.335 44.5889 93.5177C44.759 93.1516 45.1844 92.9789 45.5608 93.1259C45.8805 93.2496 46.2672 93.3966 46.6127 93.5281C47.1593 93.7369 51.7586 90.5271 51.7586 90.5271C52.099 90.2616 52.1686 89.7743 51.9185 89.4211L51.4132 88.7121C51.1837 88.3898 50.7583 88.2816 50.4026 88.4543L48.3194 89.6557C47.7187 89.9548 46.819 90.5555 46.2208 90.2564C44.9936 89.6428 42.0236 87.8588 39.8967 87.4385C39.5744 87.3741 39.3733 87.3766 39.1542 87.5236L33.9902 91.0066C33.6215 91.2541 33.5236 91.7543 33.7685 92.1256L34.1552 92.7056C34.3692 93.0253 34.7791 93.1516 35.1349 93.0047L38.6411 91.5609C39.0382 91.3985 39.4455 91.7646 39.3243 92.1771C38.9892 93.3038 38.4194 95.1574 37.8651 96.6321C37.579 97.3927 37.9296 98.246 38.6643 98.5941C39.7343 99.0994 41.0491 99.7207 41.0491 99.7207L45.0968 101.556C45.2386 101.621 45.3597 101.724 45.4422 101.855L47.6414 105.274C47.8554 105.607 48.2782 105.735 48.6417 105.578L49.2166 105.331C49.6497 105.143 49.8302 104.624 49.6085 104.209L47.3939 100.069C47.3294 99.9502 47.2366 99.847 47.1232 99.7723L43.5215 97.4184C43.1838 97.1967 43.0601 96.761 43.2328 96.3975L43.2405 96.3923Z"
+              fill="#333333"
+            />
+            <path
+              d="M44.7229 88.1552C46.047 88.1552 47.1205 87.0818 47.1205 85.7576C47.1205 84.4334 46.047 83.3599 44.7229 83.3599C43.3987 83.3599 42.3252 84.4334 42.3252 85.7576C42.3252 87.0818 43.3987 88.1552 44.7229 88.1552Z"
+              fill="#333333"
+            />
+            <path
+              d="M34.5107 101.724L31.5897 102.397C31.203 102.487 30.9297 102.83 30.9297 103.227V103.748C30.9297 104.238 31.3396 104.624 31.8295 104.599L36.0034 104.366C36.2123 104.354 36.4108 104.266 36.5577 104.119L39.3576 101.319C39.7778 100.899 39.6489 100.187 39.1075 99.9424L37.54 99.2309C37.1816 99.0684 36.7562 99.1716 36.5165 99.4835L35.0315 101.394C34.9026 101.561 34.7195 101.678 34.5133 101.724H34.5107Z"
+              fill="#333333"
+            />
+            <ellipse
+              cx="33.571"
+              cy="88.6994"
+              rx="1.42841"
+              ry="1.44809"
+              fill="white"
+              fill-opacity="0.2"
+            />
+            <ellipse
+              cx="46.9977"
+              cy="74.7978"
+              rx="1.42841"
+              ry="1.44809"
+              fill="white"
+              fill-opacity="0.2"
+            />
+            <ellipse
+              cx="37.5705"
+              cy="66.3989"
+              rx="1.14272"
+              ry="1.15847"
+              fill="white"
+              fill-opacity="0.2"
+            />
+            <ellipse
+              cx="39.5699"
+              cy="79.4316"
+              rx="0.857043"
+              ry="0.868852"
+              fill="white"
+              fill-opacity="0.2"
+            />
+            <ellipse
+              cx="30.1427"
+              cy="74.5081"
+              rx="1.14272"
+              ry="1.15847"
+              fill="white"
+              fill-opacity="0.2"
+            />
+            <ellipse
+              cx="50.4264"
+              cy="62.0546"
+              rx="0.857043"
+              ry="0.868852"
+              fill="white"
+              fill-opacity="0.2"
+            />
+            <ellipse
+              cx="42.7122"
+              cy="91.3059"
+              rx="2.28545"
+              ry="2.31694"
+              fill="white"
+              fill-opacity="0.2"
+            />
+            <ellipse
+              cx="52.1399"
+              cy="82.0381"
+              rx="1.71409"
+              ry="1.7377"
+              fill="white"
+              fill-opacity="0.2"
+            />
+            <ellipse
+              cx="51.1406"
+              cy="98.4015"
+              rx="1.57125"
+              ry="1.5929"
+              fill="white"
+              fill-opacity="0.2"
+            />
+            <ellipse
+              cx="30.285"
+              cy="57.2759"
+              rx="0.428522"
+              ry="0.434426"
+              fill="white"
+              fill-opacity="0.2"
+            />
+            <ellipse
+              cx="39.1414"
+              cy="32.0956"
+              rx="0.428522"
+              ry="0.434426"
+              fill="white"
+              fill-opacity="0.2"
+            />
+            <ellipse
+              cx="42.284"
+              cy="53.5109"
+              rx="0.428522"
+              ry="0.434426"
+              fill="white"
+              fill-opacity="0.2"
+            />
+            <ellipse
+              cx="51.1404"
+              cy="25.4344"
+              rx="0.428522"
+              ry="0.434426"
+              fill="white"
+              fill-opacity="0.2"
+            />
+            <g filter="url(#filter2_i_6034_5684)">
+              <ellipse cx="41.5" cy="5" rx="16.5" ry="5" fill="#F06A8A" />
+            </g>
+            <defs>
+              <filter
+                id="filter0_f_6034_5684"
+                x="0"
+                y="78.5463"
+                width="82.5664"
+                height="52.7432"
+                filterUnits="userSpaceOnUse"
+                color-interpolation-filters="sRGB"
+              >
+                <feFlood flood-opacity="0" result="BackgroundImageFix" />
+                <feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape" />
+                <feGaussianBlur stdDeviation="10" result="effect1_foregroundBlur_6034_5684" />
+              </filter>
+              <filter
+                id="run_cap_shadow"
+                x="25"
+                y="47"
+                width="33"
+                height="13"
+                filterUnits="userSpaceOnUse"
+                color-interpolation-filters="sRGB"
+              >
+                <feFlood flood-opacity="0" result="BackgroundImageFix" />
+                <feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape" />
+                <feColorMatrix
+                  in="SourceAlpha"
+                  type="matrix"
+                  values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0"
+                  result="hardAlpha"
+                />
+                <feOffset dy="-3" />
+                <feGaussianBlur stdDeviation="2" />
+                <feComposite in2="hardAlpha" operator="arithmetic" k2="-1" k3="1" />
+                <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.25 0" />
+                <feBlend mode="normal" in2="shape" result="effect1_innerShadow_6034_5684" />
+              </filter>
+              <filter
+                id="filter2_i_6034_5684"
+                x="25"
+                y="-3"
+                width="33"
+                height="13"
+                filterUnits="userSpaceOnUse"
+                color-interpolation-filters="sRGB"
+              >
+                <feFlood flood-opacity="0" result="BackgroundImageFix" />
+                <feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape" />
+                <feColorMatrix
+                  in="SourceAlpha"
+                  type="matrix"
+                  values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0"
+                  result="hardAlpha"
+                />
+                <feOffset dy="-3" />
+                <feGaussianBlur stdDeviation="2" />
+                <feComposite in2="hardAlpha" operator="arithmetic" k2="-1" k3="1" />
+                <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.05 0" />
+                <feBlend mode="normal" in2="shape" result="effect1_innerShadow_6034_5684" />
+              </filter>
+            </defs>
+          </svg>
+          {{ 'universal_activityData_run' | translate }}
+        </div>
+
+        <!-- bike -->
+        <div class="type_value">
+          <div class="value_percent">
+            <span class="value">{{ getTypePercent('2') }}</span>
+            <span class="percent">%</span>
+          </div>
+          <svg
+            width="84"
+            height="132"
+            viewBox="0 0 84 132"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <g filter="url(#filter0_f_6034_5792)">
+              <ellipse
+                cx="42.1153"
+                cy="104.918"
+                rx="21.2832"
+                ry="6.37158"
+                fill="#F7D308"
+                fill-opacity="0.5"
+              />
+            </g>
+            <path
+              opacity="0.65"
+              fill-rule="evenodd"
+              clip-rule="evenodd"
+              d="M58.832 5H25.832V105C25.832 107.761 33.2193 110 42.332 110C51.4447 110 58.832 107.761 58.832 105V5Z"
+              fill="#F7D308"
+              fill-opacity="0.8"
+            />
+            <ellipse cx="42.332" cy="105" rx="16.5" ry="5" fill="#F7D308" />
+            <rect id="bike_bar" x="25.832" y="55" width="33" height="50" fill="#F7D308" />
+            <g filter="url(#bike_cap_shadow)">
+              <ellipse id="bike_cap" cx="42.332" cy="55" rx="16.5" ry="5" fill="#F7D308" />
+            </g>
+            <path
+              d="M40.9582 92.9944L43.3146 91.8136C43.7091 91.6151 44.1886 91.7698 44.3948 92.1565L45.1193 93.5177C45.2224 93.7111 45.4003 93.8555 45.6091 93.9148L50.8685 95.4359C51.2295 95.5416 51.6162 95.3817 51.7992 95.0543C52.0416 94.6237 51.8456 94.0798 51.3867 93.9019L47.7103 92.4736C47.4757 92.3834 47.2952 92.1874 47.2256 91.9451L46.3362 88.9003C46.264 88.658 46.0835 88.462 45.8489 88.3718L41.3011 86.629C40.9582 86.4975 40.5689 86.6135 40.3523 86.9126L36.0185 92.9299C35.7942 93.2419 35.82 93.6698 36.0804 93.9534L39.3366 97.4906C39.401 97.5602 39.4784 97.6195 39.566 97.6634L40.7055 98.2434C40.9814 98.3852 41.1541 98.6688 41.149 98.9782L41.0639 104.413C41.0562 104.867 41.4248 105.238 41.8786 105.238H42.3659C42.7887 105.233 43.1393 104.908 43.1702 104.485L43.6678 97.9418C43.6833 97.7227 43.6111 97.5061 43.4641 97.3411L40.721 94.2577C40.3678 93.858 40.4864 93.2316 40.9634 92.9944H40.9582Z"
+              fill="#333333"
+            />
+            <path
+              d="M44.8718 86.8456C46.3129 86.8456 47.4808 85.6777 47.4808 84.2365C47.4808 82.7953 46.3129 81.6274 44.8718 81.6274C43.4306 81.6274 42.2627 82.7953 42.2627 84.2365C42.2627 85.6777 43.4306 86.8456 44.8718 86.8456Z"
+              fill="#333333"
+            />
+            <path
+              d="M33.4841 107.385C30.5012 107.385 28.0752 104.959 28.0752 101.977C28.0752 98.9937 30.5012 96.5677 33.4841 96.5677C36.467 96.5677 38.893 98.9937 38.893 101.977C38.893 104.959 36.467 107.385 33.4841 107.385ZM33.4841 98.6302C31.6382 98.6302 30.1377 100.131 30.1377 101.977C30.1377 103.823 31.6382 105.323 33.4841 105.323C35.33 105.323 36.8305 103.823 36.8305 101.977C36.8305 100.131 35.33 98.6302 33.4841 98.6302Z"
+              fill="#333333"
+            />
+            <path
+              d="M51.0515 107.385C48.0686 107.385 45.6426 104.959 45.6426 101.977C45.6426 98.9937 48.0686 96.5677 51.0515 96.5677C54.0344 96.5677 56.4604 98.9937 56.4604 101.977C56.4604 104.959 54.0344 107.385 51.0515 107.385ZM51.0515 98.6302C49.2055 98.6302 47.7051 100.131 47.7051 101.977C47.7051 103.823 49.2055 105.323 51.0515 105.323C52.8974 105.323 54.3979 103.823 54.3979 101.977C54.3979 100.131 52.8974 98.6302 51.0515 98.6302Z"
+              fill="#333333"
+            />
+            <ellipse
+              cx="34.403"
+              cy="88.6994"
+              rx="1.42841"
+              ry="1.44809"
+              fill="white"
+              fill-opacity="0.2"
+            />
+            <ellipse
+              cx="47.8298"
+              cy="74.7978"
+              rx="1.42841"
+              ry="1.44809"
+              fill="white"
+              fill-opacity="0.2"
+            />
+            <ellipse
+              cx="38.4025"
+              cy="66.3989"
+              rx="1.14272"
+              ry="1.15847"
+              fill="white"
+              fill-opacity="0.2"
+            />
+            <ellipse
+              cx="40.402"
+              cy="79.4316"
+              rx="0.857043"
+              ry="0.868852"
+              fill="white"
+              fill-opacity="0.2"
+            />
+            <ellipse
+              cx="30.9748"
+              cy="74.5081"
+              rx="1.14272"
+              ry="1.15847"
+              fill="white"
+              fill-opacity="0.2"
+            />
+            <ellipse
+              cx="51.2584"
+              cy="62.0546"
+              rx="0.857043"
+              ry="0.868852"
+              fill="white"
+              fill-opacity="0.2"
+            />
+            <ellipse
+              cx="43.5442"
+              cy="91.3059"
+              rx="2.28545"
+              ry="2.31694"
+              fill="white"
+              fill-opacity="0.2"
+            />
+            <ellipse
+              cx="52.9719"
+              cy="82.0381"
+              rx="1.71409"
+              ry="1.7377"
+              fill="white"
+              fill-opacity="0.2"
+            />
+            <ellipse
+              cx="51.9726"
+              cy="98.4015"
+              rx="1.57125"
+              ry="1.5929"
+              fill="white"
+              fill-opacity="0.2"
+            />
+            <ellipse
+              cx="31.117"
+              cy="57.2759"
+              rx="0.428522"
+              ry="0.434426"
+              fill="white"
+              fill-opacity="0.2"
+            />
+            <ellipse
+              cx="39.9734"
+              cy="32.0956"
+              rx="0.428522"
+              ry="0.434426"
+              fill="white"
+              fill-opacity="0.2"
+            />
+            <ellipse
+              cx="43.116"
+              cy="53.5109"
+              rx="0.428522"
+              ry="0.434426"
+              fill="white"
+              fill-opacity="0.2"
+            />
+            <ellipse
+              cx="51.9725"
+              cy="25.4344"
+              rx="0.428522"
+              ry="0.434426"
+              fill="white"
+              fill-opacity="0.2"
+            />
+            <g filter="url(#filter2_i_6034_5792)">
+              <ellipse cx="42.332" cy="5" rx="16.5" ry="5" fill="#F7D308" />
+            </g>
+            <defs>
+              <filter
+                id="filter0_f_6034_5792"
+                x="0.832031"
+                y="78.5463"
+                width="82.5664"
+                height="52.7432"
+                filterUnits="userSpaceOnUse"
+                color-interpolation-filters="sRGB"
+              >
+                <feFlood flood-opacity="0" result="BackgroundImageFix" />
+                <feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape" />
+                <feGaussianBlur stdDeviation="10" result="effect1_foregroundBlur_6034_5792" />
+              </filter>
+              <filter
+                id="bike_cap_shadow"
+                x="25.832"
+                y="47"
+                width="33"
+                height="13"
+                filterUnits="userSpaceOnUse"
+                color-interpolation-filters="sRGB"
+              >
+                <feFlood flood-opacity="0" result="BackgroundImageFix" />
+                <feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape" />
+                <feColorMatrix
+                  in="SourceAlpha"
+                  type="matrix"
+                  values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0"
+                  result="hardAlpha"
+                />
+                <feOffset dy="-3" />
+                <feGaussianBlur stdDeviation="2" />
+                <feComposite in2="hardAlpha" operator="arithmetic" k2="-1" k3="1" />
+                <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.25 0" />
+                <feBlend mode="normal" in2="shape" result="effect1_innerShadow_6034_5792" />
+              </filter>
+              <filter
+                id="filter2_i_6034_5792"
+                x="25.832"
+                y="-3"
+                width="33"
+                height="13"
+                filterUnits="userSpaceOnUse"
+                color-interpolation-filters="sRGB"
+              >
+                <feFlood flood-opacity="0" result="BackgroundImageFix" />
+                <feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape" />
+                <feColorMatrix
+                  in="SourceAlpha"
+                  type="matrix"
+                  values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0"
+                  result="hardAlpha"
+                />
+                <feOffset dy="-3" />
+                <feGaussianBlur stdDeviation="2" />
+                <feComposite in2="hardAlpha" operator="arithmetic" k2="-1" k3="1" />
+                <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.05 0" />
+                <feBlend mode="normal" in2="shape" result="effect1_innerShadow_6034_5792" />
+              </filter>
+            </defs>
+          </svg>
+          {{ 'universal_activityData_cycle' | translate }}
+        </div>
+
+        <!-- weight -->
+        <div class="type_value">
+          <div class="value_percent">
+            <span class="value">{{ getTypePercent('3') }}</span>
+            <span class="percent">%</span>
+          </div>
+          <svg
+            width="84"
+            height="132"
+            viewBox="0 0 84 132"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <g filter="url(#filter0_f_6034_5819)">
+              <ellipse
+                cx="41.9825"
+                cy="104.918"
+                rx="21.2832"
+                ry="6.37158"
+                fill="#717366"
+                fill-opacity="0.5"
+              />
+            </g>
+            <path
+              opacity="0.65"
+              fill-rule="evenodd"
+              clip-rule="evenodd"
+              d="M58.6992 5H25.6992V105C25.6992 107.761 33.0865 110 42.1992 110C51.3119 110 58.6992 107.761 58.6992 105V5Z"
+              fill="#717366"
+              fill-opacity="0.8"
+            />
+            <ellipse cx="42.1992" cy="105" rx="16.5" ry="5" fill="#717366" />
+            <rect id="weight_bar" x="25.6992" y="55" width="33" height="50" fill="#717366" />
+            <g filter="url(#weight_cap_shadow)">
+              <ellipse id="weight_cap" cx="42.1992" cy="55" rx="16.5" ry="5" fill="#717366" />
+            </g>
+            <path
+              d="M44.6875 92.4451C44.6875 93.9078 43.5247 95.0942 42.0913 95.0942C40.6579 95.0942 39.4951 93.9078 39.4951 92.4451C39.4951 90.9824 40.6579 89.7959 42.0913 89.7959C43.5247 89.7959 44.6875 90.9824 44.6875 92.4451Z"
+              fill="#333333"
+            />
+            <path
+              d="M28.2773 85.2868C28.2773 85.0689 28.1042 84.8922 27.8906 84.8922C27.677 84.8922 27.5039 85.0689 27.5039 85.2868V89.2329C27.5039 89.4509 27.677 89.6275 27.8906 89.6275C28.1042 89.6275 28.2773 89.4509 28.2773 89.2329V85.2868Z"
+              fill="#333333"
+            />
+            <path
+              d="M52.2539 86.7337H32.4023C31.8326 86.7337 31.3711 86.2628 31.3711 85.6814V84.8922C31.3711 84.3108 30.9096 83.8399 30.3398 83.8399C29.7701 83.8399 29.3086 84.3108 29.3086 84.8922V89.6275C29.3086 90.2089 29.7701 90.6798 30.3398 90.6798C30.9096 90.6798 31.3711 90.2089 31.3711 89.6275V88.8383C31.3711 88.2569 31.8326 87.786 32.4023 87.786H52.2539C52.8237 87.786 53.2852 88.2569 53.2852 88.8383V89.6275C53.2852 90.2089 53.7466 90.6798 54.3164 90.6798C54.8862 90.6798 55.3477 90.2089 55.3477 89.6275V84.8922C55.3477 84.3108 54.8862 83.8399 54.3164 83.8399C53.7466 83.8399 53.2852 84.3108 53.2852 84.8922V85.6814C53.2852 86.2628 52.8237 86.7337 52.2539 86.7337Z"
+              fill="#333333"
+            />
+            <path
+              d="M57.1523 85.2868C57.1523 85.0689 56.9792 84.8922 56.7656 84.8922C56.552 84.8922 56.3789 85.0689 56.3789 85.2868V89.2329C56.3789 89.4509 56.552 89.6275 56.7656 89.6275C56.9792 89.6275 57.1523 89.4509 57.1523 89.2329V85.2868Z"
+              fill="#333333"
+            />
+            <path
+              d="M49.0825 84.8238C48.3942 84.9185 47.9121 85.5657 48.0049 86.2655L48.6623 91.2533C48.6932 91.4822 48.6623 91.7137 48.5721 91.9268L47.5382 94.4076C47.4093 94.718 47.1644 94.9627 46.8602 95.0916L45.0684 95.844C44.9163 95.9071 44.7539 95.9413 44.5889 95.9413H39.9044C39.7394 95.9413 39.577 95.9098 39.4249 95.844L37.6357 95.0916C37.3289 94.9627 37.084 94.7154 36.955 94.405L35.9186 91.8979C35.831 91.6874 35.8 91.4559 35.831 91.227L36.4884 86.2549C36.5812 85.5499 36.0965 84.9054 35.4056 84.8107C34.7172 84.7186 34.0882 85.2105 33.9954 85.9129L33.2451 91.6032C33.2142 91.8295 33.2451 92.0584 33.3302 92.2688L35.0575 96.4833C35.1555 96.72 35.3205 96.9226 35.5319 97.0647L37.4217 98.3169C37.6769 98.4853 37.8651 98.7457 37.9476 99.0456L38.9428 102.644C38.9969 102.839 39.0047 103.042 38.966 103.239L38.6901 104.678C38.5664 105.323 38.9402 105.957 39.5538 106.151L41.8019 106.859C42.0417 106.935 42.2969 106.935 42.5367 106.859L44.8802 106.135C45.4861 105.949 45.8625 105.33 45.7568 104.694L45.5118 103.223C45.4809 103.036 45.4912 102.844 45.5428 102.66L46.5431 99.0456C46.6256 98.7457 46.8138 98.4879 47.069 98.3169L48.9588 97.0673C49.1702 96.9279 49.3378 96.7253 49.4357 96.4859L51.1631 92.2741C51.2482 92.0636 51.2791 91.8347 51.2482 91.6085L50.4979 85.9261C50.4051 85.2237 49.7709 84.7317 49.0825 84.8265V84.8238Z"
+              fill="#333333"
+            />
+            <ellipse
+              cx="34.2702"
+              cy="88.6994"
+              rx="1.42841"
+              ry="1.44809"
+              fill="white"
+              fill-opacity="0.2"
+            />
+            <ellipse
+              cx="47.697"
+              cy="74.7978"
+              rx="1.42841"
+              ry="1.44809"
+              fill="white"
+              fill-opacity="0.2"
+            />
+            <ellipse
+              cx="38.2697"
+              cy="66.3989"
+              rx="1.14272"
+              ry="1.15847"
+              fill="white"
+              fill-opacity="0.2"
+            />
+            <ellipse
+              cx="40.2692"
+              cy="79.4316"
+              rx="0.857043"
+              ry="0.868852"
+              fill="white"
+              fill-opacity="0.2"
+            />
+            <ellipse
+              cx="30.8419"
+              cy="74.5081"
+              rx="1.14272"
+              ry="1.15847"
+              fill="white"
+              fill-opacity="0.2"
+            />
+            <ellipse
+              cx="51.1256"
+              cy="62.0546"
+              rx="0.857043"
+              ry="0.868852"
+              fill="white"
+              fill-opacity="0.2"
+            />
+            <ellipse
+              cx="43.4114"
+              cy="91.3059"
+              rx="2.28545"
+              ry="2.31694"
+              fill="white"
+              fill-opacity="0.2"
+            />
+            <ellipse
+              cx="52.8391"
+              cy="82.0381"
+              rx="1.71409"
+              ry="1.7377"
+              fill="white"
+              fill-opacity="0.2"
+            />
+            <ellipse
+              cx="51.8398"
+              cy="98.4015"
+              rx="1.57125"
+              ry="1.5929"
+              fill="white"
+              fill-opacity="0.2"
+            />
+            <ellipse
+              cx="30.9842"
+              cy="57.2759"
+              rx="0.428522"
+              ry="0.434426"
+              fill="white"
+              fill-opacity="0.2"
+            />
+            <ellipse
+              cx="39.8406"
+              cy="32.0956"
+              rx="0.428522"
+              ry="0.434426"
+              fill="white"
+              fill-opacity="0.2"
+            />
+            <ellipse
+              cx="42.9832"
+              cy="53.5109"
+              rx="0.428522"
+              ry="0.434426"
+              fill="white"
+              fill-opacity="0.2"
+            />
+            <ellipse
+              cx="51.8397"
+              cy="25.4344"
+              rx="0.428522"
+              ry="0.434426"
+              fill="white"
+              fill-opacity="0.2"
+            />
+            <g filter="url(#filter2_i_6034_5819)">
+              <ellipse cx="42.1992" cy="5" rx="16.5" ry="5" fill="#717366" />
+            </g>
+            <defs>
+              <filter
+                id="filter0_f_6034_5819"
+                x="0.699219"
+                y="78.5463"
+                width="82.5664"
+                height="52.7432"
+                filterUnits="userSpaceOnUse"
+                color-interpolation-filters="sRGB"
+              >
+                <feFlood flood-opacity="0" result="BackgroundImageFix" />
+                <feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape" />
+                <feGaussianBlur stdDeviation="10" result="effect1_foregroundBlur_6034_5819" />
+              </filter>
+              <filter
+                id="weight_cap_shadow"
+                x="25.6992"
+                y="47"
+                width="33"
+                height="13"
+                filterUnits="userSpaceOnUse"
+                color-interpolation-filters="sRGB"
+              >
+                <feFlood flood-opacity="0" result="BackgroundImageFix" />
+                <feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape" />
+                <feColorMatrix
+                  in="SourceAlpha"
+                  type="matrix"
+                  values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0"
+                  result="hardAlpha"
+                />
+                <feOffset dy="-3" />
+                <feGaussianBlur stdDeviation="2" />
+                <feComposite in2="hardAlpha" operator="arithmetic" k2="-1" k3="1" />
+                <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.25 0" />
+                <feBlend mode="normal" in2="shape" result="effect1_innerShadow_6034_5819" />
+              </filter>
+              <filter
+                id="filter2_i_6034_5819"
+                x="25.6992"
+                y="-3"
+                width="33"
+                height="13"
+                filterUnits="userSpaceOnUse"
+                color-interpolation-filters="sRGB"
+              >
+                <feFlood flood-opacity="0" result="BackgroundImageFix" />
+                <feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape" />
+                <feColorMatrix
+                  in="SourceAlpha"
+                  type="matrix"
+                  values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0"
+                  result="hardAlpha"
+                />
+                <feOffset dy="-3" />
+                <feGaussianBlur stdDeviation="2" />
+                <feComposite in2="hardAlpha" operator="arithmetic" k2="-1" k3="1" />
+                <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.05 0" />
+                <feBlend mode="normal" in2="shape" result="effect1_innerShadow_6034_5819" />
+              </filter>
+            </defs>
+          </svg>
+          {{ 'universal_activityData_weightTraining' | translate }}
+        </div>
+
+        <!-- swim -->
+        <div class="type_value">
+          <div class="value_percent">
+            <span class="value">{{ getTypePercent('4') }}</span>
+            <span class="percent">%</span>
+          </div>
+          <svg
+            width="83"
+            height="132"
+            viewBox="0 0 83 132"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <g filter="url(#filter0_f_6034_5846)">
+              <ellipse
+                cx="41.5489"
+                cy="104.918"
+                rx="21.2832"
+                ry="6.37158"
+                fill="#8FBDDF"
+                fill-opacity="0.5"
+              />
+            </g>
+            <path
+              opacity="0.65"
+              fill-rule="evenodd"
+              clip-rule="evenodd"
+              d="M58.2656 5H25.2656V105C25.2656 107.761 32.6529 110 41.7656 110C50.8783 110 58.2656 107.761 58.2656 105V5Z"
+              fill="#8FBDDF"
+              fill-opacity="0.8"
+            />
+            <ellipse cx="41.7656" cy="105" rx="16.5" ry="5" fill="#8FBDDF" />
+            <rect id="swim_bar" x="25.2656" y="55" width="33" height="50" fill="#8FBDDF" />
+            <g filter="url(#swim_cap_shadow)">
+              <ellipse id="swim_cap" cx="41.7656" cy="55" rx="16.5" ry="5" fill="#8FBDDF" />
+            </g>
+            <path
+              d="M46.8471 83.3138C46.1948 83.3138 45.5658 83.5716 45.094 84.032L38.6461 90.3168C38.5791 90.3826 38.5017 90.4352 38.4166 90.472L31.9275 93.3606C31.6388 93.4895 31.4531 93.7789 31.4531 94.0998V94.9364C31.4531 95.3389 31.7445 95.6809 32.1363 95.7361L36.0138 96.2702C38.4502 96.6043 40.9277 96.4727 43.3177 95.8782C43.8049 95.7572 44.0602 95.21 43.8436 94.747L43.2016 93.3737C43.1011 93.1554 43.0985 92.9028 43.1991 92.6845L44.2922 90.2931C44.3051 90.2668 44.318 90.2405 44.3334 90.2168L46.4346 86.6864C46.6666 86.2997 47.1642 86.1813 47.538 86.4286L51.9647 89.3461C52.1142 89.4434 52.2251 89.5907 52.2844 89.7617L52.4313 90.1958C52.5319 90.4904 52.7897 90.7009 53.0939 90.7351C53.7462 90.8061 54.1948 90.0853 53.8519 89.5144L53.3234 88.6331C53.2873 88.5726 53.2434 88.5174 53.1919 88.4674L48.5899 84.0241C48.1181 83.569 47.4942 83.3138 46.8445 83.3138H46.8471Z"
+              fill="#333333"
+            />
+            <path
+              d="M49.2627 91.2271C47.6436 91.2271 46.3287 92.5661 46.3287 94.2208C46.3287 94.7365 46.2334 94.797 46.4577 95.2205L49.4998 95.2968L51.8434 95.6414C52.0677 95.2179 52.194 94.7338 52.194 94.2208C52.194 92.5687 50.8817 91.2271 49.2627 91.2271Z"
+              fill="#333333"
+            />
+            <path
+              d="M40.0973 100.661L40.0019 100.645L26.9875 98.6457C26.7065 98.6036 26.5131 98.3353 26.5544 98.0459C26.5956 97.7592 26.8586 97.5619 27.1422 97.604L39.9684 99.5744C40.0302 99.5849 40.0947 99.5823 40.1566 99.5691L46.8055 98.067L46.8803 98.0722L53.9418 98.5957C54.0191 98.601 54.0939 98.5905 54.1661 98.5615L56.2234 97.746C56.489 97.6408 56.788 97.775 56.8912 98.0459C56.9943 98.3169 56.8628 98.622 56.5973 98.7273L54.3234 99.6296C54.2512 99.6586 54.1764 99.6691 54.0991 99.6638L46.9551 99.1324C46.9061 99.1298 46.8545 99.1324 46.8055 99.1429L40.0973 100.658V100.661Z"
+              fill="#333333"
+            />
+            <path
+              d="M40.4227 104.523L30.8527 103.052C30.5717 103.01 30.3784 102.742 30.4196 102.452C30.4609 102.166 30.7238 101.968 31.0074 102.01L40.3866 103.452C40.4485 103.463 40.513 103.46 40.5748 103.444L45.5016 102.331L45.5764 102.337L50.7791 102.723C50.8564 102.729 50.9312 102.718 51.0034 102.689L52.3569 102.152C52.6224 102.047 52.9215 102.181 53.0246 102.452C53.1277 102.723 52.9962 103.029 52.7307 103.134L51.1606 103.757C51.0884 103.786 51.0137 103.797 50.9363 103.791L45.6512 103.399C45.6022 103.397 45.5506 103.399 45.5016 103.41L40.6084 104.515C40.5465 104.528 40.482 104.531 40.4202 104.523H40.4227Z"
+              fill="#333333"
+            />
+            <ellipse
+              cx="33.8366"
+              cy="88.6994"
+              rx="1.42841"
+              ry="1.44809"
+              fill="white"
+              fill-opacity="0.2"
+            />
+            <ellipse
+              cx="47.2634"
+              cy="74.7978"
+              rx="1.42841"
+              ry="1.44809"
+              fill="white"
+              fill-opacity="0.2"
+            />
+            <ellipse
+              cx="37.8361"
+              cy="66.3989"
+              rx="1.14272"
+              ry="1.15847"
+              fill="white"
+              fill-opacity="0.2"
+            />
+            <ellipse
+              cx="39.8356"
+              cy="79.4316"
+              rx="0.857043"
+              ry="0.868852"
+              fill="white"
+              fill-opacity="0.2"
+            />
+            <ellipse
+              cx="30.4083"
+              cy="74.5081"
+              rx="1.14272"
+              ry="1.15847"
+              fill="white"
+              fill-opacity="0.2"
+            />
+            <ellipse
+              cx="50.692"
+              cy="62.0546"
+              rx="0.857043"
+              ry="0.868852"
+              fill="white"
+              fill-opacity="0.2"
+            />
+            <ellipse
+              cx="42.9778"
+              cy="91.3059"
+              rx="2.28545"
+              ry="2.31694"
+              fill="white"
+              fill-opacity="0.2"
+            />
+            <ellipse
+              cx="52.4055"
+              cy="82.0381"
+              rx="1.71409"
+              ry="1.7377"
+              fill="white"
+              fill-opacity="0.2"
+            />
+            <ellipse
+              cx="51.4062"
+              cy="98.4015"
+              rx="1.57125"
+              ry="1.5929"
+              fill="white"
+              fill-opacity="0.2"
+            />
+            <ellipse
+              cx="30.5506"
+              cy="57.2759"
+              rx="0.428522"
+              ry="0.434426"
+              fill="white"
+              fill-opacity="0.2"
+            />
+            <ellipse
+              cx="39.407"
+              cy="32.0956"
+              rx="0.428522"
+              ry="0.434426"
+              fill="white"
+              fill-opacity="0.2"
+            />
+            <ellipse
+              cx="42.5496"
+              cy="53.5109"
+              rx="0.428522"
+              ry="0.434426"
+              fill="white"
+              fill-opacity="0.2"
+            />
+            <ellipse
+              cx="51.4061"
+              cy="25.4344"
+              rx="0.428522"
+              ry="0.434426"
+              fill="white"
+              fill-opacity="0.2"
+            />
+            <g filter="url(#filter2_i_6034_5846)">
+              <ellipse cx="41.7656" cy="5" rx="16.5" ry="5" fill="#8FBDDF" />
+            </g>
+            <defs>
+              <filter
+                id="filter0_f_6034_5846"
+                x="0.265625"
+                y="78.5463"
+                width="82.5664"
+                height="52.7432"
+                filterUnits="userSpaceOnUse"
+                color-interpolation-filters="sRGB"
+              >
+                <feFlood flood-opacity="0" result="BackgroundImageFix" />
+                <feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape" />
+                <feGaussianBlur stdDeviation="10" result="effect1_foregroundBlur_6034_5846" />
+              </filter>
+              <filter
+                id="swim_cap_shadow"
+                x="25.2656"
+                y="47"
+                width="33"
+                height="13"
+                filterUnits="userSpaceOnUse"
+                color-interpolation-filters="sRGB"
+              >
+                <feFlood flood-opacity="0" result="BackgroundImageFix" />
+                <feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape" />
+                <feColorMatrix
+                  in="SourceAlpha"
+                  type="matrix"
+                  values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0"
+                  result="hardAlpha"
+                />
+                <feOffset dy="-3" />
+                <feGaussianBlur stdDeviation="2" />
+                <feComposite in2="hardAlpha" operator="arithmetic" k2="-1" k3="1" />
+                <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.25 0" />
+                <feBlend mode="normal" in2="shape" result="effect1_innerShadow_6034_5846" />
+              </filter>
+              <filter
+                id="filter2_i_6034_5846"
+                x="25.2656"
+                y="-3"
+                width="33"
+                height="13"
+                filterUnits="userSpaceOnUse"
+                color-interpolation-filters="sRGB"
+              >
+                <feFlood flood-opacity="0" result="BackgroundImageFix" />
+                <feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape" />
+                <feColorMatrix
+                  in="SourceAlpha"
+                  type="matrix"
+                  values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0"
+                  result="hardAlpha"
+                />
+                <feOffset dy="-3" />
+                <feGaussianBlur stdDeviation="2" />
+                <feComposite in2="hardAlpha" operator="arithmetic" k2="-1" k3="1" />
+                <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.05 0" />
+                <feBlend mode="normal" in2="shape" result="effect1_innerShadow_6034_5846" />
+              </filter>
+            </defs>
+          </svg>
+          {{ 'universal_activityData_swin' | translate }}
+        </div>
+
+        <!-- aero -->
+        <div class="type_value">
+          <div class="value_percent">
+            <span class="value">{{ getTypePercent('5') }}</span>
+            <span class="percent">%</span>
+          </div>
+          <svg
+            width="83"
+            height="132"
+            viewBox="0 0 83 132"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <g filter="url(#filter0_f_6034_5738)">
+              <ellipse
+                cx="41.416"
+                cy="104.918"
+                rx="21.2832"
+                ry="6.37158"
+                fill="#02CA8B"
+                fill-opacity="0.5"
+              />
+            </g>
+            <path
+              opacity="0.65"
+              fill-rule="evenodd"
+              clip-rule="evenodd"
+              d="M58.1328 5H25.1328V105C25.1328 107.761 32.5201 110 41.6328 110C50.7455 110 58.1328 107.761 58.1328 105V5Z"
+              fill="#02CA8B"
+              fill-opacity="0.8"
+            />
+            <ellipse cx="41.6328" cy="105" rx="16.5" ry="5" fill="#02CA8B" />
+            <rect id="aero_bar" x="25.1328" y="97" width="33" height="8" fill="#02CA8B" />
+            <g filter="url(#aero_cap_shadow)">
+              <ellipse id="aero_cap" cx="41.6328" cy="97" rx="16.5" ry="5" fill="#02CA8B" />
+            </g>
+            <path
+              d="M42.1694 87.2477C43.8787 87.5287 45.3327 86.0721 45.0517 84.3628C44.8816 83.329 44.0462 82.4962 43.0124 82.3261C41.3057 82.0477 39.8516 83.5017 40.1301 85.2084C40.3002 86.2423 41.133 87.0776 42.1668 87.2452L42.1694 87.2477Z"
+              fill="#333333"
+            />
+            <path
+              d="M49.9754 106.084L50.1404 99.4268C50.143 99.2824 50.0708 99.1484 49.9471 99.0762L45.4482 96.3795C45.3683 96.333 45.309 96.2583 45.2781 96.1706L44.6258 94.3324C44.6 94.2577 44.5949 94.1777 44.6155 94.103L44.6748 93.8658C44.6825 93.8374 44.6929 93.8116 44.7057 93.7859L46.0438 91.0995C46.1082 90.9731 46.0979 90.821 46.0206 90.7024L44.5768 88.5188C44.5098 88.4182 44.4015 88.3538 44.2829 88.3409L39.9517 87.9309C39.8511 87.9206 39.7506 87.9516 39.6707 88.0134L35.0971 91.5687C34.9011 91.7208 34.8908 92.0147 35.0764 92.1797L38.3842 95.1239L38.379 95.1342L39.6887 96.1732C39.8511 96.3021 39.8872 96.5367 39.7712 96.7095L37.1802 100.504C37.1596 100.535 37.1338 100.564 37.1029 100.587L31.9518 104.8C31.81 104.916 31.7661 105.112 31.8435 105.277L32.8438 107.422C32.9082 107.561 33.05 107.651 33.2047 107.651H35.0764C35.2492 107.651 35.4013 107.54 35.4554 107.378L35.4683 107.342C35.5276 107.164 35.4554 106.97 35.2956 106.875L34.3907 106.331C34.254 106.249 34.1793 106.094 34.1999 105.937L34.2747 105.377C34.2927 105.246 34.3752 105.13 34.4938 105.07L40.2533 102.255C40.2791 102.242 40.3049 102.227 40.3255 102.209L42.9784 100.1C43.0738 100.025 43.1975 99.9966 43.3136 100.022L47.0029 100.863C47.155 100.896 47.271 101.018 47.3045 101.167L48.6245 107.334C48.6632 107.517 48.8256 107.648 49.0138 107.648H51.3006C51.4321 107.648 51.5558 107.584 51.6306 107.473C51.7775 107.257 51.6796 106.958 51.4321 106.872L50.259 106.468C50.094 106.411 49.9857 106.254 49.9909 106.081L49.9754 106.084ZM39.3046 91.481C39.5701 91.3031 39.9259 91.4965 39.9233 91.8162L39.9053 94.2448H39.6139L38.5698 92.4195C38.4667 92.239 38.5208 92.007 38.6936 91.8909L39.302 91.4836L39.3046 91.481Z"
+              fill="#333333"
+            />
+            <ellipse
+              cx="33.7038"
+              cy="88.6994"
+              rx="1.42841"
+              ry="1.44809"
+              fill="white"
+              fill-opacity="0.2"
+            />
+            <ellipse
+              cx="47.1306"
+              cy="74.7978"
+              rx="1.42841"
+              ry="1.44809"
+              fill="white"
+              fill-opacity="0.2"
+            />
+            <ellipse
+              cx="37.7033"
+              cy="66.3989"
+              rx="1.14272"
+              ry="1.15847"
+              fill="white"
+              fill-opacity="0.2"
+            />
+            <ellipse
+              cx="39.7027"
+              cy="79.4316"
+              rx="0.857043"
+              ry="0.868852"
+              fill="white"
+              fill-opacity="0.2"
+            />
+            <ellipse
+              cx="30.2755"
+              cy="74.5081"
+              rx="1.14272"
+              ry="1.15847"
+              fill="white"
+              fill-opacity="0.2"
+            />
+            <ellipse
+              cx="50.5592"
+              cy="62.0546"
+              rx="0.857043"
+              ry="0.868852"
+              fill="white"
+              fill-opacity="0.2"
+            />
+            <ellipse
+              cx="42.845"
+              cy="91.3059"
+              rx="2.28545"
+              ry="2.31694"
+              fill="white"
+              fill-opacity="0.2"
+            />
+            <ellipse
+              cx="52.2727"
+              cy="82.0381"
+              rx="1.71409"
+              ry="1.7377"
+              fill="white"
+              fill-opacity="0.2"
+            />
+            <ellipse
+              cx="51.2734"
+              cy="98.4015"
+              rx="1.57125"
+              ry="1.5929"
+              fill="white"
+              fill-opacity="0.2"
+            />
+            <ellipse
+              cx="30.4178"
+              cy="57.2759"
+              rx="0.428522"
+              ry="0.434426"
+              fill="white"
+              fill-opacity="0.2"
+            />
+            <ellipse
+              cx="39.2742"
+              cy="32.0956"
+              rx="0.428522"
+              ry="0.434426"
+              fill="white"
+              fill-opacity="0.2"
+            />
+            <ellipse
+              cx="42.4168"
+              cy="53.5109"
+              rx="0.428522"
+              ry="0.434426"
+              fill="white"
+              fill-opacity="0.2"
+            />
+            <ellipse
+              cx="51.2732"
+              cy="25.4344"
+              rx="0.428522"
+              ry="0.434426"
+              fill="white"
+              fill-opacity="0.2"
+            />
+            <g filter="url(#filter2_i_6034_5738)">
+              <ellipse cx="41.6328" cy="5" rx="16.5" ry="5" fill="#02CA8B" />
+            </g>
+            <defs>
+              <filter
+                id="filter0_f_6034_5738"
+                x="0.132812"
+                y="78.5463"
+                width="82.5664"
+                height="52.7432"
+                filterUnits="userSpaceOnUse"
+                color-interpolation-filters="sRGB"
+              >
+                <feFlood flood-opacity="0" result="BackgroundImageFix" />
+                <feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape" />
+                <feGaussianBlur stdDeviation="10" result="effect1_foregroundBlur_6034_5738" />
+              </filter>
+              <filter
+                id="aero_cap_shadow"
+                x="25.1328"
+                y="89"
+                width="33"
+                height="13"
+                filterUnits="userSpaceOnUse"
+                color-interpolation-filters="sRGB"
+              >
+                <feFlood flood-opacity="0" result="BackgroundImageFix" />
+                <feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape" />
+                <feColorMatrix
+                  in="SourceAlpha"
+                  type="matrix"
+                  values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0"
+                  result="hardAlpha"
+                />
+                <feOffset dy="-3" />
+                <feGaussianBlur stdDeviation="2" />
+                <feComposite in2="hardAlpha" operator="arithmetic" k2="-1" k3="1" />
+                <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.25 0" />
+                <feBlend mode="normal" in2="shape" result="effect1_innerShadow_6034_5738" />
+              </filter>
+              <filter
+                id="filter2_i_6034_5738"
+                x="25.1328"
+                y="-3"
+                width="33"
+                height="13"
+                filterUnits="userSpaceOnUse"
+                color-interpolation-filters="sRGB"
+              >
+                <feFlood flood-opacity="0" result="BackgroundImageFix" />
+                <feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape" />
+                <feColorMatrix
+                  in="SourceAlpha"
+                  type="matrix"
+                  values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0"
+                  result="hardAlpha"
+                />
+                <feOffset dy="-3" />
+                <feGaussianBlur stdDeviation="2" />
+                <feComposite in2="hardAlpha" operator="arithmetic" k2="-1" k3="1" />
+                <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.05 0" />
+                <feBlend mode="normal" in2="shape" result="effect1_innerShadow_6034_5738" />
+              </filter>
+            </defs>
+          </svg>
+          {{ 'universal_activityData_aerobic' | translate }}
+        </div>
+
+        <!-- row -->
+        <div class="type_value">
+          <div class="value_percent">
+            <span class="value">{{ getTypePercent('6') }}</span>
+            <span class="percent">%</span>
+          </div>
+          <svg
+            width="84"
+            height="132"
+            viewBox="0 0 84 132"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <g filter="url(#filter0_f_6034_5711)">
+              <ellipse
+                cx="41.8496"
+                cy="104.918"
+                rx="21.2832"
+                ry="6.37158"
+                fill="#F48E35"
+                fill-opacity="0.5"
+              />
+            </g>
+            <path
+              opacity="0.65"
+              fill-rule="evenodd"
+              clip-rule="evenodd"
+              d="M58.5664 5H25.5664V105C25.5664 107.761 32.9537 110 42.0664 110C51.1791 110 58.5664 107.761 58.5664 105V5Z"
+              fill="#F48E35"
+              fill-opacity="0.8"
+            />
+            <ellipse cx="42.0664" cy="105" rx="16.5" ry="5" fill="#F48E35" />
+            <rect id="row_bar" x="25.5664" y="55" width="33" height="50" fill="#F48E35" />
+            <g filter="url(#row_cap_shadow)">
+              <ellipse id="row_cap" cx="42.0664" cy="55" rx="16.5" ry="5" fill="#F48E35" />
+            </g>
+            <path
+              d="M38.8823 104.482L28.3352 102.894C28.0541 102.853 27.8608 102.59 27.902 102.307C27.9433 102.026 28.2062 101.832 28.4898 101.873L38.7224 103.415C39.2741 103.498 39.8387 103.48 40.3827 103.358L45.374 102.252L45.4487 102.258L50.4529 102.621C51.2263 102.678 52.0023 102.562 52.7242 102.281L53.4152 102.013C53.6807 101.91 53.9798 102.041 54.0829 102.307C54.186 102.572 54.0545 102.871 53.789 102.974L51.8941 103.712C51.8219 103.74 51.7471 103.75 51.6698 103.745L45.8535 103.322C45.5854 103.302 45.3147 103.322 45.0543 103.382L40.2951 104.436C39.831 104.539 39.3541 104.555 38.8848 104.485L38.8823 104.482Z"
+              fill="#333333"
+            />
+            <path
+              d="M40.6559 89.1066C42.3729 89.3876 43.8373 87.9232 43.5537 86.2062C43.3836 85.1646 42.5431 84.3267 41.5041 84.1566C39.7845 83.873 38.3201 85.3399 38.6037 87.0595C38.7764 88.1011 39.6169 88.939 40.6559 89.1066Z"
+              fill="#333333"
+            />
+            <path
+              d="M52.7576 91.9833L40.6183 102.937C40.3572 103.172 40.3365 103.575 40.5721 103.836C40.8077 104.097 41.2104 104.118 41.4715 103.882L53.6108 92.9289C53.8719 92.6932 53.8926 92.2906 53.657 92.0295C53.4214 91.7684 53.0187 91.7477 52.7576 91.9833Z"
+              fill="#333333"
+            />
+            <path
+              d="M41.3552 97.9908L39.5995 96.0495C39.4732 95.9102 39.2979 95.8252 39.1096 95.8148L38.2563 95.7633C38.081 95.753 37.9082 95.8071 37.769 95.9154L36.5444 96.877C36.0829 97.2406 35.4049 96.9234 35.3843 96.3382C35.3765 96.1371 35.4539 95.9438 35.5957 95.802L38.741 92.6876C38.9111 92.5174 39.1561 92.4452 39.3932 92.4942L43.1882 93.2831L48.146 94.3969C48.3832 94.451 48.6281 94.3814 48.8034 94.2113L48.94 94.0772C49.3319 93.6982 49.1746 93.0408 48.6564 92.8758L43.6755 91.3109C43.6549 91.3057 43.6368 91.298 43.6162 91.2902L38.7204 89.2638C38.6198 89.2226 38.5141 89.2045 38.4058 89.2097L34.9047 89.4056C34.7397 89.4159 34.5825 89.4804 34.4613 89.5913L29.5551 94.0643C29.4752 94.1365 29.4133 94.2241 29.3746 94.3221L27.9335 97.8516C27.7943 98.1893 27.7092 98.5477 27.6782 98.9112L27.6318 99.4474C27.6318 99.8445 27.9541 100.167 28.3511 100.167H55.7901C56.1871 100.167 56.5094 99.8445 56.5094 99.4474V99.071C56.5094 98.6766 56.1923 98.3569 55.7979 98.3543L41.8863 98.2228C41.6852 98.2228 41.4944 98.1352 41.3604 97.9856L41.3552 97.9908Z"
+              fill="#333333"
+            />
+            <ellipse
+              cx="34.1374"
+              cy="88.6994"
+              rx="1.42841"
+              ry="1.44809"
+              fill="white"
+              fill-opacity="0.2"
+            />
+            <ellipse
+              cx="47.5641"
+              cy="74.7978"
+              rx="1.42841"
+              ry="1.44809"
+              fill="white"
+              fill-opacity="0.2"
+            />
+            <ellipse
+              cx="38.1369"
+              cy="66.3989"
+              rx="1.14272"
+              ry="1.15847"
+              fill="white"
+              fill-opacity="0.2"
+            />
+            <ellipse
+              cx="40.1363"
+              cy="79.4316"
+              rx="0.857043"
+              ry="0.868852"
+              fill="white"
+              fill-opacity="0.2"
+            />
+            <ellipse
+              cx="30.7091"
+              cy="74.5081"
+              rx="1.14272"
+              ry="1.15847"
+              fill="white"
+              fill-opacity="0.2"
+            />
+            <ellipse
+              cx="50.9928"
+              cy="62.0546"
+              rx="0.857043"
+              ry="0.868852"
+              fill="white"
+              fill-opacity="0.2"
+            />
+            <ellipse
+              cx="43.2786"
+              cy="91.3059"
+              rx="2.28545"
+              ry="2.31694"
+              fill="white"
+              fill-opacity="0.2"
+            />
+            <ellipse
+              cx="52.7063"
+              cy="82.0381"
+              rx="1.71409"
+              ry="1.7377"
+              fill="white"
+              fill-opacity="0.2"
+            />
+            <ellipse
+              cx="51.707"
+              cy="98.4015"
+              rx="1.57125"
+              ry="1.5929"
+              fill="white"
+              fill-opacity="0.2"
+            />
+            <ellipse
+              cx="30.8514"
+              cy="57.2759"
+              rx="0.428522"
+              ry="0.434426"
+              fill="white"
+              fill-opacity="0.2"
+            />
+            <ellipse
+              cx="39.7078"
+              cy="32.0956"
+              rx="0.428522"
+              ry="0.434426"
+              fill="white"
+              fill-opacity="0.2"
+            />
+            <ellipse
+              cx="42.8504"
+              cy="53.5109"
+              rx="0.428522"
+              ry="0.434426"
+              fill="white"
+              fill-opacity="0.2"
+            />
+            <ellipse
+              cx="51.7068"
+              cy="25.4344"
+              rx="0.428522"
+              ry="0.434426"
+              fill="white"
+              fill-opacity="0.2"
+            />
+            <g filter="url(#filter2_i_6034_5711)">
+              <ellipse cx="42.0664" cy="5" rx="16.5" ry="5" fill="#F48E35" />
+            </g>
+            <defs>
+              <filter
+                id="filter0_f_6034_5711"
+                x="0.566406"
+                y="78.5463"
+                width="82.5664"
+                height="52.7432"
+                filterUnits="userSpaceOnUse"
+                color-interpolation-filters="sRGB"
+              >
+                <feFlood flood-opacity="0" result="BackgroundImageFix" />
+                <feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape" />
+                <feGaussianBlur stdDeviation="10" result="effect1_foregroundBlur_6034_5711" />
+              </filter>
+              <filter
+                id="row_cap_shadow"
+                x="25.5664"
+                y="47"
+                width="33"
+                height="13"
+                filterUnits="userSpaceOnUse"
+                color-interpolation-filters="sRGB"
+              >
+                <feFlood flood-opacity="0" result="BackgroundImageFix" />
+                <feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape" />
+                <feColorMatrix
+                  in="SourceAlpha"
+                  type="matrix"
+                  values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0"
+                  result="hardAlpha"
+                />
+                <feOffset dy="-3" />
+                <feGaussianBlur stdDeviation="2" />
+                <feComposite in2="hardAlpha" operator="arithmetic" k2="-1" k3="1" />
+                <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.25 0" />
+                <feBlend mode="normal" in2="shape" result="effect1_innerShadow_6034_5711" />
+              </filter>
+              <filter
+                id="filter2_i_6034_5711"
+                x="25.5664"
+                y="-3"
+                width="33"
+                height="13"
+                filterUnits="userSpaceOnUse"
+                color-interpolation-filters="sRGB"
+              >
+                <feFlood flood-opacity="0" result="BackgroundImageFix" />
+                <feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape" />
+                <feColorMatrix
+                  in="SourceAlpha"
+                  type="matrix"
+                  values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0"
+                  result="hardAlpha"
+                />
+                <feOffset dy="-3" />
+                <feGaussianBlur stdDeviation="2" />
+                <feComposite in2="hardAlpha" operator="arithmetic" k2="-1" k3="1" />
+                <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.05 0" />
+                <feBlend mode="normal" in2="shape" result="effect1_innerShadow_6034_5711" />
+              </filter>
+            </defs>
+          </svg>
+          {{ 'universal_sportsName_boating' | translate }}
+        </div>
+
+        <!-- ball -->
+        <div class="type_value">
+          <div class="value_percent">
+            <span class="value">{{ getTypePercent('7') }}</span>
+            <span class="percent">%</span>
+          </div>
+          <svg
+            width="83"
+            height="132"
+            viewBox="0 0 83 132"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <g filter="url(#filter0_f_6034_5765)">
+              <ellipse
+                cx="41.6817"
+                cy="104.918"
+                rx="21.2832"
+                ry="6.37158"
+                fill="#D9C3A9"
+                fill-opacity="0.5"
+              />
+            </g>
+            <path
+              opacity="0.65"
+              fill-rule="evenodd"
+              clip-rule="evenodd"
+              d="M58.3984 5H25.3984V105C25.3984 107.761 32.7857 110 41.8984 110C51.0111 110 58.3984 107.761 58.3984 105V5Z"
+              fill="#D9C3A9"
+              fill-opacity="0.8"
+            />
+            <ellipse cx="41.8984" cy="105" rx="16.5" ry="5" fill="#D9C3A9" />
+            <rect id="ball_bar" x="25.3984" y="55" width="33" height="50" fill="#D9C3A9" />
+            <g filter="url(#ball_cap_shadow)">
+              <ellipse id="ball_cap" cx="41.8984" cy="55" rx="16.5" ry="5" fill="#D9C3A9" />
+            </g>
+            <path
+              d="M38.4276 94.2783C38.2909 91.9296 37.252 89.8233 35.6509 88.297C34.153 89.8723 33.1914 91.9631 33.0625 94.2783H38.4276Z"
+              fill="#333333"
+            />
+            <path
+              d="M33.0625 95.3276C33.1888 97.6427 34.1505 99.7336 35.6509 101.309C37.252 99.7826 38.2935 97.6737 38.4276 95.3276H33.0625Z"
+              fill="#333333"
+            />
+            <path
+              d="M41.9675 94.2783V85.3734C39.8045 85.492 37.8348 86.3402 36.3008 87.6731C38.0565 89.3618 39.1934 91.6873 39.3301 94.2783H41.9675Z"
+              fill="#333333"
+            />
+            <path
+              d="M43.0166 94.2783H45.654C45.7907 91.6899 46.9276 89.3618 48.6833 87.6731C47.1493 86.3402 45.1796 85.492 43.0166 85.3734V94.2783Z"
+              fill="#333333"
+            />
+            <path
+              d="M43.0166 95.3276V104.232C45.1796 104.114 47.1493 103.266 48.6833 101.933C46.9276 100.244 45.7907 97.9186 45.654 95.3276H43.0166Z"
+              fill="#333333"
+            />
+            <path
+              d="M41.9675 95.3276H39.3301C39.1934 97.916 38.0565 100.244 36.3008 101.933C37.8348 103.266 39.8045 104.114 41.9675 104.232V95.3276Z"
+              fill="#333333"
+            />
+            <path
+              d="M51.9223 94.2783C51.796 91.9631 50.8344 89.8723 49.3339 88.297C47.7329 89.8233 46.6913 91.9322 46.5547 94.2783H51.9198H51.9223Z"
+              fill="#333333"
+            />
+            <path
+              d="M46.5566 95.3276C46.6933 97.6762 47.7348 99.7826 49.3359 101.309C50.8338 99.7336 51.7954 97.6402 51.9243 95.3276H46.5592H46.5566Z"
+              fill="#333333"
+            />
+            <ellipse
+              cx="33.9694"
+              cy="88.6994"
+              rx="1.42841"
+              ry="1.44809"
+              fill="white"
+              fill-opacity="0.2"
+            />
+            <ellipse
+              cx="47.3962"
+              cy="74.7978"
+              rx="1.42841"
+              ry="1.44809"
+              fill="white"
+              fill-opacity="0.2"
+            />
+            <ellipse
+              cx="37.9689"
+              cy="66.3989"
+              rx="1.14272"
+              ry="1.15847"
+              fill="white"
+              fill-opacity="0.2"
+            />
+            <ellipse
+              cx="39.9684"
+              cy="79.4316"
+              rx="0.857043"
+              ry="0.868852"
+              fill="white"
+              fill-opacity="0.2"
+            />
+            <ellipse
+              cx="30.5412"
+              cy="74.5081"
+              rx="1.14272"
+              ry="1.15847"
+              fill="white"
+              fill-opacity="0.2"
+            />
+            <ellipse
+              cx="50.8248"
+              cy="62.0546"
+              rx="0.857043"
+              ry="0.868852"
+              fill="white"
+              fill-opacity="0.2"
+            />
+            <ellipse
+              cx="43.1106"
+              cy="91.3059"
+              rx="2.28545"
+              ry="2.31694"
+              fill="white"
+              fill-opacity="0.2"
+            />
+            <ellipse
+              cx="52.5383"
+              cy="82.0381"
+              rx="1.71409"
+              ry="1.7377"
+              fill="white"
+              fill-opacity="0.2"
+            />
+            <ellipse
+              cx="51.539"
+              cy="98.4015"
+              rx="1.57125"
+              ry="1.5929"
+              fill="white"
+              fill-opacity="0.2"
+            />
+            <ellipse
+              cx="30.6834"
+              cy="57.2759"
+              rx="0.428522"
+              ry="0.434426"
+              fill="white"
+              fill-opacity="0.2"
+            />
+            <ellipse
+              cx="39.5398"
+              cy="32.0956"
+              rx="0.428522"
+              ry="0.434426"
+              fill="white"
+              fill-opacity="0.2"
+            />
+            <ellipse
+              cx="42.6824"
+              cy="53.5109"
+              rx="0.428522"
+              ry="0.434426"
+              fill="white"
+              fill-opacity="0.2"
+            />
+            <ellipse
+              cx="51.5389"
+              cy="25.4344"
+              rx="0.428522"
+              ry="0.434426"
+              fill="white"
+              fill-opacity="0.2"
+            />
+            <g filter="url(#filter2_i_6034_5765)">
+              <ellipse cx="41.8984" cy="5" rx="16.5" ry="5" fill="#D9C3A9" />
+            </g>
+            <defs>
+              <filter
+                id="filter0_f_6034_5765"
+                x="0.398438"
+                y="78.5463"
+                width="82.5664"
+                height="52.7432"
+                filterUnits="userSpaceOnUse"
+                color-interpolation-filters="sRGB"
+              >
+                <feFlood flood-opacity="0" result="BackgroundImageFix" />
+                <feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape" />
+                <feGaussianBlur stdDeviation="10" result="effect1_foregroundBlur_6034_5765" />
+              </filter>
+              <filter
+                id="ball_cap_shadow"
+                x="25.3984"
+                y="47"
+                width="33"
+                height="13"
+                filterUnits="userSpaceOnUse"
+                color-interpolation-filters="sRGB"
+              >
+                <feFlood flood-opacity="0" result="BackgroundImageFix" />
+                <feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape" />
+                <feColorMatrix
+                  in="SourceAlpha"
+                  type="matrix"
+                  values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0"
+                  result="hardAlpha"
+                />
+                <feOffset dy="-3" />
+                <feGaussianBlur stdDeviation="2" />
+                <feComposite in2="hardAlpha" operator="arithmetic" k2="-1" k3="1" />
+                <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.25 0" />
+                <feBlend mode="normal" in2="shape" result="effect1_innerShadow_6034_5765" />
+              </filter>
+              <filter
+                id="filter2_i_6034_5765"
+                x="25.3984"
+                y="-3"
+                width="33"
+                height="13"
+                filterUnits="userSpaceOnUse"
+                color-interpolation-filters="sRGB"
+              >
+                <feFlood flood-opacity="0" result="BackgroundImageFix" />
+                <feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape" />
+                <feColorMatrix
+                  in="SourceAlpha"
+                  type="matrix"
+                  values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0"
+                  result="hardAlpha"
+                />
+                <feOffset dy="-3" />
+                <feGaussianBlur stdDeviation="2" />
+                <feComposite in2="hardAlpha" operator="arithmetic" k2="-1" k3="1" />
+                <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.05 0" />
+                <feBlend mode="normal" in2="shape" result="effect1_innerShadow_6034_5765" />
+              </filter>
+            </defs>
+          </svg>
+          {{ 'universal_activityData_ballSports' | translate }}
+        </div>
+      </div>
+    </ng-container>
+    <ng-template class="week_month_chart" #noDataTemplate>
+      <div class="effect_value no_data">此時間區間無運動資料</div>
+    </ng-template>
+  </div>
+</div>

@@ -1,0 +1,36 @@
+<app-loading-bar [progress]="progress"></app-loading-bar>
+<app-loading-mask [isLoading]="progress !== 100"></app-loading-mask>
+
+<div class="chart_wrap">
+  <div class="choose_calc">
+    <span
+      [class.active]="uiFlag.calculateType == '531'"
+      class="calc_type"
+      (click)="onCalculateTypeChange('531')"
+      >531{{ 'universal_lifeTracking_target' | translate }}</span
+    >
+    <span
+      [class.active]="uiFlag.calculateType == '333'"
+      class="calc_type"
+      (click)="onCalculateTypeChange('333')"
+      >333{{ 'universal_lifeTracking_target' | translate }}</span
+    >
+    <span
+      [class.active]="uiFlag.calculateType == 'w150'"
+      class="calc_type"
+      (click)="onCalculateTypeChange('w150')"
+      >w150{{ 'universal_lifeTracking_target' | translate }}</span
+    >
+  </div>
+  <div class="doughnut_chart">
+    <app-completion-rate-doughnut-chart></app-completion-rate-doughnut-chart>
+  </div>
+  <div class="detail_chart">
+    <app-exercise-habits-detail></app-exercise-habits-detail>
+  </div>
+  <div class="trend_chart">
+    <app-exercise-habits-trend-chart
+      [calculateType]="uiFlag.calculateType"
+    ></app-exercise-habits-trend-chart>
+  </div>
+</div>
