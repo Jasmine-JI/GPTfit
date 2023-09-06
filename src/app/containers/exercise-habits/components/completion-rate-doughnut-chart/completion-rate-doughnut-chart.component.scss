@@ -59,6 +59,9 @@
   transform: translate(-50%, -25%);
   color: #483535;
   z-index: 1;
+  @include xs() {
+    top: 55%;
+  }
 }
 
 .last_week_effect,
@@ -72,7 +75,11 @@
 }
 
 .week_month_text {
+<<<<<<< HEAD
   font-size: 14px;
+=======
+  font-size: 13px;
+>>>>>>> 80595986... [web 1.15.2.0]531頁面手動更新檔案
   letter-spacing: -0.5px;
   display: block;
   color: #857979;
@@ -85,12 +92,19 @@
   text-align: center;
 
   .this_wm_value {
-    font-size: 30px;
+    font-size: 24px;
+    @include m() {
+      font-size: 30px;
+    }
   }
 
   .last_wm_value {
     color: #857979;
+<<<<<<< HEAD
     font-size: 17px;
+=======
+    font-size: 16px;
+>>>>>>> 80595986... [web 1.15.2.0]531頁面手動更新檔案
     @include m() {
       font-size: 20px;
     }
