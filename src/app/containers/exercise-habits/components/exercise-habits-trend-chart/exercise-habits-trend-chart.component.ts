@@ -140,9 +140,7 @@ export class ExerciseHabitsTrendChartComponent
   constructor(
     private exerciseHabitsService: ExerciseHabitsService,
     private translate: TranslateService,
-    private breakpointObserver: BreakpointObserver,
-    private elementRef: ElementRef,
-    private cdr: ChangeDetectorRef
+    private breakpointObserver: BreakpointObserver
   ) {}
 
   ngOnInit() {
