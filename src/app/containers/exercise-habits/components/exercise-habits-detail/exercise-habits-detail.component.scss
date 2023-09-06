@@ -1,10 +1,17 @@
 @import 'screen-size.scss';
 
-.detailChart_title {
+.detailChart_wrap {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
   color: #888;
   letter-spacing: 1px;
-  font-weight: 700;
   font-size: 15px;
+}
+
+.detailChart_title {
+  font-weight: 700;
   margin: 10px;
   position: relative;
   &::before {
@@ -176,11 +183,9 @@ thead {
 
 tbody {
   flex: 1;
-  /* Allow tbody to fill available space */
   display: block;
-  /* Enable vertical scrolling if needed */
   overflow-y: auto;
-  /* Show vertical scrollbar if tbody overflows */
+  max-height: 59vh;
 }
 
 tr {

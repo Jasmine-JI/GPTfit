@@ -4,7 +4,7 @@
   display: flex;
   flex-direction: column;
   gap: 15px;
-  margin: 0 auto 50px;
+  margin: 0 auto 60px;
 }
 .doughnut_chart,
 .trend_chart,
@@ -50,7 +50,7 @@
     display: grid;
     grid-gap: 20px;
     grid-template-columns: [line_1] 40% [line2] 60% [column-3];
-    grid-template-rows: 30px auto repeat(2, 1fr);
+    grid-template-rows: 30px auto repeat(1, 1fr);
     grid-auto-rows: minmax(20px, auto);
   }
   // grid-area:grid-row-start / grid-column-start / grid-row-end / grid-column-end

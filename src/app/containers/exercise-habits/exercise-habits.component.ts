@@ -75,6 +75,7 @@ export class ExerciseHabitsComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
+    this.exerciseHabitsService.updateCalculateType('531');
     this.getGroupId();
     this.progress = 30;
   }

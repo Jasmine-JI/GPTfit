@@ -8,6 +8,9 @@ import {
   ViewChild,
   HostListener,
   ChangeDetectorRef,
+  OnChanges,
+  SimpleChanges,
+  Input,
 } from '@angular/core';
 import {
   Api531Post,
@@ -85,7 +88,9 @@ const DATE_FORMAT = {
     { provide: MAT_DATE_FORMATS, useValue: DATE_FORMAT },
   ],
 })
-export class ExerciseHabitsTrendChartComponent implements OnInit, AfterViewInit, OnDestroy {
+export class ExerciseHabitsTrendChartComponent
+  implements OnInit, OnChanges, AfterViewInit, OnDestroy
+{
   @ViewChild('svgContainer') svgContainer: ElementRef;
   @ViewChild('selectOption') selectOption: ElementRef;
   private languageChangeSubscription: Subscription;
@@ -120,7 +125,8 @@ export class ExerciseHabitsTrendChartComponent implements OnInit, AfterViewInit,
   FilterStartTime: string;
   FilterEndTime: string;
   select_type: number; //自訂時間 1
-  calculateType: string = this.exerciseHabitsService.calculateType;
+  @Input() calculateType: string;
+  // calculateType: string = this.exerciseHabitsService.getCalculateType();
 
   /**
    * 此圖所需資料
@@ -134,13 +140,18 @@ export class ExerciseHabitsTrendChartComponent implements OnInit, AfterViewInit,
   constructor(
     private exerciseHabitsService: ExerciseHabitsService,
     private translate: TranslateService,
-    private breakpointObserver: BreakpointObserver,
-    private elementRef: ElementRef,
-    private cdr: ChangeDetectorRef
+    private breakpointObserver: BreakpointObserver
   ) {}
 
   ngOnInit() {
     this.get531Response();
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes.calculateType && changes.calculateType.currentValue) {
+      this.uiFlag.dateOption = this.dateOptions.past3Months;
+      this.getApiRequest();
+    }
   }
 
   /**
@@ -160,7 +171,7 @@ export class ExerciseHabitsTrendChartComponent implements OnInit, AfterViewInit,
   }
 
   /**
-   * 開啟快速日期選單
+   * 開啟/關閉快速日期選單
    */
   dateSelect() {
     this.uiFlag.isDateSelect = !this.uiFlag.isDateSelect;
@@ -790,16 +801,12 @@ export class ExerciseHabitsTrendChartComponent implements OnInit, AfterViewInit,
               if (datasetIndex === 0) {
                 // 第一個資料集的 tooltip，平均運動天數
                 return `${this.translate.instant(
-                  'universal_adjective_avg'
-                )}${this.translate.instant('universal_time_day')}:${value}${this.translate.instant(
-                  'universal_time_day'
-                )}`;
+                  'universal_time_avgDays'
+                )}:${value}${this.translate.instant('universal_time_day')}`;
               } else if (datasetIndex === 1) {
                 // 第二個資料集的 tooltip，平均運動時間
                 return `${this.translate.instant(
-                  'universal_adjective_avg'
-                )}${this.translate.instant(
-                  'universal_activityData_time'
+                  'universal_time_avgTimes'
                 )}:${value}${this.translate.instant('universal_time_minute')}`;
               }
             },
