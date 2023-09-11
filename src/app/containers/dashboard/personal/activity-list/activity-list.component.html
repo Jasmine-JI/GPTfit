@@ -1,77 +1,106 @@
 <app-loading-bar [progress]="uiFlag.progress"></app-loading-bar>
-<section class="cardSection">
-  <app-report-filter></app-report-filter>
+<section class="filterSection">
+  <app-activity-list-filter></app-activity-list-filter>
 </section>
-<section class="cardSection" style="min-height: 200px">
+<section class="cards">
   <ul class="activity__list">
     <ng-container *ngIf="activityList.length > 0; else noData">
       <ng-container *ngFor="let _list of activityList; let _idx = index">
         <li [id]="'card__' + _idx" class="flexCol list__card" (click)="handleNavigation(_idx)">
+          <!-- 圖片區 -->
           <div class="flexCenter list__img__block">
+            <!-- 圖片遮罩 -->
             <div class="img__mask"></div>
             <img
               [src]="_list.fileInfo.scenery ? _list.fileInfo.scenery : _list.fileInfo.photo"
               class="list__img"
             />
-            <i class="icon-svg_web-icon_p2_096-camera"></i>
-          </div>
-          <div class="flexCol list__card__info">
-            <span class="list__title">{{ _list.fileInfo.dispName }}</span>
-            <div class="flexRow" style="justify-content: space-between; align-items: center">
-              <i
-                [class]="_list.activityInfoLayer.type | sportTypeIcon"
-                style="font-size: 24px; color: var(--scale-100-205)"
-              ></i>
-              <div class="flexCol" style="align-items: flex-end">
-                <div class="flexRow" style="align-items: center">
-                  <ng-container
-                    *ngIf="
-                      _list.activityInfoLayer.avgHeartRateBpm &&
-                      [sportCode.all, sportCode.aerobic, sportCode.ball].includes(
-                        reportConditionOpt.sportType
-                      )
-                    "
-                  >
-                    <i class="icon-svg_web-icon_p2_006-avg_heart_rate"></i>
-                    <span style="font-size: 14px; margin-right: 5px">
-                      {{ _list.activityInfoLayer.avgHeartRateBpm }}
-                    </span>
-                  </ng-container>
-                  <ng-container
-                    *ngIf="
-                      _list.activityInfoLayer.totalDistanceMeters &&
-                      [sportCode.run, sportCode.cycle, sportCode.swim, sportCode.row].includes(
-                        reportConditionOpt.sportType
-                      )
-                    "
-                  >
-                    <i class="icon-svg_web-icon_p2_018-distance"></i>
-                    <span style="font-size: 14px; margin-right: 5px">
-                      {{
-                        _list.activityInfoLayer.totalDistanceMeters
-                          | distanceSibs: { unitType: unit, showUnit: true }
-                      }}
-                    </span>
-                  </ng-container>
-                  <ng-container
-                    *ngIf="
-                      _list.activityInfoLayer.totalWeightKg &&
-                      reportConditionOpt.sportType === sportCode.weightTrain
-                    "
-                  >
-                    <i class="icon-svg_web-icon_p2_033-weight"></i>
-                    <span style="font-size: 14px; margin-right: 5px">
-                      {{ _list.activityInfoLayer.totalWeightKg | weightSibs: { unitType: unit } }}
-                    </span>
-                  </ng-container>
-                  <i class="icon-svg_web-icon_p1_026-time"></i>
-                  <span style="font-size: 14px">
-                    {{ _list.activityInfoLayer.totalSecond | sportTime }}
+            <!-- 文字區 -->
+            <div class="list__card__info">
+              <!-- 日期/icon/標題 -->
+              <div class="flexCol card_info_wrapper">
+                <div class="flexCol info_head">
+                  <!-- 日期-YYYY-MM-DD -->
+                  <span class="startTime">
+                    {{ _list.activityInfoLayer.startTime | timeFormat: 'YYYY-MM-DD' }}
                   </span>
+                  <!--運動類別 icon / 日期-ddd HH:mm -->
+                  <div class="flexRow activityType">
+                    <i [class]="_list.activityInfoLayer.type | sportTypeIcon"> </i>
+                    <!-- 日期-ddd HH:mm -->
+                    <span class="startTime">
+                      {{ _list.activityInfoLayer.startTime | timeFormat: 'ddd HH:mm' }}
+                    </span>
+                  </div>
+                  <!-- 標題 -->
+                  <span class="list__title">{{ _list.fileInfo.dispName }}</span>
                 </div>
-                <span style="font-size: 12px; color: var(--scale-150-180)">
-                  {{ _list.activityInfoLayer.startTime | timeFormat: 'YYYY-MM-DD ddd HH:mm' }}
-                </span>
+                <!-- 心率/運動時間 -->
+                <div class="flexRow info_bottom">
+                  <!--  totalSecond 總時間 icon-->
+                  <div class="time">
+                    <i class="icon-svg_web-icon_p2_019-time"></i>
+                    <!-- 總時間 數字 -->
+                    <span>
+                      {{ _list.activityInfoLayer.totalSecond | sportTime }}
+                    </span>
+                  </div>
+                  <!-- avgHeartRateBpm  -->
+                  <div class="heartRate">
+                    <ng-container
+                      *ngIf="
+                        _list.activityInfoLayer.avgHeartRateBpm &&
+                        [sportCode.all, sportCode.aerobic, sportCode.ball].includes(
+                          reportConditionOpt.sportType
+                        )
+                      "
+                    >
+                      <!-- avgHeartRateBpm icon -->
+                      <i class="icon-svg_web-icon_p2_006-avg_heart_rate"></i>
+                      <!-- avgHeartRateBpm 數字 -->
+                      <span>
+                        {{ _list.activityInfoLayer.avgHeartRateBpm }}
+                      </span>
+                    </ng-container>
+                  </div>
+                  <!-- totalDistanceMeters  -->
+                  <div class="totalDistance">
+                    <ng-container
+                      *ngIf="
+                        _list.activityInfoLayer.totalDistanceMeters &&
+                        [sportCode.run, sportCode.cycle, sportCode.swim, sportCode.row].includes(
+                          reportConditionOpt.sportType
+                        )
+                      "
+                    >
+                      <!-- totalDistanceMeters icon -->
+                      <i class="icon-svg_web-icon_p2_018-distance"></i>
+                      <!-- totalDistanceMeters 文字 -->
+                      <span>
+                        {{
+                          _list.activityInfoLayer.totalDistanceMeters
+                            | distanceSibs: { unitType: unit, showUnit: true }
+                        }}
+                      </span>
+                    </ng-container>
+                  </div>
+                  <!-- totalWeightKg -->
+                  <div class="totalWeight">
+                    <ng-container
+                      *ngIf="
+                        _list.activityInfoLayer.totalWeightKg &&
+                        reportConditionOpt.sportType === sportCode.weightTrain
+                      "
+                    >
+                      <!-- totalWeightKg icon -->
+                      <i class="icon-svg_web-icon_p2_033-weight"></i>
+                      <!-- totalWeightKg 文字 -->
+                      <span>
+                        {{ _list.activityInfoLayer.totalWeightKg | weightSibs: { unitType: unit } }}
+                      </span>
+                    </ng-container>
+                  </div>
+                </div>
               </div>
             </div>
           </div>

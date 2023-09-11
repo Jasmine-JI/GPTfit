@@ -102,10 +102,31 @@ export class ExerciseHabitsDetailComponent implements OnInit {
     return Math.round(value * 100);
   }
 
+  isToday(day: string) {
+    const thisWeek = [...new Set(this.latest_two_weeks_days.map((item) => item.year_week_num))][1];
+    const indexOfToday =
+      this.latest_two_weeks_days.filter(
+        (item) => item.year_week_num === thisWeek && item.day_of_week !== 'empty'
+      ).length - 1;
+    const indexOfEveryDay = this.dayOfWeekName.indexOf(day);
+    return indexOfToday === indexOfEveryDay ? true : false;
+  }
+
+  isthisWeek(week: string) {
+    const thisMonth = [
+      ...new Set(this.latest_two_month_response.map((item) => item.year_month)),
+    ][1];
+    const numberOfWeek = this.latest_two_month_response.filter(
+      (item) => item.year_month === thisMonth && item.year_week_num !== 'empty'
+    ).length;
+    const numberOfEeeryWeek = `Week${numberOfWeek}`;
+    return week === numberOfEeeryWeek ? true : false;
+  }
+
   weeksValue() {
     const twoWeeks = [...new Set(this.latest_two_weeks_days.map((item) => item.year_week_num))];
-    const thisWeek = twoWeeks[1]; //本周週數
     const lastWeek = twoWeeks[0]; //上周週數
+    const thisWeek = twoWeeks[1]; //本周週數
 
     this.lastWeekValues = this.getWeekValues(lastWeek);
     this.thisWeekValues = this.getWeekValues(thisWeek);

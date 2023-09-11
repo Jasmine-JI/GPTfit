@@ -728,13 +728,6 @@ a.ban-send:hover {
   @include bold-font(18px);
 }
 
-.cardSection {
-  padding: 10px;
-  margin: 5px 0;
-  width: 100%;
-  background-color: rgba(240, 240, 240, 1);
-}
-
 .functionBtnBar {
   display: flex;
   flex-direction: row;

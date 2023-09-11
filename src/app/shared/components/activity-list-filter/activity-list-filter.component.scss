@@ -2,9 +2,11 @@
 @import 'flex-center.scss';
 @import 'font.scss';
 @import 'transform.scss';
-@import 'overflow-scroll';
 @import 'z-index.scss';
 @import 'min-size.scss';
+@import 'color.scss';
+@import 'screen-size.scss';
+@import 'overflow-scroll.scss';
 
 $active-color: rgba(38, 171, 227, 1);
 $hover-bg-gray: rgba(240, 240, 240, 1);
@@ -31,21 +33,156 @@ $drop-list-width: 200px;
   padding-left: 10px;
 }
 
-main {
-  margin-top: 10px;
+// filterSection
+.filterSection {
+  width: 100%;
+  margin: 0;
+}
+
+// 篩選按鈕
+.filterBtn {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  .filten,
+  .order {
+    min-width: 50px;
+    width: 75px;
+    height: fit-content;
+    border-radius: 10px;
+    padding: 5px 5px;
+    margin: 0 5px;
+    border: 1px solid transparent;
+    background: linear-gradient(white, white) padding-box,
+      linear-gradient(180deg, rgb(223, 58, 58) 0%, rgb(197, 73, 184) 100%) border-box;
+    cursor: pointer;
+  }
+  .typeFilter {
+    width: 100%;
+    margin: 10px 50px;
+    @include l() {
+      margin: 10px 20px;
+    }
+    @include s() {
+      margin: 10px 10px;
+    }
+    @include xs() {
+      overflow-y: auto;
+      scroll-behavior: smooth;
+      /* Firefox */
+      scrollbar-width: thin;
+      scrollbar-color: #f4a2b785 #ffffff;
+
+      /* Chrome, Edge, and Safari */
+      &::-webkit-scrollbar {
+        width: 10px;
+      }
+
+      &::-webkit-scrollbar-track {
+        background: #ffffff;
+      }
+
+      &::-webkit-scrollbar-thumb {
+        background-color: #f4a2b785;
+        border-radius: 5px;
+        border: 2px solid #ffffff;
+      }
+    }
+  }
+}
+
+.filterIcon {
+  font-size: 25px;
+}
+
+.ConditionSelector {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 10px;
+  @include m() {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    gap: unset;
+  }
+}
+
+// sortenBtns
+.order {
+  position: relative;
+  .sortenBtns {
+    // width
+    width: 120px;
+    height: fit-content;
+    padding: 10px;
+    // position
+    position: absolute;
+    top: 100%;
+    left: 0;
+    z-index: 22;
+    margin-top: 10px;
+    @include xs() {
+      margin-top: 5px;
+    }
+    // border
+    border-radius: 10px;
+    border: 1px solid transparent;
+    background: linear-gradient(white, white) padding-box,
+      linear-gradient(180deg, rgb(223, 58, 58) 0%, rgb(197, 73, 184) 100%) border-box;
+    // display
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+}
+
+.order-Btn {
+  width: 100%;
+  text-align: left;
+  &:hover {
+    background: linear-gradient(270deg, #df3a3a 0%, #c549b8 100%);
+    background: -webkit-linear-gradient(270deg, #df3a3a 0%, #c549b8 100%);
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+    font-weight: 900;
+  }
+  &.active {
+    background: linear-gradient(270deg, #df3a3a 0%, #c549b8 100%);
+    background: -webkit-linear-gradient(270deg, #df3a3a 0%, #c549b8 100%);
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+    font-weight: 900;
+  }
 }
 
 // sportTyle with Icon
 .sport__type__selector {
-  display: grid;
-  grid-gap: 0;
-  grid-template-columns: repeat(auto-fill, 100px);
+  box-sizing: border-box;
+  display: flex;
+  flex-wrap: wrap;
+  @include xs() {
+    flex-wrap: initial;
+  }
 }
 
 .sport__type__button {
-  flex-grow: 1;
-  margin: 5px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 0 0 calc(100% / 9);
+  padding: 0;
+  box-sizing: border-box;
   color: rgba(0, 0, 0, 0.5);
+  @include l() {
+    flex: 0 0 20%;
+  }
+  @include s() {
+    flex: 0 0 calc(100% / 3);
+  }
 }
 
 .sport__type__icon {
@@ -63,7 +200,7 @@ main {
 .condition__unfold__icon {
   color: var(--scale-100-230);
   @include transition(transform);
-  margin-left: 10px;
+  margin-left: 5px;
 }
 
 .condition__fold__icon {
@@ -167,7 +304,12 @@ main {
 }
 
 .condition__section {
-  margin: 3px 0;
+  display: flex;
+  gap: 10px;
+}
+
+.search_icon {
+  font-size: 24px;
 }
 
 .condition__title {
@@ -179,8 +321,6 @@ main {
 }
 
 .condition__content {
-  margin-left: 35px;
-  flex-wrap: wrap;
   color: var(--scale-0-255);
 }
 
@@ -306,5 +446,109 @@ main {
     height: 5px;
     background-color: #08d818;
     margin-right: 2px;
+  }
+}
+
+//時間篩選
+.choose_date {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  .time__icon {
+    font-size: 24px;
+    margin-right: 5px;
+  }
+}
+
+.select_option {
+  position: relative;
+
+  .date_option {
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translate(-50%, 0%);
+
+    min-width: 100%;
+    max-width: 100%;
+    z-index: 4;
+  }
+}
+
+.date_select {
+  min-width: 100px;
+  text-align: center;
+  height: fit-content;
+  border-radius: 10px;
+  padding: 0 10px;
+  border: 1px solid transparent;
+  background: linear-gradient(white, white) padding-box,
+    linear-gradient(180deg, rgb(223, 58, 58) 0%, rgb(197, 73, 184) 100%) border-box;
+  outline: none;
+  cursor: pointer;
+  @media screen and (max-width: 576px) {
+    min-width: 80px;
+    max-width: 100px;
+    > span {
+      overflow-wrap: break-word;
+    }
+  }
+}
+
+.date_option {
+  display: none;
+  &.active {
+    display: block;
+    padding: 5px;
+    border: 1px solid transparent;
+    border-radius: 0 0 10px 10px;
+    border-top: none;
+    background: linear-gradient(white, white) padding-box,
+      linear-gradient(180deg, rgb(223, 58, 58) 0%, rgb(197, 73, 184) 100%) border-box;
+
+    ul {
+      margin: 0;
+      padding: 0;
+    }
+
+    li {
+      list-style: none;
+      text-align: center;
+      cursor: pointer;
+      overflow-wrap: break-word; //外語長度過長
+      &:not(:last-child) {
+        margin-block-end: 5px;
+      }
+      &:hover {
+        background-color: rgb(252, 230, 236);
+        border-radius: 5px;
+      }
+      &.active {
+        background-color: rgb(252, 230, 236);
+        border-radius: 5px;
+      }
+    }
+  }
+}
+
+.filter_start_time,
+.filter_end_time {
+  button {
+    padding: 0;
+  }
+  input {
+    max-width: 95px;
+    text-align: center;
+    height: fit-content;
+    border-radius: 10px;
+    padding: 0 5px;
+    border: 1px solid transparent;
+    background: linear-gradient(white, white) padding-box,
+      linear-gradient(180deg, rgb(223, 58, 58) 0%, rgb(197, 73, 184) 100%) border-box;
+    outline: none;
+    cursor: pointer;
+    @include m() {
+      max-width: 100px;
+    }
   }
 }

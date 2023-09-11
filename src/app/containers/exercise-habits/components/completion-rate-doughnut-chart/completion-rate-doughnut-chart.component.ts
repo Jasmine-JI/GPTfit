@@ -1,14 +1,14 @@
-import { AfterViewInit, Component, OnDestroy, OnInit } from '@angular/core';
+import { AsyncPipe, NgIf } from '@angular/common';
+import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { Chart, ChartOptions } from 'chart.js/auto';
+import { Subject, Subscription, takeUntil } from 'rxjs';
 import {
   Api531Response,
   ExerciseHabitsService,
   latest_two_month_response,
   latest_two_weeks_days,
 } from '../../service/exercise-habits.service';
-import { Chart, ChartOptions, ChartTypeRegistry, TooltipItem } from 'chart.js/auto';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import { Subscription } from 'rxjs';
-import { AsyncPipe, NgIf } from '@angular/common';
 
 @Component({
   selector: 'app-completion-rate-doughnut-chart',
@@ -19,6 +19,8 @@ import { AsyncPipe, NgIf } from '@angular/common';
 })
 export class CompletionRateDoughnutChartComponent implements OnInit, AfterViewInit, OnDestroy {
   private languageChangeSubscription: Subscription;
+  private ngUnsubscribe = new Subject();
+  @ViewChild('week_month_chart') weekMonthChart: ElementRef;
 
   // post Response
   api531Response: Api531Response;
@@ -30,16 +32,52 @@ export class CompletionRateDoughnutChartComponent implements OnInit, AfterViewIn
   lastWeekCompletionRate: string;
   ifNoData: boolean;
 
+  //上週/月設定之顏色
+  lastWeekMonthColors = [
+    'rgba(178, 202, 255, 1)',
+    'rgba(178, 232, 255, 1)',
+    'rgba(193, 255, 178, 1)',
+    'rgba(255, 254, 178, 1)',
+    'rgba(255, 227, 178, 1)',
+    'rgba(243, 190, 241, 1)',
+    'rgba(255, 178, 178, 1)',
+  ];
+
+  //本週/月設定之顏色
+  thisWeekMonthColors = [
+    'rgba(127, 166, 255, 1)',
+    'rgba(127, 217, 255, 1)',
+    'rgba(151, 255, 128, 1)',
+    'rgba(255, 253, 122, 1)',
+    'rgba(255, 206, 120, 1)',
+    'rgba(231, 126, 227, 1)',
+    'rgba(255, 128, 128, 1)',
+  ];
+
   ngOnInit() {
     this.get531Response();
   }
 
   ngAfterViewInit() {
-    this.languageChangeSubscription = this.translate.onLangChange.subscribe(() => {
-      if (this.api531Response) {
-        this.initChart();
+    this.languageChangeSubscription = this.translate.onLangChange
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe(() => {
+        if (this.api531Response) {
+          this.initChart();
+        }
+      });
+
+    // 監聽 week_month_chart 寬度變化事件，並直接執行圖表 resize() 方法
+    new ResizeObserver(() => {
+      const weeksChart = Chart.getChart('weeks');
+      if (weeksChart) {
+        weeksChart.resize();
       }
-    });
+      const monthsChart = Chart.getChart('months');
+      if (monthsChart) {
+        monthsChart.resize();
+      }
+    }).observe(this.weekMonthChart.nativeElement);
   }
 
   constructor(
@@ -51,15 +89,21 @@ export class CompletionRateDoughnutChartComponent implements OnInit, AfterViewIn
    * 取回已儲存的 531API response
    */
   get531Response() {
-    this.exerciseHabitsService.getIfNoDataObservable().subscribe((value) => {
-      this.ifNoData = value;
-    });
+    this.exerciseHabitsService
+      .getIfNoDataObservable()
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe((value) => {
+        this.ifNoData = value;
+      });
     if (this.ifNoData === false) {
       //有運動資料
-      this.exerciseHabitsService.get531Response().subscribe((response: Api531Response) => {
-        this.api531Response = response;
-        this.getData(response);
-      });
+      this.exerciseHabitsService
+        .get531Response()
+        .pipe(takeUntil(this.ngUnsubscribe))
+        .subscribe((response: Api531Response) => {
+          this.api531Response = response;
+          this.getData(response);
+        });
     }
   }
 
@@ -71,7 +115,9 @@ export class CompletionRateDoughnutChartComponent implements OnInit, AfterViewIn
     if (this.api531Response) {
       this.latest_two_month_response = response.latest_two_month_response;
       this.latest_two_weeks_days = response.latest_two_weeks_days;
-      this.initChart();
+      setTimeout(() => {
+        this.initChart();
+      }, 500);
     }
   }
 
@@ -112,27 +158,6 @@ export class CompletionRateDoughnutChartComponent implements OnInit, AfterViewIn
     const lastWeekLabels = getWeekLabels(lastWeek);
     const thisWeekLabels = getWeekLabels(thisWeek);
 
-    const lastWeekColors = [
-      'rgba(178, 202, 255, 1)',
-      'rgba(178, 232, 255, 1)',
-      'rgba(193, 255, 178, 1)',
-      'rgba(255, 254, 178, 1)',
-      'rgba(255, 227, 178, 1)',
-
-      'rgba(243, 190, 241, 1)',
-      'rgba(255, 178, 178, 1)',
-    ];
-
-    const thisWeekColors = [
-      'rgba(127, 166, 255, 1)',
-      'rgba(127, 217, 255, 1)',
-      'rgba(151, 255, 128, 1)',
-      'rgba(255, 253, 122, 1)',
-      'rgba(255, 206, 120, 1)',
-      'rgba(231, 126, 227, 1)',
-      'rgba(255, 128, 128, 1)',
-    ];
-
     // 上周-每天指定顏色
     const getLastWeekColor = (dayOfWeek) => {
       if (dayOfWeek === 'empty') {
@@ -140,7 +165,7 @@ export class CompletionRateDoughnutChartComponent implements OnInit, AfterViewIn
       } else {
         const dayIndexInWeek = lastWeekLabels.indexOf(dayOfWeek);
         if (dayIndexInWeek !== -1) {
-          return lastWeekColors[dayIndexInWeek % lastWeekColors.length];
+          return this.lastWeekMonthColors[dayIndexInWeek % this.lastWeekMonthColors.length];
         }
       }
     };
@@ -152,7 +177,7 @@ export class CompletionRateDoughnutChartComponent implements OnInit, AfterViewIn
       } else {
         const dayIndexInWeek = thisWeekLabels.indexOf(dayOfWeek);
         if (dayIndexInWeek !== -1) {
-          return thisWeekColors[dayIndexInWeek % thisWeekColors.length];
+          return this.thisWeekMonthColors[dayIndexInWeek % this.thisWeekMonthColors.length];
         }
       }
     };
@@ -161,7 +186,6 @@ export class CompletionRateDoughnutChartComponent implements OnInit, AfterViewIn
       labels: lastWeekLabels.concat(thisWeekLabels), // 合併兩週的日期
       datasets: [
         {
-          // label: this.translate.instant('universal_lifeTracking_achievementRate'),
           data: [...lastWeekValues, ...new Array(thisWeekLabels.length).fill(null)], // 使用 null 填充未知的本週值
           backgroundColor: [
             ...lastWeekLabels.map((dayOfWeek) => getLastWeekColor(dayOfWeek)),
@@ -188,7 +212,6 @@ export class CompletionRateDoughnutChartComponent implements OnInit, AfterViewIn
           weight: 0.4,
         },
         {
-          // label: this.translate.instant('universal_lifeTracking_achievementRate'),
           data: [...new Array(lastWeekLabels.length).fill(null), ...thisWeekValues], // 使用 null 填充未知的上週值
           backgroundColor: [
             ...new Array(lastWeekLabels.length).fill(null),
@@ -267,10 +290,6 @@ export class CompletionRateDoughnutChartComponent implements OnInit, AfterViewIn
       data: data,
       options: options, // 指定 options 物件來設定多個 Y 軸
     });
-
-    window.addEventListener('resize', function () {
-      Chart.getChart('weeks').resize();
-    });
   }
 
   monthsValue() {
@@ -303,26 +322,6 @@ export class CompletionRateDoughnutChartComponent implements OnInit, AfterViewIn
     const lastMonthLabels = getMonthLabels(lastMonth);
     const thisMonthLabels = getMonthLabels(thisMonth);
 
-    const lastMonthColors = [
-      'rgba(178, 202, 255, 1)',
-      'rgba(178, 232, 255, 1)',
-      'rgba(193, 255, 178, 1)',
-      'rgba(255, 254, 178, 1)',
-      'rgba(255, 227, 178, 1)',
-      'rgba(255, 178, 178, 1)',
-      'rgba(243, 190, 241, 1)',
-    ];
-
-    const thisMonthColors = [
-      'rgba(127, 166, 255, 1)',
-      'rgba(127, 217, 255, 1)',
-      'rgba(151, 255, 128, 1)',
-      'rgba(255, 253, 122, 1)',
-      'rgba(255, 206, 120, 1)',
-      'rgba(255, 128, 128, 1)',
-      'rgba(231, 126, 227, 1)',
-    ];
-
     // 上月-每周指定顏色
     const getLastMonthColor = (weekNumber) => {
       if (weekNumber === 'empty') {
@@ -330,7 +329,7 @@ export class CompletionRateDoughnutChartComponent implements OnInit, AfterViewIn
       } else {
         const weekIndexInMonth = lastMonthLabels.indexOf(weekNumber); // 取得週數在本月的索引
         if (weekIndexInMonth !== -1) {
-          return lastMonthColors[weekIndexInMonth % lastMonthColors.length];
+          return this.lastWeekMonthColors[weekIndexInMonth % this.lastWeekMonthColors.length];
         }
       }
     };
@@ -344,7 +343,7 @@ export class CompletionRateDoughnutChartComponent implements OnInit, AfterViewIn
         const weekIndexInArray = thisMonthLabels.indexOf(weekNumber);
         if (weekIndexInArray !== -1) {
           // 使用 weekIndexInArray 来索引颜色数组
-          return thisMonthColors[weekIndexInArray % thisMonthColors.length];
+          return this.thisWeekMonthColors[weekIndexInArray % this.thisWeekMonthColors.length];
         }
       }
     };
@@ -353,7 +352,6 @@ export class CompletionRateDoughnutChartComponent implements OnInit, AfterViewIn
       labels: [...lastMonthLabels, ...thisMonthLabels],
       datasets: [
         {
-          // label: this.translate.instant('universal_lifeTracking_achievementRate'),
           data: [...lastMonthValues, ...new Array(thisMonthValues.length).fill(null)], // 使用 null 填充未知的本月值
           backgroundColor: [
             ...lastMonthLabels.map(
@@ -375,7 +373,6 @@ export class CompletionRateDoughnutChartComponent implements OnInit, AfterViewIn
           borderRadius: 10,
         },
         {
-          // label: this.translate.instant('universal_lifeTracking_achievementRate'),
           data: [...new Array(lastMonthValues.length).fill(null), ...thisMonthValues], // 使用 null 填充未知的上月值
           backgroundColor: [
             ...new Array(lastMonthValues.length).fill(null),
@@ -405,7 +402,7 @@ export class CompletionRateDoughnutChartComponent implements OnInit, AfterViewIn
 
     const options: ChartOptions = {
       responsive: true, // 允許圖表自適應大小
-      maintainAspectRatio: true, // 保持正圓形
+      maintainAspectRatio: true,
       animation: {
         easing: 'easeOutBounce',
       },
@@ -453,10 +450,6 @@ export class CompletionRateDoughnutChartComponent implements OnInit, AfterViewIn
       data: data,
       options: options, // 指定 options 物件來設定多個 Y 軸
     });
-
-    window.addEventListener('resize', function () {
-      Chart.getChart('months').resize();
-    });
   }
 
   ngOnDestroy(): void {
@@ -464,5 +457,7 @@ export class CompletionRateDoughnutChartComponent implements OnInit, AfterViewIn
     if (this.languageChangeSubscription) {
       this.languageChangeSubscription.unsubscribe();
     }
+    this.ngUnsubscribe.next(null);
+    this.ngUnsubscribe.complete();
   }
 }

@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Api21xxService } from './api-21xx.service';
 import { deepCopy } from '../utils/index';
-import { Observable, BehaviorSubject, ReplaySubject } from 'rxjs';
+import { Observable, BehaviorSubject, ReplaySubject, Subject } from 'rxjs';
 import { ReportConditionOpt } from '../models/compo/report-condition.model';
 
 @Injectable({
@@ -10,6 +10,7 @@ import { ReportConditionOpt } from '../models/compo/report-condition.model';
 export class ReportService {
   reportCondition$ = new ReplaySubject<ReportConditionOpt>(1);
   reportLoading$ = new ReplaySubject<boolean>(1);
+  OrderType$: number;
 
   /**
    * 儲存api 2104回傳之基準運動數據，
@@ -137,5 +138,19 @@ export class ReportService {
    */
   getReportLoading(): Observable<boolean> {
     return this.reportLoading$;
+  }
+
+  /**
+   * 儲存排序條件
+   */
+  setSelectedOrderType(OrderType: number) {
+    this.OrderType$ = OrderType;
+  }
+
+  /**
+   * 取得排序條件
+   */
+  getSelectedOrderType() {
+    return this.OrderType$;
   }
 }
