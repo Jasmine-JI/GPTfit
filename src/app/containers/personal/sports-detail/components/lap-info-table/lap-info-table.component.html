@@ -214,7 +214,13 @@
           <span class="lap__column">{{ _lapIndex }}</span>
           <div class="flexCol" style="width: 100%">
             <span class="lap__display__name" *ngIf="_lap && !compareLapData">
-              <ng-container *ngIf="sportsType !== SportType.swim && _lap[dataIndex['dispName']]">
+              <ng-container
+                *ngIf="
+                  sportsType !== SportType.swim &&
+                  _lap[dataIndex['dispName']] &&
+                  _lap[dataIndex['dispName']] !== 'ERROR'
+                "
+              >
                 {{ _lap[dataIndex['dispName']] }}
               </ng-container>
               <ng-container

@@ -6,7 +6,7 @@ import {
   GlobalEventsService,
   UserService,
 } from '../../../core/services';
-import { Observable, Subject, takeUntil } from 'rxjs';
+import { BehaviorSubject, Observable, Subject, takeUntil } from 'rxjs';
 import { TranslateService, TranslateModule } from '@ngx-translate/core';
 import { langData } from '../../../core/models/const';
 import { setLocalStorageObject, getLocalStorageObject } from '../../../core/utils';
@@ -41,7 +41,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
   isShowMask = false;
   href: string;
   deviceWidth: number;
-  login$: Observable<boolean>;
+  login$: BehaviorSubject<boolean>;
   langName: string;
   showActivityEntry = false;
   isCountdownFinished = false;

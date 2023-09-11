@@ -129,6 +129,7 @@ import {
   LoadingMaskComponent,
   ImgCropperComponent,
 } from '../../components';
+import { ActivityListFilterComponent } from './activity-list-filter/activity-list-filter.component';
 
 @NgModule({
   imports: [
@@ -258,6 +259,7 @@ import {
     ComparePaceChartComponent,
     CompareExtremeGforceChartComponent,
     WeightTrainLevelSelectorComponent,
+    ActivityListFilterComponent,
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   exports: [
@@ -312,6 +314,8 @@ import {
     ComparePaceChartComponent,
     CompareExtremeGforceChartComponent,
     WeightTrainLevelSelectorComponent,
+    ActivityListFilterComponent,
   ],
+  declarations: [],
 })
 export class SharedComponentsModule {}

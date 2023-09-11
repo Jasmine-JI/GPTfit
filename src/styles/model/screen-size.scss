@@ -34,12 +34,26 @@ $extra-small: 450px;
   }
 }
 
+// 大-小
+@mixin l() {
+  @media screen and (max-width: 1200px) {
+    @content;
+  }
+}
+
 @mixin s() {
   @media screen and (max-width: 767px) {
     @content;
   }
 }
 
+@mixin xs() {
+  @media screen and (max-width: 430px) {
+    @content;
+  }
+}
+
+// 小-大
 @mixin m() {
   @media screen and (min-width: 768px) {
     @content;
