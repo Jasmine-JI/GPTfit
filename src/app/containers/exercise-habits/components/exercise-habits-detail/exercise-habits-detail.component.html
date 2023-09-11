@@ -1,7 +1,7 @@
 <ng-container *ngIf="!ifNoData">
   <!-- <div class="detailChart_title">{{ 'universal_system_completenessDetail' | translate }}</div> -->
   <div class="detailChart_wrap">
-    <div class="detailChart_title">詳細列表</div>
+    <div class="detailChart_title">{{ 'universal_system_completenessDetail' | translate }}</div>
     <div class="detailChart_unit">{{ 'universal_deviceSetting_unit' | translate }} (%)</div>
   </div>
 
@@ -123,12 +123,27 @@
               {{ roundToInteger(lastWeekValues[i]) || '0' }}
             </td>
             <td class="colored-cell">{{ day }}</td>
-            <td
-              class="colored-cell"
-              [ngStyle]="{ 'background-color': getBackgroundColor(thisWeekValues[i]) }"
-            >
-              {{ roundToInteger(thisWeekValues[i]) || '0' }}
-            </td>
+            <ng-container *ngIf="isToday(day); else anotherDay">
+              <!-- 今日標記 -->
+              <div class="note_day_week">
+                <div class="note_text">{{ 'universal_time_today' | translate }}</div>
+                <td
+                  class="colored-cell"
+                  [ngStyle]="{ 'background-color': getBackgroundColor(thisWeekValues[i]) }"
+                >
+                  {{ roundToInteger(thisWeekValues[i]) || '0' }}
+                </td>
+              </div>
+            </ng-container>
+
+            <ng-template #anotherDay>
+              <td
+                class="colored-cell"
+                [ngStyle]="{ 'background-color': getBackgroundColor(thisWeekValues[i]) }"
+              >
+                {{ roundToInteger(thisWeekValues[i]) || '0' }}
+              </td>
+            </ng-template>
           </tr>
         </tbody>
       </table>
@@ -141,13 +156,29 @@
           </tr>
         </thead>
         <tbody class="personal_data">
-          <tr *ngFor="let day of WeekOfMonthName; let i = index">
-            <td
-              class="colored-cell"
-              [ngStyle]="{ 'background-color': getBackgroundColor(thisMonthValues[i]) }"
-            >
-              {{ roundToInteger(thisMonthValues[i]) || '0' }}
-            </td>
+          <tr *ngFor="let week of WeekOfMonthName; let i = index">
+            <!-- 本週標記 -->
+            <ng-container *ngIf="isthisWeek(week); else anotherDay">
+              <div class="note_day_week">
+                <div class="note_text">{{ 'universal_time_thisWeek' | translate }}</div>
+                <td
+                  class="colored-cell"
+                  [ngStyle]="{ 'background-color': getBackgroundColor(thisMonthValues[i]) }"
+                >
+                  {{ roundToInteger(thisMonthValues[i]) || '0' }}
+                </td>
+              </div>
+            </ng-container>
+
+            <ng-template #anotherDay>
+              <td
+                class="colored-cell"
+                [ngStyle]="{ 'background-color': getBackgroundColor(thisMonthValues[i]) }"
+              >
+                {{ roundToInteger(thisMonthValues[i]) || '0' }}
+              </td>
+            </ng-template>
+
             <td class="colored-cell">{{ WeekOfMonthName[i] }}</td>
             <td
               class="colored-cell"

@@ -1,149 +1,128 @@
 <div
   #filterSection
-  style="width: 100%; margin: 0"
-  class="cardContent"
+  class="filterSection"
   [class.reportPreviewMode]="uiFlag.isPreviewMode"
   [style.pointer-events]="uiFlag.isLoading ? 'none' : 'initial'"
 >
-  <div
-    class="flexRow"
-    style="width: fit-content; align-items: center; cursor: pointer"
-    (click)="openConditionSelector()"
-  >
-    <h6 class="condition__title" style="margin-bottom: 0; font-size: 18px">
-      {{ 'universal_operating_filter' | translate }}
-    </h6>
-    <i
-      class="icon-svg_web-icon_p1_006-unfold condition__unfold__icon"
-      [class.condition__fold__icon]="uiFlag.showConditionSelector"
-    ></i>
-  </div>
-  <main *ngIf="uiFlag.showConditionSelector">
-    <ng-container *ngIf="reportConditionOpt && reportConditionOpt.date">
-      <section id="date__selector__bar">
-        <div #dateSelectorBar class="flexRow" style="height: 48px; position: relative">
-          <i
-            class="icon-svg_web-icon_p1_073-level_fold switch__btn"
-            (click)="shiftDateTypeBar('pre')"
-            [style.border-right]="uiFlag.disableBtn !== 'pre' ? '2px solid var(--tab-border)' : ''"
-            [class.btn__disabled]="uiFlag.disableBtn === 'pre'"
-            *ngIf="uiFlag.showDateTypeShiftIcon"
-          ></i>
+  <!-- 點選篩選 -->
+  <div class="flexRow filterBtn">
+    <!-- 排序按鈕 -->
+    <button class="order" (click)="openConditionSelector('order')">
+      <i class="icon-svg_web-icon_p1_022-descending filterIcon"></i>
+      <i
+        class="icon-svg_web-icon_p1_006-unfold condition__unfold__icon"
+        [class.condition__fold__icon]="uiFlag.showOrderSelector"
+      ></i>
+      <!-- 排序下拉選單 -->
+      <div class="sortenBtns" *ngIf="uiFlag.showOrderSelector">
+        <!--日期/時長/距離/平均心率 -->
+        <ng-container *ngFor="let Btn of OrderBtns">
           <div
-            class="flexCol date__type__content"
-            style="display: flex; overflow: hidden; justify-content: center; position: relative"
-            [style.max-width]="uiFlag.dateTypeBarWidth"
+            class="order-Btn"
+            [class.active]="uiFlag.orderType == Btn.orderType"
+            (click)="chooseOrderType(Btn.orderType)"
           >
-            <div class="flexRow date__type__bar" [style.transform]="uiFlag.dateTypeBarOffset">
-              <span
-                class="selector__tab__title"
-                [class.date__type--active]="date.type === 'sevenDay'"
-                (click)="selectDateRange($event, 0)"
-                >7{{ 'universal_time_day' | translate }}</span
-              >
-              <span
-                class="selector__tab__title"
-                [class.date__type--active]="date.type === 'thirtyDay'"
-                (click)="selectDateRange($event, 1)"
-                >30{{ 'universal_time_day' | translate }}</span
-              >
-              <span
-                class="selector__tab__title"
-                [class.date__type--active]="date.type === 'sixMonth'"
-                (click)="selectDateRange($event, 2)"
-                >6{{ 'universal_time_month' | translate }}</span
-              >
-              <div
-                #calendarPeriod
-                style="display: flex; justify-content: center; position: relative"
-              >
-                <span
-                  class="selector__tab__title"
-                  [class.date__type--active]="
-                    date.type === 'today' ||
-                    date.type === 'thisWeek' ||
-                    date.type === 'thisMonth' ||
-                    date.type === 'thisYear'
-                  "
-                  (click)="selectDateRange($event, 3)"
-                  >{{ 'universal_activityData_calendarSelect' | translate }}</span
-                >
-              </div>
-              <div class="flexCenter">
-                <span
-                  class="selector__tab__title"
-                  [class.date__type--active]="date.type === 'custom'"
-                  (click)="selectDateRange($event, 4)"
-                  >{{ 'universal_activityData_dateRange' | translate }}</span
-                >
-                <app-date-range-picker
-                  style="
-                    position: absolute;
-                    bottom: 0px;
-                    z-index: -1;
-                    opacity: 0;
-                    pointer-events: none;
-                  "
-                  [pickerType]="'rangePick'"
-                  [startTimeStamp]="date?.startTimestamp"
-                  [endTimeStamp]="date.endTimestamp"
-                  [openLeft]="true"
-                  [openPicker]="date.openSelector === 'custom'"
-                  [limitMaxCurrent]="true"
-                  [editStyle]="'max-width: 0px;'"
-                  (selectDateRange)="getSelectDate($event)"
-                ></app-date-range-picker>
-              </div>
-            </div>
-            <div
-              class="date__selector--active"
-              [style.transform]="uiFlag.activeDateTypeOffset"
-            ></div>
+            {{ Btn.text | translate }}
           </div>
-          <i
-            class="icon-svg_web-icon_p1_074-level_unfold switch__btn"
-            (click)="shiftDateTypeBar('next')"
-            [style.border-left]="
-              uiFlag.disableBtn !== 'next' ? '2px solid var(--tab-border)' : 'none'
-            "
-            [class.btn__disabled]="uiFlag.disableBtn === 'next'"
-            *ngIf="uiFlag.showDateTypeShiftIcon"
-          ></i>
-          <div
-            class="flexCol date__drop"
-            [style.transform]="uiFlag.calendarPeriodOffset"
-            *ngIf="date.openSelector === 'calendarPeriod'"
-          >
-            <span class="calendar_period__option" (click)="selectCalendarPeroid('today')">{{
-              'universal_time_today' | translate
-            }}</span>
-            <span class="calendar_period__option" (click)="selectCalendarPeroid('thisWeek')">{{
-              'universal_time_thisWeek' | translate
-            }}</span>
-            <span class="calendar_period__option" (click)="selectCalendarPeroid('thisMonth')">{{
-              'universal_time_thisMonth' | translate
-            }}</span>
-            <span class="calendar_period__option" (click)="selectCalendarPeroid('thisYear')">{{
-              'universal_time_thisYear' | translate
-            }}</span>
-          </div>
-        </div>
-      </section>
-      <section id="shiftDate">
-        <button (click)="shiftPreTime()" class="report__time__btn">
-          <mat-icon style="cursor: pointer"> keyboard_arrow_left </mat-icon>
-        </button>
+        </ng-container>
+      </div>
+    </button>
+    <!-- 運動種類篩選 -->
+    <section
+      class="typeFilter"
+      *ngIf="reportConditionOpt && ['sport', 'file'].includes(reportConditionOpt.pageType)"
+    >
+      <!-- 有ICON版 -->
+      <div class="sport__type__selector">
         <button
-          (click)="shiftNextTime()"
-          [disabled]="date.endTimestamp >= date.maxTimestamp"
-          class="report__time__btn"
+          class="sport__type__button"
+          *ngFor="let sport of sports"
+          [class.type__button--active]="
+            reportConditionOpt.sportType === 99 || reportConditionOpt.sportType === sport.type
+          "
+          (click)="handleClickSportType(sport.type)"
         >
-          <mat-icon style="cursor: pointer"> keyboard_arrow_right </mat-icon>
+          <ng-container *ngIf="sport.type === 99; else icon">
+            <mat-icon class="sport__type__icon">done_all</mat-icon>
+          </ng-container>
+
+          <ng-container *ngIf="sport.type !== 99" #icon>
+            <i class="icon-svg_web-icon_p{{ sport.icon }} sport__type__icon"> </i>
+          </ng-container>
+
+          <span class="sport__type__text">
+            {{ sport.type | sportType | translate }}
+          </span>
         </button>
-        {{ date.startTimestamp | timeFormat: 'YYYY-MM-DD' }} -
-        {{ date.endTimestamp | timeFormat: 'YYYY-MM-DD' }}
-      </section>
-    </ng-container>
+      </div>
+    </section>
+    <!-- 篩選更多按鈕 -->
+    <button class="filten" (click)="openConditionSelector('filten')">
+      <i class="icon-svg_web-icon_p1_078-filter filterIcon"></i>
+      <i
+        class="icon-svg_web-icon_p1_006-unfold condition__unfold__icon"
+        [class.condition__fold__icon]="uiFlag.showConditionSelector"
+      ></i>
+    </button>
+  </div>
+  <!-- 篩選下拉內容 -->
+  <section class="ConditionSelector" *ngIf="uiFlag.showConditionSelector">
+    <!-- 篩選日期 -->
+    <div class="choose_date">
+      <i class="time__icon icon-svg_web-icon_p2_019-time"></i>
+      <!-- 預設時間 -->
+      <div #selectOption class="select_option">
+        <div (click)="dateSelect()" class="date_select">
+          <span>{{ uiFlag.dateOption | translate }}</span>
+        </div>
+        <div class="date_option" [class.active]="uiFlag.isDateSelect">
+          <ul>
+            <li
+              class="options"
+              [class.active]="uiFlag.dateOption === dateOptions[option]"
+              *ngFor="let option of getObjectKeys(dateOptions)"
+              (click)="dateOption(option)"
+            >
+              {{ dateOptions[option] | translate }}
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- 自訂日期 -->
+      <!-- startTime -->
+      <div class="filter_start_time">
+        <button mat-raised-button (click)="openStartDatePicker.open()">
+          <input
+            readonly
+            matInput
+            [matDatepicker]="openStartDatePicker"
+            (dateChange)="changeStartTime($event.value)"
+            [value]="FilterStartTime"
+            [max]="FilterEndTime || maxTimestamp | timeFormat: 'YYYY-MM-DD'"
+          />
+        </button>
+        <mat-datepicker [touchUi]="isMobile" #openStartDatePicker disabled="false"></mat-datepicker>
+      </div>
+      ~
+      <!-- endTime -->
+      <div class="filter_end_time">
+        <button mat-raised-button (click)="openEndDatePicker.open()">
+          <input
+            readonly
+            matInput
+            [matDatepicker]="openEndDatePicker"
+            (dateChange)="changeEndTime($event.value)"
+            [value]="FilterEndTime"
+            [min]="FilterStartTime"
+            [max]="maxTimestamp | timeFormat: 'YYYY-MM-DD'"
+          />
+        </button>
+        <mat-datepicker [touchUi]="isMobile" #openEndDatePicker disabled="false"></mat-datepicker>
+      </div>
+    </div>
+
+    <!-- 群組篩選 -->
     <section
       class="flexCol condition__section"
       *ngIf="
@@ -219,50 +198,6 @@
       </div>
     </section>
 
-    <!-- 運動種類篩選 -->
-    <section
-      class="flexCol condition__section"
-      *ngIf="reportConditionOpt && ['sport', 'file'].includes(reportConditionOpt.pageType)"
-    >
-      <h6 class="condition__title">{{ 'universal_activityData_activityType' | translate }}</h6>
-      <!-- 有ICON版 -->
-      <div class="flexRow sport__type__selector condition__content">
-        <button
-          class="flexCol sport__type__button"
-          *ngFor="let sport of sports"
-          [class.type__button--active]="
-            reportConditionOpt.sportType === 99 || reportConditionOpt.sportType === sport.type
-          "
-          (click)="handleClickSportType(sport.type)"
-        >
-          <ng-container *ngIf="sport.type === 99; else icon">
-            <mat-icon class="sport__type__icon">done_all</mat-icon>
-          </ng-container>
-
-          <ng-container *ngIf="sport.type !== 99" #icon>
-            <i class="icon-svg_web-icon_p{{ sport.icon }} sport__type__icon"> </i>
-          </ng-container>
-
-          <span class="sport__type__text">
-            {{ sport.type | sportType | translate }}
-          </span>
-        </button>
-      </div>
-
-      <!-- 無ICON -->
-      <!-- <div class="flexRow condition__content">
-        <span
-          class="condition__btn"
-          *ngFor="let _type of sportCondition"
-          [class.condition__btn--active]="
-            reportConditionOpt.sportType === 99 || reportConditionOpt.sportType === _type
-          "
-          (click)="handleClickSportType(_type)"
-        >
-          {{ _type | sportType | translate }}
-        </span>
-      </div> -->
-    </section>
     <!-- 雲跑地圖篩選 -->
     <section
       class="flexCol condition__section"
@@ -362,6 +297,8 @@
         </label>
       </div>
     </section>
+
+    <!-- 性別篩選 -->
     <section
       class="flexCol condition__section"
       *ngIf="reportConditionOpt && reportConditionOpt.pageType === 'cloudRun' && uiFlag.isGroupPage"
@@ -393,6 +330,8 @@
         </div>
       </div>
     </section>
+
+    <!-- 年齡 -->
     <section
       class="flexCol condition__section"
       *ngIf="reportConditionOpt && reportConditionOpt.pageType === 'cloudRun' && uiFlag.isGroupPage"
@@ -493,23 +432,26 @@
         </div>
       </div>
     </section>
+
+    <!-- 關鍵字搜尋 -->
     <section
-      class="flexCol condition__section"
+      class="condition__section"
       *ngIf="reportConditionOpt && reportConditionOpt.pageType === 'file'"
     >
-      <h6 class="condition__title">{{ 'universal_activityData_keyword' | translate }}</h6>
-      <div class="flexRow condition__content">
+      <i class="search_icon icon-svg_web-icon_p1_014-search"></i>
+      <div class="condition__content">
         <input
           id="keyword"
           type="text"
           [placeholder]="'universal_activityData_keyword' | translate"
           (focusout)="handleKeywordInput($event)"
+          (enter)="handleKeywordInput($event)"
           (change)="handleKeywordInput($event)"
         />
       </div>
     </section>
 
-    <!-- 確認 -->
+    <!-- 確定送出 -->
     <div
       style="display: flex; justify-content: flex-end"
       *ngIf="reportConditionOpt && !reportConditionOpt.hideConfirmBtn"
@@ -518,5 +460,5 @@
         {{ 'universal_operating_confirm' | translate }}
       </button>
     </div>
-  </main>
+  </section>
 </div>

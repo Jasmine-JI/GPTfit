@@ -5,22 +5,50 @@ import {
   ViewChild,
   ElementRef,
   ChangeDetectorRef,
+  HostListener,
 } from '@angular/core';
 import dayjs from 'dayjs';
 import { ReportConditionOpt } from '../../../core/models/compo/report-condition.model';
 import { Subject, Subscription, fromEvent, merge } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { GlobalEventsService, NodejsApiService, ReportService } from '../../../core/services';
-import { SelectDate, Lang } from '../../../core/models/common';
+import { Lang } from '../../../core/models/common';
 import { SportType } from '../../../core/enums/sports';
+import { FileSortType } from '../../../core/enums/api';
 import { getLocalStorageObject } from '../../../core/utils';
 import { Gender } from '../../../core/enums/personal';
 import { SportTypePipe } from '../../../core/pipes/sport-type.pipe';
 import { TimeFormatPipe } from '../../../core/pipes/time-format.pipe';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { MatIconModule } from '@angular/material/icon';
 import { DateRangePickerComponent } from '../date-range-picker/date-range-picker.component';
-import { NgIf, NgFor } from '@angular/common';
+import { NgIf, NgFor, CommonModule } from '@angular/common';
+import {
+  MAT_DATE_LOCALE,
+  MAT_DATE_FORMATS,
+  MatNativeDateModule,
+  DateAdapter,
+} from '@angular/material/core';
+import {
+  MAT_MOMENT_DATE_ADAPTER_OPTIONS,
+  MomentDateAdapter,
+} from '@angular/material-moment-adapter';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { BreakpointObserver } from '@angular/cdk/layout';
+
+const DATE_FORMAT = {
+  parse: {
+    dateInput: 'YYYY-MM-DD',
+  },
+  display: {
+    dateInput: 'YYYY-MM-DD',
+    monthYearLabel: 'YYYY MMM',
+    dateA11yLabel: 'LL',
+    monthYearA11yLabel: 'YYYY MMMM',
+  },
+};
 
 interface DateCondition {
   type:
@@ -42,9 +70,9 @@ interface DateCondition {
 type MapListType = 'all' | 'routine';
 
 @Component({
-  selector: 'app-report-filter',
-  templateUrl: './report-filter.component.html',
-  styleUrls: ['./report-filter.component.scss'],
+  selector: 'app-activity-list-filter',
+  templateUrl: './activity-list-filter.component.html',
+  styleUrls: ['./activity-list-filter.component.scss'],
   standalone: true,
   imports: [
     NgIf,
@@ -54,9 +82,22 @@ type MapListType = 'all' | 'routine';
     TranslateModule,
     TimeFormatPipe,
     SportTypePipe,
+    CommonModule,
+    MatFormFieldModule,
+    MatDatepickerModule,
+    MatNativeDateModule,
+    MatInputModule,
+  ],
+  providers: [
+    {
+      provide: DateAdapter,
+      useClass: MomentDateAdapter,
+      deps: [MAT_DATE_LOCALE, MAT_MOMENT_DATE_ADAPTER_OPTIONS],
+    },
+    { provide: MAT_DATE_FORMATS, useValue: DATE_FORMAT },
   ],
 })
-export class ReportFilterComponent implements OnInit, OnDestroy {
+export class ActivityListFilterComponent implements OnInit, OnDestroy {
   private ngUnsubscribe = new Subject();
   clickSubscription: Subscription;
   resizeSubScription: Subscription;
@@ -65,27 +106,39 @@ export class ReportFilterComponent implements OnInit, OnDestroy {
   @ViewChild('dateSelectorBar') dateSelectorBar: ElementRef;
   @ViewChild('calendarPeriod') calendarPeriod: ElementRef;
   @ViewChild('dropMenu') dropMenu: ElementRef;
+  @ViewChild('selectOption') selectOption: ElementRef;
+
+  /**
+   *日期快速選單
+   */
+  dateOptions = {
+    sevenDay: 'universal_time_last7Days',
+    thirtyDay: 'universal_time_last30Days',
+    sixMonth: 'universal_time_last6Months',
+    today: 'universal_time_today',
+    thisWeek: 'universal_time_thisWeek',
+    thisMonth: 'universal_time_thisMonth',
+    thisYear: 'universal_time_thisYear',
+    custom: 'universal_system_custom',
+  };
 
   /**
    * UI上會需要用到的變數或flag
    */
   uiFlag = {
     showConditionSelector: true,
+    showOrderSelector: false,
     isPreviewMode: false,
     isGroupPage: location.pathname.includes('group-info'),
     dateTypeIdx: 0,
-    showDateTypeShiftIcon: false,
     showMapSelector: false,
-    dateTypeBarWidth: '800px',
-    dateTypeBarOffset: 'translateX(0px)',
-    calendarPeriodOffset: 'translateX(0px)',
-    activeDateTypeOffset: 'translateX(0px)',
-    offsetNum: 0,
-    disableBtn: 'pre',
     isLoading: false,
     currentType: '',
     currentLanguage: <Lang>'zh-tw',
     mapListType: <MapListType>'routine',
+    orderType: 1,
+    dateOption: this.dateOptions.custom,
+    isDateSelect: false,
   };
 
   /**
@@ -99,6 +152,9 @@ export class ReportFilterComponent implements OnInit, OnDestroy {
     endOfShift: true,
     openSelector: null,
   };
+
+  FilterStartTime: string;
+  FilterEndTime: string;
 
   /**
    * 運動類別清單
@@ -118,7 +174,7 @@ export class ReportFilterComponent implements OnInit, OnDestroy {
   /**
    *運動類別清單
    */
-  public sports = [
+  sports = [
     { type: SportType.all },
     { type: SportType.run, icon: '1_083-run' },
     { type: SportType.cycle, icon: '1_084-cycle' },
@@ -128,6 +184,13 @@ export class ReportFilterComponent implements OnInit, OnDestroy {
     { type: SportType.row, icon: '1_088-row' },
     { type: SportType.ball, icon: '2_073-basketball' },
     { type: SportType.complex, icon: '2_038-complex' },
+  ];
+
+  OrderBtns = [
+    { orderType: FileSortType.startDate, text: 'universal_time_date' },
+    { orderType: FileSortType.totalSecond, text: 'universal_activityData_totalTime' },
+    { orderType: FileSortType.distance, text: 'universal_activityData_distance' },
+    { orderType: FileSortType.avgHr, text: 'universal_activityData_avgHr' },
   ];
 
   /**
@@ -151,15 +214,162 @@ export class ReportFilterComponent implements OnInit, OnDestroy {
     private reportService: ReportService,
     private changeDetectorRef: ChangeDetectorRef,
     private globalEventsService: GlobalEventsService,
-    private nodejsApiService: NodejsApiService
+    private nodejsApiService: NodejsApiService,
+    private breakpointObserver: BreakpointObserver
   ) {}
 
   ngOnInit(): void {
     this.uiFlag.currentLanguage = getLocalStorageObject('locale');
-    this.pageSizeChange();
     this.onResize();
     this.getReportCondition();
     this.getLoadingStatus();
+  }
+
+  /**
+   * 開啟/關閉快速日期選單
+   */
+  dateSelect() {
+    this.uiFlag.isDateSelect = !this.uiFlag.isDateSelect;
+  }
+
+  getObjectKeys(obj: any): string[] {
+    return Object.keys(obj);
+  }
+
+  get isMobile() {
+    return this.breakpointObserver.isMatched('(max-width: 767px)');
+  }
+
+  @HostListener('document:click', ['$event'])
+  handleClick(event: Event): void {
+    if (this.selectOption) {
+      // 檢查點擊事件是否發生在 date_option 之外
+      if (!this.selectOption.nativeElement.contains(event.target)) {
+        this.uiFlag.isDateSelect = false;
+      }
+    }
+  }
+
+  /**
+   * 選擇快速日期
+   * @param */
+  dateOption(dateOption: string) {
+    this.uiFlag.isDateSelect = false;
+    this.uiFlag.dateOption = this.dateOptions[dateOption];
+    switch (dateOption) {
+      case 'sevenDay':
+        this.date.type = 'sevenDay';
+        this.changeOptionTime(
+          dayjs().startOf('day').subtract(6, 'day').toDate(),
+          dayjs().endOf('day').toDate()
+        );
+        break;
+      case 'thirtyDay':
+        this.date.type = 'thirtyDay';
+        this.changeOptionTime(
+          dayjs().startOf('day').subtract(29, 'day').toDate(),
+          dayjs().endOf('day').toDate()
+        );
+        break;
+      case 'sixMonth':
+        this.date.type = 'sixMonth';
+        this.changeOptionTime(
+          dayjs().subtract(6, 'month').add(1, 'day').toDate(),
+          dayjs().endOf('day').toDate()
+        );
+        break;
+      case 'today':
+        this.date.type = 'today';
+        this.changeOptionTime(dayjs().startOf('day').toDate(), dayjs().endOf('day').toDate());
+        break;
+      case 'thisWeek':
+        this.date.type = 'thisWeek';
+        this.changeOptionTime(dayjs().startOf('week').toDate(), dayjs().endOf('day').toDate());
+        break;
+      case 'thisMonth':
+        this.date.type = 'thisMonth';
+        this.changeOptionTime(dayjs().startOf('month').toDate(), dayjs().endOf('day').toDate());
+        break;
+      case 'thisYear':
+        this.date.type = 'thisYear';
+        this.changeOptionTime(dayjs().startOf('year').toDate(), dayjs().endOf('day').toDate());
+        break;
+      case 'custom':
+        this.date.type = 'custom';
+        break;
+      default:
+        break;
+    }
+  }
+
+  /**
+   *快速日期區間選單
+   */
+  changeOptionTime(optionStartTime: Date, optionEndTime: Date) {
+    this.FilterStartTime = dayjs(optionStartTime).format('YYYY-MM-DDT00:00:00.000+08:00');
+    this.FilterEndTime = dayjs(optionEndTime).format('YYYY-MM-DDT23:59:59.999+08:00');
+
+    this.date.startTimestamp = dayjs(optionStartTime).valueOf();
+    this.date.endTimestamp = dayjs(optionEndTime).valueOf();
+
+    // 設置debounce避免使用者快速點擊而大量呼叫api
+    if (this.timeout) {
+      clearTimeout(this.timeout);
+    }
+
+    this.timeout = setTimeout(() => {
+      if (this.reportConditionOpt.hideConfirmBtn) {
+        this.submit();
+      }
+    }, 300);
+  }
+
+  /**
+   * custom更改起始日
+   */
+  changeStartTime(FilterStartTime: Date) {
+    this.uiFlag.dateOption = this.dateOptions.custom;
+    this.date.type = 'custom';
+    this.FilterStartTime = dayjs(FilterStartTime).format('YYYY-MM-DDT00:00:00.000+08:00');
+    this.date.startTimestamp = dayjs(FilterStartTime).valueOf();
+    this.TimeoutSubmit();
+  }
+
+  /**
+   * custom更改結束日
+   */
+  changeEndTime(FilterEndTime: Date) {
+    this.uiFlag.dateOption = this.dateOptions.custom;
+    this.date.type = 'custom';
+    this.FilterEndTime = dayjs(FilterEndTime).format('YYYY-MM-DDT23:59:59.999+08:00');
+    this.date.endTimestamp = dayjs(FilterEndTime).valueOf();
+    this.TimeoutSubmit();
+  }
+
+  /**
+   * 設置debounce避免使用者快速點擊而大量呼叫api
+   */
+  TimeoutSubmit() {
+    if (this.timeout) {
+      clearTimeout(this.timeout);
+    }
+
+    this.timeout = setTimeout(() => {
+      if (this.reportConditionOpt.hideConfirmBtn) {
+        this.submit();
+      }
+    }, 300);
+  }
+
+  /**
+   * 儲存排序 type
+   * @param orderType
+   */
+  chooseOrderType(orderType: number) {
+    this.reportService.setSelectedOrderType(orderType);
+    this.changeDetectorRef.markForCheck();
+    this.uiFlag.orderType = this.reportService.getSelectedOrderType();
+    this.submit();
   }
 
   /**
@@ -171,34 +381,9 @@ export class ReportFilterComponent implements OnInit, OnDestroy {
     this.date.openSelector = null;
     this.resizeSubScription = merge(resizeEvent, this.globalEventsService.getRxSideBarMode())
       .pipe(takeUntil(this.ngUnsubscribe))
-      .subscribe((e) => {
-        this.pageSizeChange();
-      });
+      .subscribe((e) => {});
 
     this.changeDetectorRef.markForCheck();
-  }
-
-  /**
-   * 頁面尺寸變更
-   * @author kidin-1100609
-   */
-  pageSizeChange() {
-    setTimeout(() => {
-      const filterSection = this.filterSection.nativeElement,
-        filterSectionWidth = filterSection.clientWidth;
-      if (filterSectionWidth < 820) {
-        this.uiFlag.showDateTypeShiftIcon = true;
-        this.uiFlag.dateTypeBarWidth = `${filterSectionWidth - 90}px`;
-      } else {
-        this.uiFlag.showDateTypeShiftIcon = false;
-        this.uiFlag.dateTypeBarWidth = `800px`;
-        this.uiFlag.offsetNum = 0;
-        this.uiFlag.dateTypeBarOffset = `translateX(0px)`;
-        this.changeActiveBar();
-      }
-
-      this.changeDetectorRef.markForCheck();
-    }, 500);
   }
 
   /**
@@ -213,6 +398,7 @@ export class ReportFilterComponent implements OnInit, OnDestroy {
         this.reportConditionOpt = res;
         // 確認頁面是否變更
         const { pageType } = this.reportConditionOpt;
+
         if (pageType !== this.uiFlag.currentType) {
           this.initDate();
           this.uiFlag.currentType = pageType;
@@ -241,8 +427,6 @@ export class ReportFilterComponent implements OnInit, OnDestroy {
           } else {
             this.date.endOfShift = true;
           }
-
-          this.changeActiveBar();
         }
 
         this.changeDetectorRef.markForCheck();
@@ -262,8 +446,6 @@ export class ReportFilterComponent implements OnInit, OnDestroy {
       endOfShift: true,
       openSelector: null,
     };
-
-    this.changeActiveBar();
   }
 
   /**
@@ -299,112 +481,18 @@ export class ReportFilterComponent implements OnInit, OnDestroy {
    * 展開或收合條件選擇器
    * @author kidin-1091028
    */
-  openConditionSelector() {
-    this.uiFlag.showConditionSelector = !this.uiFlag.showConditionSelector;
-  }
-
-  /**
-   * 點擊日期選擇類型列的平移按鈕
-   * @param action {'pre' | 'next'} - 使用者所點擊的按鈕
-   * @author kidin-1091027
-   */
-  shiftDateTypeBar(action: 'pre' | 'next') {
-    const filterSection = this.filterSection.nativeElement,
-      filterSectionWidth = filterSection.clientWidth;
-
-    if (action === 'pre') {
-      this.uiFlag.offsetNum += 160;
-    } else {
-      this.uiFlag.offsetNum -= 160;
-    }
-
-    if (this.uiFlag.offsetNum === 0) {
-      this.uiFlag.disableBtn = 'pre';
-    } else if (this.uiFlag.offsetNum <= filterSectionWidth - 848) {
-      this.uiFlag.disableBtn = 'next';
-    } else {
-      this.uiFlag.disableBtn = null;
-    }
-
-    this.uiFlag.dateTypeBarOffset = `translateX(${this.uiFlag.offsetNum}px)`;
-    this.changeActiveBar();
-  }
-
-  /**
-   * 切換日期類別
-   * @param e {MouseEvent}
-   * @param opt {number}-使用者點擊的日期類別
-   * @author kidin-1091023
-   */
-  selectDateRange(e: MouseEvent, opt: number) {
-    e.stopPropagation();
-    switch (opt) {
-      case 0:
-        this.date.type = 'sevenDay';
-        this.date.startTimestamp = dayjs().startOf('day').subtract(6, 'day').valueOf();
-        this.date.endTimestamp = dayjs().endOf('day').valueOf();
-        this.date.openSelector = null;
-        if (this.reportConditionOpt.hideConfirmBtn) {
-          this.submit();
-        }
-
+  openConditionSelector(e: string) {
+    switch (e) {
+      case 'order':
+        this.uiFlag.showOrderSelector = !this.uiFlag.showOrderSelector;
         break;
-      case 1:
-        this.date.type = 'thirtyDay';
-        this.date.startTimestamp = dayjs().startOf('day').subtract(29, 'day').valueOf();
-        this.date.endTimestamp = dayjs().endOf('day').valueOf();
-        this.date.openSelector = null;
-        if (this.reportConditionOpt.hideConfirmBtn) {
-          this.submit();
-        }
-
+      case 'filten':
+        this.uiFlag.showConditionSelector = !this.uiFlag.showConditionSelector;
+        this.uiFlag.showOrderSelector = false;
         break;
-      case 2:
-        this.date.type = 'sixMonth';
-        this.date.startTimestamp = dayjs().subtract(6, 'month').add(1, 'day').valueOf();
-        this.date.endTimestamp = dayjs().endOf('day').valueOf();
-        this.date.openSelector = null;
-        if (this.reportConditionOpt.hideConfirmBtn) {
-          this.submit();
-        }
-
-        break;
-      case 3:
-        this.scrollToChildPageTop('filterSection');
-        if (this.date.openSelector !== 'calendarPeriod') {
-          this.date.openSelector = 'calendarPeriod';
-          const dropList = this.calendarPeriod.nativeElement,
-            dropListCenter = dropList.getBoundingClientRect().left,
-            dateSelectorBar = this.dateSelectorBar.nativeElement,
-            dateSelectorBarLeft = dateSelectorBar.getBoundingClientRect().left;
-
-          // 根據畫面大小調整選單位置
-          this.uiFlag.calendarPeriodOffset = `translateX(${
-            dropListCenter - dateSelectorBarLeft + 20
-          }px)`;
-          this.clickSubscribe();
-        } else {
-          this.clickUnsubscribe();
-        }
-
-        break;
-      case 4:
-        this.date.type = 'custom';
-        this.scrollToChildPageTop('filterSection');
-        // 待捲動動畫結束再顯示日期選擇器
-        setTimeout(() => {
-          if (this.date.openSelector !== 'custom') {
-            this.date.openSelector = 'custom';
-            this.clickSubscribe();
-          } else {
-            this.clickUnsubscribe();
-          }
-        }, 500);
-
+      default:
         break;
     }
-
-    this.changeActiveBar();
   }
 
   /**
@@ -423,241 +511,6 @@ export class ReportFilterComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * 根據現在所選擇的日期類別顯示藍色底線
-   * @author kidin-1091028
-   */
-  changeActiveBar() {
-    switch (this.date.type) {
-      case 'sevenDay':
-        this.uiFlag.activeDateTypeOffset = `translateX(${this.uiFlag.offsetNum}px)`;
-        break;
-      case 'thirtyDay':
-        this.uiFlag.activeDateTypeOffset = `translateX(${this.uiFlag.offsetNum + 160}px)`;
-        break;
-      case 'sixMonth':
-        this.uiFlag.activeDateTypeOffset = `translateX(${this.uiFlag.offsetNum + 320}px)`;
-        break;
-      case 'today':
-      case 'thisWeek':
-      case 'thisMonth':
-      case 'thisYear':
-        this.uiFlag.activeDateTypeOffset = `translateX(${this.uiFlag.offsetNum + 480}px)`;
-        break;
-      case 'custom':
-        this.uiFlag.activeDateTypeOffset = `translateX(${this.uiFlag.offsetNum + 640}px)`;
-        break;
-    }
-
-    this.changeDetectorRef.markForCheck();
-  }
-
-  /**
-   * 選擇曆期
-   * @param opt {'today'| 'thisWeek' | 'thisMonth' | 'thisYear'}
-   * @author kidin-1091023
-   */
-  selectCalendarPeroid(opt: 'today' | 'thisWeek' | 'thisMonth' | 'thisYear') {
-    this.date.type = opt;
-    switch (opt) {
-      case 'today':
-        this.date.startTimestamp = dayjs().startOf('day').valueOf();
-        this.date.endTimestamp = dayjs().endOf('day').valueOf();
-        break;
-      case 'thisWeek':
-        this.date.startTimestamp = dayjs().startOf('week').valueOf();
-        this.date.endTimestamp = dayjs().endOf('day').valueOf();
-        break;
-      case 'thisMonth':
-        this.date.startTimestamp = dayjs().startOf('month').valueOf();
-        this.date.endTimestamp = dayjs().endOf('day').valueOf();
-        break;
-      case 'thisYear':
-        this.date.startTimestamp = dayjs().startOf('year').valueOf();
-        this.date.endTimestamp = dayjs().endOf('day').valueOf();
-        break;
-    }
-
-    this.date.openSelector = null;
-    this.changeActiveBar();
-
-    if (this.reportConditionOpt.hideConfirmBtn) {
-      this.submit();
-    }
-
-    this.clickUnsubscribe();
-  }
-
-  /**
-   * 取得使用者所選擇的日期
-   * @param e {SelectDate}-使用者選擇的日期('YYYY-MM-DDTHH:mm:ss.SSSZ')
-   * @author kidin-1091023
-   */
-  getSelectDate(e: SelectDate) {
-    if (this.date.openSelector === 'custom') {
-      this.date.startTimestamp = dayjs(e.startDate).valueOf();
-      this.date.endTimestamp = dayjs(e.endDate).valueOf();
-      this.date.openSelector = null;
-      if (this.reportConditionOpt.hideConfirmBtn) {
-        this.submit();
-      }
-
-      this.clickUnsubscribe();
-    }
-
-    this.changeDetectorRef.markForCheck();
-  }
-
-  /**
-   * 根據日期類別往前平移日期
-   * @author kidin-1091023
-   */
-  shiftPreTime() {
-    const startTime = dayjs(this.date.startTimestamp);
-    switch (this.date.type) {
-      case 'sevenDay':
-      case 'thisWeek': {
-        const newStartTimestamp = startTime.subtract(7, 'day');
-        this.date.startTimestamp = newStartTimestamp.valueOf();
-        this.date.endTimestamp = newStartTimestamp.add(6, 'day').endOf('day').valueOf();
-        break;
-      }
-      case 'thirtyDay': {
-        const newStartTimestamp = startTime.subtract(30, 'day');
-        this.date.startTimestamp = newStartTimestamp.valueOf();
-        this.date.endTimestamp = newStartTimestamp.add(29, 'day').endOf('day').valueOf();
-        break;
-      }
-      case 'sixMonth': {
-        const newStartTimestamp = startTime.subtract(6, 'month');
-        this.date.startTimestamp = newStartTimestamp.valueOf();
-        this.date.endTimestamp = newStartTimestamp
-          .add(6, 'month')
-          .subtract(1, 'day')
-          .endOf('day')
-          .valueOf();
-        break;
-      }
-      case 'today': {
-        const newStartTimestamp = startTime.subtract(1, 'day');
-        this.date.startTimestamp = newStartTimestamp.valueOf();
-        this.date.endTimestamp = newStartTimestamp.endOf('day').valueOf();
-        break;
-      }
-      case 'thisMonth': {
-        const newStartTimestamp = startTime.subtract(1, 'month').startOf('month');
-        this.date.startTimestamp = newStartTimestamp.valueOf();
-        this.date.endTimestamp = newStartTimestamp.endOf('month').valueOf();
-        break;
-      }
-      case 'thisYear': {
-        const newStartTimestamp = startTime.subtract(1, 'year').startOf('year');
-        this.date.startTimestamp = newStartTimestamp.valueOf();
-        this.date.endTimestamp = newStartTimestamp.endOf('year').valueOf();
-        break;
-      }
-      case 'custom': {
-        const range = dayjs(this.date.endTimestamp).diff(startTime);
-        const newStartTimestamp = dayjs(this.date.startTimestamp - range - 1)
-          .startOf('day')
-          .valueOf();
-        this.date.startTimestamp = newStartTimestamp;
-        this.date.endTimestamp = dayjs(newStartTimestamp + range)
-          .endOf('day')
-          .valueOf();
-        break;
-      }
-    }
-
-    // 設置debounce避免使用者快速點擊而大量呼叫api
-    if (this.timeout) {
-      clearTimeout(this.timeout);
-    }
-
-    this.timeout = setTimeout(() => {
-      if (this.reportConditionOpt.hideConfirmBtn) {
-        this.submit();
-      }
-    }, 300);
-
-    this.changeDetectorRef.markForCheck();
-  }
-
-  /**
-   * 根據日期類別往後平移日期
-   * @author kidin-1091023
-   */
-  shiftNextTime() {
-    const startTime = dayjs(this.date.startTimestamp);
-    switch (this.date.type) {
-      case 'sevenDay':
-      case 'thisWeek': {
-        const newStartTimestamp = startTime.add(7, 'day');
-        this.date.startTimestamp = newStartTimestamp.valueOf();
-        this.date.endTimestamp = newStartTimestamp.add(6, 'day').endOf('day').valueOf();
-        break;
-      }
-      case 'thirtyDay': {
-        const newStartTimestamp = startTime.add(30, 'day');
-        this.date.startTimestamp = newStartTimestamp.valueOf();
-        this.date.endTimestamp = startTime.add(29, 'day').endOf('day').valueOf();
-        break;
-      }
-      case 'sixMonth': {
-        const newStartTimestamp = startTime.add(6, 'month');
-        this.date.startTimestamp = newStartTimestamp.valueOf();
-        this.date.endTimestamp = startTime
-          .add(6, 'month')
-          .subtract(1, 'day')
-          .endOf('day')
-          .valueOf();
-        break;
-      }
-      case 'today': {
-        const newStartTimestamp = startTime.add(1, 'day');
-        this.date.startTimestamp = newStartTimestamp.valueOf();
-        this.date.endTimestamp = newStartTimestamp.endOf('day').valueOf();
-        break;
-      }
-      case 'thisMonth': {
-        const newStartTimestamp = startTime.add(1, 'month').startOf('month');
-        this.date.startTimestamp = newStartTimestamp.valueOf();
-        this.date.endTimestamp = newStartTimestamp.endOf('month').valueOf();
-        break;
-      }
-      case 'thisYear': {
-        const newStartTimestamp = startTime.add(1, 'year').startOf('year');
-        this.date.startTimestamp = newStartTimestamp.valueOf();
-        this.date.endTimestamp = newStartTimestamp.endOf('year').valueOf();
-        break;
-      }
-      case 'custom': {
-        const range = dayjs(this.date.endTimestamp).diff(startTime);
-        const newStartTimestamp = dayjs(this.date.startTimestamp + range + 1)
-          .startOf('day')
-          .valueOf();
-        this.date.startTimestamp = newStartTimestamp;
-        this.date.endTimestamp = dayjs(newStartTimestamp + range)
-          .endOf('day')
-          .valueOf();
-        break;
-      }
-    }
-
-    // 設置debounce避免使用者快速點擊而大量呼叫api
-    if (this.timeout) {
-      clearTimeout(this.timeout);
-    }
-
-    this.timeout = setTimeout(() => {
-      if (this.reportConditionOpt.hideConfirmBtn) {
-        this.submit();
-      }
-    }, 300);
-
-    this.changeDetectorRef.markForCheck();
-  }
-
-  /**
    * 點擊品牌/企業條件-則下面階層全亮或全暗
    * @author kidin-1091029
    */
@@ -667,7 +520,6 @@ export class ReportFilterComponent implements OnInit, OnDestroy {
     if (this.reportConditionOpt.hideConfirmBtn) {
       this.submit();
     }
-
     this.changeDetectorRef.markForCheck();
   }
 
@@ -695,7 +547,6 @@ export class ReportFilterComponent implements OnInit, OnDestroy {
     if (this.reportConditionOpt.hideConfirmBtn) {
       this.submit();
     }
-
     this.changeDetectorRef.markForCheck();
   }
 
@@ -705,8 +556,7 @@ export class ReportFilterComponent implements OnInit, OnDestroy {
    */
   handleClickSportType(type: SportType) {
     this.reportConditionOpt.sportType = type;
-
-    if (this.reportConditionOpt.hideConfirmBtn) {
+    if (this.reportConditionOpt.sportType) {
       this.submit();
     }
 
@@ -777,7 +627,6 @@ export class ReportFilterComponent implements OnInit, OnDestroy {
         },
       });
     }
-
     this.reportService.setReportCondition(this.reportConditionOpt);
     this.changeDetectorRef.markForCheck();
   }
@@ -824,8 +673,6 @@ export class ReportFilterComponent implements OnInit, OnDestroy {
       endOfShift: !isThisMonth,
       openSelector: null,
     };
-
-    this.changeActiveBar();
   }
 
   /**
@@ -905,6 +752,9 @@ export class ReportFilterComponent implements OnInit, OnDestroy {
       target: { value },
     } = e as any;
     this.reportConditionOpt.keyword = value;
+    if (this.reportConditionOpt.hideConfirmBtn) {
+      this.submit();
+    }
   }
 
   /**

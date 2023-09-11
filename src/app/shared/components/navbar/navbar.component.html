@@ -37,13 +37,16 @@
         />
         <i
           class="icon-svg_web-icon_p1_069-about alert__icon__enable"
-          *ngIf="!accountStatus || accountStatus === 1 | async"
+          *ngIf="(accountStatus | async) === false || (accountStatus | async) === 1"
         ></i>
       </div>
       <ul [class.member_activ]="menu.memberMenu" class="member">
         <p class="member_list member-name">{{ userProfile.nickname }}</p>
         <!-- 啟用帳號 -->
-        <li class="member_list enableAccount" *ngIf="!accountStatus || accountStatus === 1 | async">
+        <li
+          class="member_list enableAccount"
+          *ngIf="(accountStatus | async) === false || (accountStatus | async) === 1"
+        >
           <a [routerLink]="['']" (click)="toEnableAccount()">
             <i class="icon-svg_web-icon_p1_069-about alert__icon__enable list_icon"></i>
             <span
@@ -53,7 +56,7 @@
           </a>
         </li>
         <!-- 登入 -->
-        <li *ngIf="!(login$ | async)" class="member_list">
+        <li *ngIf="(login$ | async) === false" class="member_list">
           <a (click)="chooseNavItem('signIn')">
             <mat-icon class="list_icon">person</mat-icon>
             <span>{{ 'universal_userAccount_logIn' | translate }}</span>

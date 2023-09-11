@@ -25,6 +25,32 @@
   }
 }
 
+.note_day_week {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  flex: 1;
+  .note_text {
+    font-size: 12px;
+    background: linear-gradient(270deg, #df3a3a 0%, #c549b8 100%);
+    background: -webkit-linear-gradient(270deg, #df3a3a 0%, #c549b8 100%);
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+
+    position: absolute;
+    top: 50%;
+    top: -3px;
+    left: 0;
+    transform: translate(0, -50%);
+  }
+  .colored-cell {
+    align-self: stretch;
+  }
+}
+
 .colored-cell {
   text-align: center;
   border-radius: 10px;

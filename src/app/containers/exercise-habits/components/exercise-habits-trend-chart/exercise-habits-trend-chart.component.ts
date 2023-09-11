@@ -30,16 +30,36 @@ import {
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { Subscription } from 'rxjs';
 import dayjs from 'dayjs';
-import { AuthService } from '../../../../../app/core/services';
 import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatNativeDateModule } from '@angular/material/core';
+import {
+  MAT_DATE_LOCALE,
+  MAT_DATE_FORMATS,
+  MatNativeDateModule,
+  DateAdapter,
+} from '@angular/material/core';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BreakpointObserver, LayoutModule } from '@angular/cdk/layout';
 import zoomPlugin from 'chartjs-plugin-zoom';
 import { ZoomPluginOptions } from 'chartjs-plugin-zoom/types/options';
+import {
+  MAT_MOMENT_DATE_ADAPTER_OPTIONS,
+  MomentDateAdapter,
+} from '@angular/material-moment-adapter';
 Chart.register(zoomPlugin);
+
+const DATE_FORMAT = {
+  parse: {
+    dateInput: 'YYYY-MM-DD',
+  },
+  display: {
+    dateInput: 'YYYY-MM-DD',
+    monthYearLabel: 'YYYY MMM',
+    dateA11yLabel: 'LL',
+    monthYearA11yLabel: 'YYYY MMMM',
+  },
+};
 
 @Component({
   selector: 'app-exercise-habits-trend-chart',
@@ -58,6 +78,14 @@ Chart.register(zoomPlugin);
     FormsModule,
     ReactiveFormsModule,
     LayoutModule,
+  ],
+  providers: [
+    {
+      provide: DateAdapter,
+      useClass: MomentDateAdapter,
+      deps: [MAT_DATE_LOCALE, MAT_MOMENT_DATE_ADAPTER_OPTIONS],
+    },
+    { provide: MAT_DATE_FORMATS, useValue: DATE_FORMAT },
   ],
 })
 export class ExerciseHabitsTrendChartComponent
@@ -195,10 +223,12 @@ export class ExerciseHabitsTrendChartComponent
    *快速日期區間選單
    */
   changeOptionTime(optionStartTime: Date, optionEndTime: Date) {
-    this.FilterStartTime = dayjs(optionStartTime).format('YYYY-MM-DDT00:00:00.000+08:00');
-    this.Api531Post.filterStartTime = this.FilterStartTime;
-    this.FilterEndTime = dayjs(optionEndTime).format('YYYY-MM-DDT23:59:59.999+08:00');
-    this.Api531Post.filterEndTime = this.FilterEndTime;
+    this.Api531Post.filterStartTime = dayjs(optionStartTime).format(
+      'YYYY-MM-DDT00:00:00.000+08:00'
+    );
+    this.FilterStartTime = dayjs(optionStartTime).format('YYYY-MM-DD');
+    this.Api531Post.filterEndTime = dayjs(optionEndTime).format('YYYY-MM-DDT23:59:59.999+08:00');
+    this.FilterEndTime = dayjs(optionEndTime).format('YYYY-MM-DD');
     this.prefetchAPI();
   }
 
@@ -207,8 +237,10 @@ export class ExerciseHabitsTrendChartComponent
    */
   changeStartTime(FilterStartTime: Date) {
     this.uiFlag.dateOption = this.dateOptions.custom;
-    this.FilterStartTime = dayjs(FilterStartTime).format('YYYY-MM-DDT00:00:00.000+08:00');
-    this.Api531Post.filterStartTime = this.FilterStartTime;
+    this.Api531Post.filterStartTime = dayjs(FilterStartTime).format(
+      'YYYY-MM-DDT00:00:00.000+08:00'
+    );
+    this.FilterStartTime = dayjs(FilterStartTime).format('YYYY-MM-DD');
     this.prefetchAPI();
   }
 
@@ -217,8 +249,8 @@ export class ExerciseHabitsTrendChartComponent
    */
   changeEndTime(FilterEndTime: Date) {
     this.uiFlag.dateOption = this.dateOptions.custom;
-    this.FilterEndTime = dayjs(FilterEndTime).format('YYYY-MM-DDT23:59:59.999+08:00');
-    this.Api531Post.filterEndTime = this.FilterEndTime;
+    this.Api531Post.filterEndTime = dayjs(FilterEndTime).format('YYYY-MM-DDT23:59:59.999+08:00');
+    this.FilterEndTime = dayjs(FilterEndTime).format('YYYY-MM-DD');
     this.prefetchAPI();
   }
 
@@ -252,8 +284,8 @@ export class ExerciseHabitsTrendChartComponent
    */
   getApiRequest() {
     this.Api531Post = { ...this.exerciseHabitsService.getOriginalApiRequest() };
-    this.FilterStartTime = this.Api531Post.filterStartTime;
-    this.FilterEndTime = this.Api531Post.filterEndTime;
+    this.FilterStartTime = dayjs(this.Api531Post.filterStartTime).format('YYYY-MM-DD');
+    this.FilterEndTime = dayjs(this.Api531Post.filterEndTime).format('YYYY-MM-DD');
   }
 
   ngAfterViewInit() {
