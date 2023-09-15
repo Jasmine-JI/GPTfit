@@ -34,6 +34,7 @@ export class InnerSettingsComponent implements OnInit, OnDestroy {
   systemDevelopers = [];
   systemMaintainers = [];
   systemAuditor = [];
+  deviceManagers = []; //裝置管理
   systemPushners = [];
   marketingDevelopers = [];
   isLoading = false;
@@ -63,6 +64,8 @@ export class InnerSettingsComponent implements OnInit, OnDestroy {
 
   fetchInnerAdmin() {
     this.nodejsApiService.getInnerAdmin().subscribe((_result) => {
+      console.log(_result);
+
       this.isLoading = false;
       const isCanUse = _result.findIndex((_res) => _res.userId === this.userId) > -1;
       if (isCanUse) {
@@ -74,6 +77,10 @@ export class InnerSettingsComponent implements OnInit, OnDestroy {
         this.systemPushners = _result.filter((_res) => _res.accessRight == AccessRight.pusher);
         this.marketingDevelopers = _result.filter(
           (_res) => _res.accessRight == AccessRight.marketing
+        );
+        //裝置管理
+        this.deviceManagers = _result.filter(
+          (_res) => _res.accessRight == AccessRight.deviceManager
         );
       }
     });
@@ -123,6 +130,11 @@ export class InnerSettingsComponent implements OnInit, OnDestroy {
       case AccessRight.marketing:
         targetAdminName = `系統行銷企劃員(${_type})`;
         adminLists = cloneDeep(this.marketingDevelopers);
+        isCanOpen = this.maxAccessRight <= AccessRight.maintainer;
+        break;
+      case AccessRight.deviceManager: //裝置管理
+        targetAdminName = `裝置管理員(${_type})`;
+        adminLists = cloneDeep(this.deviceManagers);
         isCanOpen = this.maxAccessRight <= AccessRight.maintainer;
         break;
     }

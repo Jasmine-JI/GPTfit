@@ -5,6 +5,7 @@ export enum AccessRight {
   god = 10,
   maintainer = 20,
   auditor = 21,
+  deviceManager = 27, //裝置管理
   pusher = 28,
   marketing = 29,
   brandAdmin = 30,
