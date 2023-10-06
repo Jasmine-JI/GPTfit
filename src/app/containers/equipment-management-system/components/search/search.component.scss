@@ -1,0 +1,146 @@
+@import 'equipment-management.scss';
+$card_width: 550px;
+
+.section {
+  .title {
+    font-size: 26px;
+  }
+}
+
+.select_section {
+  display: flex;
+  gap: 20px;
+  margin: 15px 0 0 15px;
+
+  .option {
+    font-size: 16px;
+    cursor: pointer;
+    color: $tile-color2;
+
+    &:hover {
+      color: $text-color1;
+    }
+
+    &.active {
+      color: $text-color1;
+      box-shadow: 0px 1px 0px 0px $main-color;
+    }
+  }
+}
+
+.order_list,
+.rigister_list {
+  margin: 0 0 0 15%;
+}
+
+.order_list {
+  max-width: $card_width;
+  cursor: pointer;
+  margin-top: 25px;
+}
+
+.rigister_list {
+  position: relative;
+  max-width: max-content;
+  margin-top: 25px;
+}
+
+.rigister_edit {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.rigister_detail {
+  min-width: $card_width;
+  flex-grow: 1;
+}
+
+.user {
+  box-shadow: 0px 1px 0px 0px black;
+  color: $main-color;
+
+  .user_icon {
+    font-size: 22px;
+  }
+
+  .user_name {
+    font-size: 20px;
+    font-weight: 500;
+  }
+}
+
+.detail_wrap {
+  display: flex;
+  flex-wrap: wrap;
+  max-width: 100%;
+
+  .detail {
+    width: 50%;
+    display: flex;
+    align-items: baseline;
+    gap: 5px;
+
+    &:nth-child(2) {
+      justify-content: flex-end;
+    }
+
+    &:not(:last-child) {
+      flex-grow: 1;
+    }
+
+    .detail_icon {
+      font-size: 20px;
+    }
+
+    .detail_content {
+    }
+  }
+}
+
+.main_button {
+  background: $main-color;
+  color: #fff;
+  padding: 10px 15px;
+}
+
+.add_list {
+  display: flex;
+  position: relative;
+  margin: 0 50px 0 auto;
+  ul {
+    margin-left: auto;
+    position: absolute;
+    width: 200px;
+    height: max-content;
+    padding: 10px;
+    bottom: 100%;
+    right: 0%;
+    border-radius: 10px;
+    background: $backgroundColor;
+  }
+}
+
+.add_list_option,
+.rigister_add_option {
+  cursor: pointer;
+  color: $tile-color2;
+
+  &:hover {
+    color: $text-color1;
+  }
+}
+
+.rigister_add_list {
+  position: absolute;
+  bottom: 50%;
+  left: 100%;
+
+  ul {
+    width: 200px;
+    height: max-content;
+    padding: 10px;
+    border-radius: 10px;
+    background: $backgroundColor;
+  }
+}

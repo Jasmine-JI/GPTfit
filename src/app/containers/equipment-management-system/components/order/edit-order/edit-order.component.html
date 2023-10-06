@@ -1,0 +1,95 @@
+<ng-container *ngIf="editing">
+  <div class="edit_section">
+    <div *ngIf="isNewForm" class="title">銷貨單新增</div>
+    <div *ngIf="!isNewForm" class="title">銷貨單編輯</div>
+    <div class="edit_detail">
+      <div class="label_input">
+        <label class="edit_item_label">銷貨單號</label>
+        <input
+          class="input"
+          [class.input_uneditable]="!isNewForm"
+          [(ngModel)]="orderInfo.order_no"
+          placeholder="Order No"
+          [disabled]="!isNewForm"
+        />
+      </div>
+      <div class="label_input">
+        <label class="edit_item_label">名稱</label>
+        <input class="input" [(ngModel)]="orderInfo.user_name" placeholder="User Name" />
+      </div>
+      <div class="label_input">
+        <label class="edit_item_label">電話</label>
+        <input class="input" [(ngModel)]="orderInfo.phone" placeholder="Phone" />
+      </div>
+      <div class="label_input">
+        <label class="edit_item_label">地址</label>
+        <input class="input" [(ngModel)]="orderInfo.address" placeholder="Address" />
+      </div>
+      <div class="label_input">
+        <label class="edit_item_label">銷售渠道</label>
+        <div class="input_select input">
+          <div
+            class="foldable"
+            [class.unfold]="showSalesChannelDropdown"
+            (click)="toggleSalesChannelDropdown()"
+          >
+            {{ orderInfo.sales_channel }}
+          </div>
+          <div *ngIf="showSalesChannelDropdown" class="toggle_dropdown">
+            <ul>
+              <li
+                *ngFor="let salesChannel of salesChannelList"
+                (click)="selectChannel(salesChannel)"
+                class="dropdown_list"
+              >
+                {{ salesChannel }}
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="memo_label_input">
+        <label class="edit_item_label">備註</label>
+        <textarea class="input" [(ngModel)]="orderInfo.memo" placeholder="memo"></textarea>
+      </div>
+      <div class="img_label_input">
+        <label class="edit_item_label">附加檔案</label>
+
+        <input
+          #fileInput
+          (change)="previewImg(fileInput)"
+          type="file"
+          id="img_input"
+          name="img_input"
+          accept=".jpg,.jpeg,.png,.gif"
+        />
+
+        <div class="img_list">
+          <ng-container *ngIf="orderInfo.attach_file !== ''">
+            <ng-container *ngFor="let fileName of fileNames; let index = i">
+              <div class="img_wrap">
+                <img
+                  (click)="openImage(imgPath + fileName)"
+                  [src]="imgPath + fileName"
+                  alt="附加檔案"
+                  id="image_preview"
+                />
+                <div (click)="deleteImg(fileName)" class="close_button delete_img_button"></div>
+              </div>
+            </ng-container>
+          </ng-container>
+          <label *ngIf="!filesMax" class="img_wrap" for="img_input">
+            <div class="add_icon add_img_circle"></div>
+          </label>
+          <label *ngIf="filesMax">
+            <div>圖片數量達上限</div>
+          </label>
+        </div>
+      </div>
+    </div>
+    <div (click)="clickCloseBtn()" class="close_button icon_button"></div>
+    <div (click)="clickSaveBtn()" class="save_button">
+      <mat-icon class="save_button_icon">save</mat-icon>儲存
+    </div>
+  </div>
+</ng-container>

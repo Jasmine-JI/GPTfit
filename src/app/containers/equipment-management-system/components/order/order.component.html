@@ -1,0 +1,276 @@
+<div class="section_wrapper">
+  <!-- 銷貨單-基本資料 -->
+  <section class="content-box section" *ngIf="orderInfo">
+    <div class="section_title">基本資料</div>
+    <div class="time_wrap">
+      <div class="time_name">
+        <div class="establish_update_time">
+          <div class="title">建立時間</div>
+          <div class="date_time">{{ orderInfo.create_time }}</div>
+        </div>
+        <div class="establish_update_time">
+          <div class="title">人員:</div>
+          <div class="name">{{ orderInfo.create_name }}</div>
+        </div>
+      </div>
+      <div class="time_name">
+        <div class="establish_update_time">
+          <div class="title">最後修改</div>
+          <div class="date_time">{{ orderInfo.modify_time }}</div>
+        </div>
+        <div class="establish_update_time">
+          <div class="title">人員</div>
+          <div class="name">{{ orderInfo.modify_name }}</div>
+        </div>
+      </div>
+    </div>
+    <div class="section_detail">
+      <div class="detail_info_wrap">
+        <div class="detail_info_title">銷貨單號</div>
+        <div class="content_wrap">
+          <div class="uneditable_content">{{ orderInfo.order_no }}</div>
+        </div>
+      </div>
+      <div class="detail_info_wrap">
+        <div class="detail_info_title">名稱</div>
+        <div class="content_wrap">
+          <div class="uneditable_content">{{ orderInfo.user_name }}</div>
+        </div>
+      </div>
+      <div class="detail_info_wrap">
+        <div class="detail_info_title">電話</div>
+        <div class="content_wrap">
+          <div class="uneditable_content">{{ orderInfo.phone }}</div>
+        </div>
+      </div>
+      <div class="detail_info_wrap">
+        <div class="detail_info_title">地址</div>
+        <div class="content_wrap">
+          <div class="uneditable_content">{{ orderInfo.address }}</div>
+        </div>
+      </div>
+      <!-- 下拉式編輯 -->
+      <div class="detail_info_wrap">
+        <div class="detail_info_title">銷售渠道</div>
+        <div class="content_wrap">
+          <div class="editable_content">
+            {{ orderInfo.sales_channel }}
+          </div>
+          <!-- <div *ngIf="showSalesChannelDropdown" class="toggle_dropdown">
+            <ul>
+              <li dropdown *ngFor="let salesChannel of salesChannelList" (click)="selectChannel(salesChannel)"
+                class="dropdown_list">
+                {{ salesChannel }}
+              </li>
+            </ul>
+          </div> -->
+        </div>
+      </div>
+
+      <div class="detail_info_wrap">
+        <div class="detail_info_title">附件</div>
+        <div class="img_list">
+          <ng-container *ngFor="let orderInfo of fileNames">
+            <div class="img_wrap">
+              <img
+                (click)="openImage(imgPath + orderInfo)"
+                [src]="imgPath + orderInfo"
+                alt="附加檔案"
+                id="image_preview"
+              />
+            </div>
+          </ng-container>
+        </div>
+      </div>
+    </div>
+    <div class="section_detail">
+      <div class="detail_info_wrap">
+        <div class="detail_info_title">備註</div>
+        <div class="memo_wrap">
+          <div class="memo_content">{{ orderInfo.memo }}</div>
+        </div>
+      </div>
+    </div>
+    <div (click)="editForm('info')" class="edit_button device_system_button">編輯</div>
+  </section>
+
+  <!-- 銷貨單-設備列表 -->
+  <section class="content-box section">
+    <div class="section_title">設備列表</div>
+    <div class="section_title"></div>
+
+    <div class="time_wrap" *ngIf="orderProds && orderProds[0]">
+      <div class="time_name">
+        <div class="establish_update_time">
+          <div class="title">建立時間</div>
+          <div class="date_time">{{ orderProds[0]?.create_time }}</div>
+        </div>
+        <div class="establish_update_time">
+          <div class="title">人員:</div>
+          <div class="name">{{ orderProds[0]?.create_name }}</div>
+        </div>
+      </div>
+      <!-- <div class="time_name" *ngIf="ProdLastModify.modify_time">
+        <div class="establish_update_time">
+          <div class="title">最後修改</div>
+          <div class="date_time">{{ ProdLastModify.modify_time }}</div>
+        </div>
+        <div class="establish_update_time">
+          <div class="title">人員:</div>
+          <div class="name">{{ ProdLastModify.modify_name }}</div>
+        </div>
+      </div> -->
+    </div>
+
+    <ng-container *ngIf="orderProds; else noDataSection">
+      <ng-container *ngFor="let orderProd of orderProds | keyvalue; let i = index">
+        <div class="section_detail equip_list">
+          <div class="detail_info_wrap">
+            <div class="detail_info_title">序號</div>
+            <div class="content_wrap">
+              <div class="uneditable_content">{{ orderProds[i].serial_no }}</div>
+            </div>
+          </div>
+          <div class="detail_info_wrap">
+            <div class="detail_info_title">保固開始日</div>
+            <div class="content_wrap">
+              <div class="editable_content">{{ orderProds[i].warranty_start }}</div>
+            </div>
+          </div>
+          <div class="detail_info_wrap">
+            <div class="detail_info_title">保固結束日</div>
+            <div class="content_wrap">
+              <div class="editable_content">{{ orderProds[i].warranty_end }}</div>
+            </div>
+          </div>
+          <!-- 下拉式編輯 -->
+          <div class="detail_info_wrap">
+            <div class="detail_info_title">安裝狀態</div>
+            <div class="content_wrap">
+              <div class="editable_content">
+                {{ orderProds[i].install_type }}
+              </div>
+            </div>
+          </div>
+          <div class="detail_info_wrap more_button">
+            <div
+              [routerLink]="['/equipment-management/equipment', orderProds[i].serial_no]"
+              class="device_system_button more_icon"
+            >
+              更多
+            </div>
+          </div>
+        </div>
+      </ng-container>
+    </ng-container>
+    <ng-template #noDataSection>
+      <div class="section_detail">無資料</div>
+    </ng-template>
+
+    <div (click)="editForm('product')" class="add_button device_system_button">新增</div>
+  </section>
+
+  <!-- 銷貨單-叫修資料 -->
+  <section class="content-box section">
+    <div class="section_title">叫修資料</div>
+    <div class="time_wrap" *ngIf="orderFixReq && orderFixReq[0]">
+      <div class="time_name">
+        <div class="establish_update_time">
+          <div class="title">建立時間</div>
+          <div class="date_time">{{ orderFixReq[0].create_time }}</div>
+        </div>
+        <div class="establish_update_time">
+          <div class="title">人員:</div>
+          <div class="name">{{ orderFixReq[0].create_name }}</div>
+        </div>
+      </div>
+      <!-- <div class="time_name">
+        <div class="establish_update_time">
+          <div class="title">最後修改</div>
+          <div class="date_time">{{ orderFixReq.modify_time }}</div>
+        </div>
+        <div class="establish_update_time">
+          <div class="title">人員</div>
+          <div class="name">{{ orderFixReq.modify_name }}</div>
+        </div>
+      </div> -->
+    </div>
+    <ng-container *ngIf="orderFixReq; else noOrderFixReq">
+      <ng-container *ngFor="let FixReq of orderFixReq | keyvalue; let r = index">
+        <div class="section_detail">
+          <div class="detail_info_wrap">
+            <div class="detail_info_title">叫修單號</div>
+            <div class="content_wrap">
+              <div class="uneditable_content">{{ orderFixReq[r].repair_id }}</div>
+            </div>
+          </div>
+
+          <div class="detail_info_wrap">
+            <div class="detail_info_title">名稱</div>
+            <div class="content_wrap">
+              <div class="uneditable_content">{{ orderFixReq[r].user_name }}</div>
+            </div>
+          </div>
+          <div class="detail_info_wrap">
+            <div class="detail_info_title">電話</div>
+            <div class="content_wrap">
+              <div class="uneditable_content">{{ orderFixReq[r].phone }}</div>
+            </div>
+          </div>
+          <div class="detail_info_wrap">
+            <div class="detail_info_title">地址</div>
+            <div class="content_wrap">
+              <div class="uneditable_content">{{ orderFixReq[r].address }}</div>
+            </div>
+          </div>
+        </div>
+        <div class="section_detail equip_list">
+          <div class="detail_info_wrap">
+            <div class="detail_info_title">備註</div>
+            <div class="memo_wrap">
+              <div class="memo_content">{{ orderFixReq[r].memo }}</div>
+            </div>
+          </div>
+        </div>
+      </ng-container>
+    </ng-container>
+    <ng-template #noOrderFixReq>
+      <div class="section_detail">無資料</div>
+    </ng-template>
+
+    <!-- <div (click)="editForm('fixReq')" class="edit_button device_system_button">新增</div> -->
+  </section>
+
+  <div *ngIf="!orderProds && !orderFixReq" class="section">
+    <button class="device_system_button delete_button delete_icon" (click)="deleteOrder()">
+      刪除銷貨單
+    </button>
+  </div>
+
+  <!-- 編輯-銷貨單 -->
+  <section class="section">
+    <app-edit-order [(editing)]="editing" [(isNewForm)]="isNewForm" (infoChange)="fetchOrderList()">
+    </app-edit-order>
+  </section>
+
+  <!-- 編輯-銷貨單_產品 -->
+  <section class="section">
+    <app-edit-equipment
+      [(editing)]="editProd"
+      [(isNewForm)]="isNewForm"
+      (infoChange)="fetchOrderList()"
+      (anotherProdAdd)="changeProdModify($event)"
+    >
+    </app-edit-equipment>
+  </section>
+
+  <!-- 編輯-銷貨單_叫修 -->
+  <section class="section">
+    <app-edit-maintenance-requirement
+      [(editing)]="editFixReq"
+      [(isNewForm)]="isNewForm"
+      (infoChange)="fetchOrderList()"
+    >
+    </app-edit-maintenance-requirement>
+  </section>
+</div>

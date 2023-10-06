@@ -58,6 +58,22 @@ export const appPath = {
   },
 
   /**
+   * new 裝置管理系統  new GPTfit  equipment management system
+   */
+  equipmentManagement: {
+    home: 'equipment-management',
+    logIn: 'log-in',
+    search: 'search',
+    equipment: 'equipment',
+    equipment_sn: 'equipment_sn',
+    repair_id: 'repair_id',
+    order: 'order',
+    order_no: 'order_no',
+    maintenanceRequirement: 'maintenance-requirement',
+    maintenance: 'maintenance',
+  },
+
+  /**
    * 後台管理，限系統管理員操作頁面
    */
   adminManage: {

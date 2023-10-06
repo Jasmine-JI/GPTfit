@@ -29,15 +29,15 @@
   flex-direction: column;
   gap: 10px;
   margin: 10px 3px;
+}
 
-  .choose_date {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    .time__icon {
-      font-size: 24px;
-      margin-right: 5px;
-    }
+.choose_date {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  .time__icon {
+    font-size: 24px;
+    margin-right: 5px;
   }
 }
 

@@ -1,0 +1,145 @@
+<div class="section_wrapper">
+  <section class="section">
+    <div class="title">最新單據</div>
+    <div class="select_section">
+      <div
+        (click)="selectOption('order')"
+        [class.active]="uiFlag.selectOption == 'order'"
+        class="option"
+      >
+        銷貨單
+      </div>
+      <div
+        (click)="selectOption('fixReq')"
+        [class.active]="uiFlag.selectOption == 'fixReq'"
+        class="option"
+      >
+        叫修單
+      </div>
+    </div>
+    <ng-container *ngIf="uiFlag.selectOption == 'order'">
+      <ng-container *ngFor="let order of uiFlag.orderList; let i = index">
+        <div [routerLink]="['/equipment-management/order', order.order_no]" class="order_list">
+          <div class="user">
+            <i class="icon-svg_web-icon_p1_079-user user_icon"></i>
+            <span class="user_name">{{ order.user_name }}</span>
+          </div>
+          <div class="detail_wrap">
+            <div class="detail">
+              <i class="icon-svg_web-icon_p1_082-information detail_icon"></i>
+              <span class="detail_content">{{ order.order_no }}</span>
+            </div>
+            <div class="detail">
+              <i class="icon-svg_web-icon_p1_039-phone detail_icon"></i>
+              <span class="detail_content">{{ order.phone }}</span>
+            </div>
+            <div class="detail">
+              <i class="icon-svg_web-icon_p1_034-home detail_icon"></i>
+              <span class="detail_content">{{ order.address }}</span>
+            </div>
+          </div>
+        </div>
+      </ng-container>
+    </ng-container>
+    <ng-container *ngIf="uiFlag.selectOption == 'fixReq'">
+      <ng-container *ngFor="let fixReq of uiFlag.fixReqList">
+        <!-- <div [routerLink]="['/equipment-management/maintenance-requirement', fixReq.repair_id]" class="order_list"> -->
+        <div class="order_list">
+          <div class="user">
+            <i class="icon-svg_web-icon_p1_079-user user_icon"></i>
+            <span class="user_name">{{ fixReq.user_name }}</span>
+          </div>
+          <div class="detail_wrap">
+            <div class="detail">
+              <i class="icon-svg_web-icon_p1_082-information detail_icon"></i>
+              <span class="detail_content">{{ fixReq.repair_id }}</span>
+            </div>
+            <div class="detail">
+              <i class="icon-svg_web-icon_p1_039-phone detail_icon"></i>
+              <span class="detail_content">{{ fixReq.phone }}</span>
+            </div>
+            <div class="detail">
+              <i class="icon-svg_web-icon_p1_034-home detail_icon"></i>
+              <span class="detail_content">{{ fixReq.address }}</span>
+            </div>
+          </div>
+        </div>
+      </ng-container>
+    </ng-container>
+  </section>
+  <section class="section">
+    <div class="title">註冊待審核產品</div>
+    <ng-container *ngFor="let register of uiFlag.registerList; let rigiIndex = index">
+      <div class="rigister_list">
+        <div class="rigister_edit">
+          <div class="rigister_detail">
+            <div class="user">
+              <span class="user_name">{{ register.equipment_sn }}</span>
+            </div>
+            <div class="detail_wrap">
+              <div class="detail">
+                <i class="icon-svg_web-icon_p1_079-user detail_icon"></i>
+                <span class="detail_content">{{ register.user_id }}</span>
+              </div>
+              <div class="detail">
+                <i class="icon-svg_web-icon_p2_019-time detail_icon"></i>
+                <span class="detail_content">{{ register.register_time }}</span>
+              </div>
+            </div>
+          </div>
+          <i
+            (click)="dropDown('rigisterProd', rigiIndex)"
+            class="icon-svg_web-icon_p2_026-more detail_icon icon_button"
+          ></i>
+        </div>
+        <div
+          *ngIf="
+            showRigisterProdDropdown.show === true && showRigisterProdDropdown.item === rigiIndex
+          "
+          class="rigister_add_list"
+        >
+          <ul>
+            <li (click)="editForm('product', register.equipment_sn)" class="rigister_add_option">
+              建立新產品
+            </li>
+            <li (click)="dropDown('rigisterProd', rigiIndex)" class="rigister_add_option">取消</li>
+          </ul>
+        </div>
+      </div>
+    </ng-container>
+  </section>
+  <section class="section">
+    <div *ngIf="showAddListDropdown" class="add_list">
+      <ul>
+        <li (click)="editForm('order')" class="add_list_option">銷貨單</li>
+        <li (click)="editForm('fixReq')" class="add_list_option">叫修單</li>
+        <li (click)="editForm('repair')" class="add_list_option">維修單</li>
+      </ul>
+    </div>
+    <div (click)="dropDown('add_list')" class="device_system_button main_button">新增</div>
+  </section>
+
+  <!-- 編輯-銷貨單 -->
+  <section class="section">
+    <app-edit-order [(editing)]="editOrder" [(isNewForm)]="isNewForm" (infoChange)="getOrderList()">
+    </app-edit-order>
+  </section>
+
+  <!-- 編輯-銷貨單_產品 -->
+  <section class="section">
+    <app-edit-equipment
+      [(editing)]="editProd"
+      [(isNewForm)]="isNewForm"
+      [(rigisterProd)]="rigisterProd"
+      [serial_no]="serial_no"
+      (infoChange)="getRegisterList()"
+    >
+    </app-edit-equipment>
+  </section>
+
+  <!-- 編輯-銷貨單_叫修 -->
+  <section class="section">
+    <app-edit-maintenance-requirement [(editing)]="editFixReq" [(isNewForm)]="isNewForm">
+    </app-edit-maintenance-requirement>
+  </section>
+</div>
