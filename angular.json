@@ -43,7 +43,8 @@
             ],
             "stylePreprocessorOptions": {
               "includePaths": [
-                "src/styles/model"
+                "src/styles/model",
+                "src/styles/module"
               ]
             },
             "scripts": [
@@ -240,7 +241,8 @@
             ],
             "stylePreprocessorOptions": {
               "includePaths": [
-                "src/styles/model"
+                "src/styles/model",
+                "src/styles/module"
               ]
             },
             "assets": [

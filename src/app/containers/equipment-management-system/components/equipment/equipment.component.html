@@ -1,0 +1,542 @@
+<div *ngIf="productOrderRecord && productDetail && targetProdInfo" class="section_wrapper">
+  <!-- 銷貨單-基本資料 -->
+  <ng-container *ngIf="targetProdInfo; else ProdOffline">
+    <section class="content-box section" *ngIf="targetProdInfo">
+      <div class="section_title">基本資料</div>
+      <div class="time_wrap">
+        <div class="time_name">
+          <div class="establish_update_time">
+            <div class="title">建立時間</div>
+            <div class="date_time">{{ targetProdInfo.create_time }}</div>
+          </div>
+          <div class="establish_update_time">
+            <div class="title">人員:</div>
+            <div class="name">{{ targetProdInfo.create_name }}</div>
+          </div>
+        </div>
+        <div class="time_name">
+          <div class="establish_update_time">
+            <div class="title">最後修改</div>
+            <div class="date_time">{{ targetProdInfo.modify_time }}</div>
+          </div>
+          <div class="establish_update_time">
+            <div class="title">人員</div>
+            <div class="name">{{ targetProdInfo.modify_name }}</div>
+          </div>
+        </div>
+      </div>
+      <div class="section_detail">
+        <div class="detail_info_wrap">
+          <div class="detail_info_title">序號</div>
+          <div class="content_wrap">
+            <div class="uneditable_content">{{ targetProdInfo.serial_no }}</div>
+          </div>
+        </div>
+        <div class="detail_info_wrap">
+          <div class="detail_info_title">所屬單號</div>
+          <div class="content_wrap">
+            <div class="uneditable_content">{{ targetProdInfo.order_no }}</div>
+          </div>
+        </div>
+        <div class="detail_info_wrap">
+          <div class="detail_info_title">類型</div>
+          <div class="content_wrap">
+            <div class="editable_content">{{ targetProdInfo.product_type }}</div>
+          </div>
+        </div>
+        <div class="detail_info_wrap">
+          <div class="detail_info_title">安裝日期</div>
+          <div class="content_wrap">
+            <div class="editable_content">{{ targetProdInfo.install_date }}</div>
+          </div>
+        </div>
+        <div class="detail_info_wrap">
+          <div class="detail_info_title">保固開始日</div>
+          <div class="content_wrap">
+            <div class="editable_content">{{ targetProdInfo.warranty_start }}</div>
+          </div>
+        </div>
+        <div class="detail_info_wrap">
+          <div class="detail_info_title">保固結束日</div>
+          <div class="content_wrap">
+            <div class="editable_content">{{ targetProdInfo.warranty_end }}</div>
+          </div>
+        </div>
+        <div class="detail_info_wrap">
+          <div class="detail_info_title">產品狀態</div>
+          <div class="content_wrap">
+            <div class="uneditable_content" [class.online]="targetProdInfo.status === 'online'">
+              {{ targetProdInfo.status }}
+            </div>
+          </div>
+        </div>
+        <div class="detail_info_wrap">
+          <div class="detail_info_title">GPTfit 註冊暱稱</div>
+          <div class="content_wrap">
+            <div *ngIf="targetProdInfo.register_id" class="uneditable_content">
+              {{ targetProdInfo.register_id }}
+            </div>
+            <div *ngIf="!targetProdInfo.register_id" class="uneditable_content">未註冊</div>
+          </div>
+        </div>
+
+        <div class="detail_info_wrap">
+          <div class="detail_info_title">附件</div>
+          <div class="img_list">
+            <ng-container *ngFor="let fileName of fileNames">
+              <div class="img_wrap">
+                <img
+                  (click)="openImage(imgPath + fileName)"
+                  [src]="imgPath + fileName"
+                  alt="附加檔案"
+                  id="image_preview"
+                />
+              </div>
+            </ng-container>
+          </div>
+        </div>
+      </div>
+      <div class="section_detail">
+        <div class="detail_info_wrap">
+          <div class="detail_info_title">備註</div>
+          <div class="memo_wrap">
+            <div class="memo_content">{{ targetProdInfo.memo }}</div>
+          </div>
+        </div>
+      </div>
+      <div (click)="editForm('targetProdInfo')" class="edit_button device_system_button">編輯</div>
+    </section>
+  </ng-container>
+  <ng-template #ProdOffline>
+    <section class="content-box section" *ngIf="prodOfflineInfo">
+      <div class="section_title">基本資料</div>
+      <div class="time_wrap">
+        <div class="time_name">
+          <div class="establish_update_time">
+            <div class="title">建立時間</div>
+            <div class="date_time">{{ prodOfflineInfo.create_time }}</div>
+          </div>
+          <div class="establish_update_time">
+            <div class="title">人員:</div>
+            <div class="name">{{ prodOfflineInfo.create_name }}</div>
+          </div>
+        </div>
+        <div class="time_name">
+          <div class="establish_update_time">
+            <div class="title">最後修改</div>
+            <div class="date_time">{{ prodOfflineInfo.modify_time }}</div>
+          </div>
+          <div class="establish_update_time">
+            <div class="title">人員</div>
+            <div class="name">{{ prodOfflineInfo.modify_name }}</div>
+          </div>
+        </div>
+      </div>
+      <div class="section_detail">
+        <div class="detail_info_wrap">
+          <div class="detail_info_title">序號</div>
+          <div class="content_wrap">
+            <div class="uneditable_content">{{ prodOfflineInfo.serial_no }}</div>
+          </div>
+        </div>
+        <div class="detail_info_wrap">
+          <div class="detail_info_title">類型</div>
+          <div class="content_wrap">
+            <div class="editable_content">{{ prodOfflineInfo.product_type }}</div>
+          </div>
+        </div>
+        <div class="detail_info_wrap">
+          <div class="detail_info_title">產品狀態</div>
+          <div class="content_wrap">
+            <div class="uneditable_content" [class.online]="prodOfflineInfo.status === 'online'">
+              {{ prodOfflineInfo.status }}
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </ng-template>
+
+  <!-- 設備產品-出退貨紀錄 -->
+  <section class="content-box section">
+    <div class="section_title">出退貨紀錄</div>
+
+    <div class="time_wrap" *ngIf="productOrderRecord">
+      <div class="time_name">
+        <div class="establish_update_time">
+          <div class="title">建立時間</div>
+          <div class="date_time">{{ productOrderRecord[0]?.create_time }}</div>
+        </div>
+        <div class="establish_update_time">
+          <div class="title">人員:</div>
+          <div class="name">{{ productOrderRecord[0]?.create_name }}</div>
+        </div>
+      </div>
+      <div class="time_name">
+        <!-- <div class="time_name"  *ngIf="ProdLastModify.modify_time"> -->
+        <div class="establish_update_time">
+          <div class="title">最後修改</div>
+          <div class="date_time">{{ targetProdInfo.modify_time }}</div>
+        </div>
+        <div class="establish_update_time">
+          <div class="title">人員:</div>
+          <div class="name">{{ targetProdInfo.modify_name }}</div>
+        </div>
+      </div>
+    </div>
+
+    <ng-container *ngIf="productOrderRecord; else noDataSection">
+      <ng-container *ngFor="let orderRecord of productOrderRecord; let i = index">
+        <div class="section_detail equip_list">
+          <div class="detail_info_wrap">
+            <div class="detail_info_title">訂貨單號</div>
+            <div class="content_wrap">
+              <div class="uneditable_content">{{ orderRecord.order_no }}</div>
+            </div>
+          </div>
+          <div class="detail_info_wrap">
+            <div class="detail_info_title">名稱</div>
+            <div class="content_wrap">
+              <div class="uneditable_content">{{ orderRecord.user_name }}</div>
+            </div>
+          </div>
+          <div class="detail_info_wrap">
+            <div class="detail_info_title">電話</div>
+            <div class="content_wrap">
+              <div class="uneditable_content">{{ orderRecord.phone }}</div>
+            </div>
+          </div>
+          <div class="detail_info_wrap">
+            <div class="detail_info_title">地址</div>
+            <div class="content_wrap">
+              <div class="uneditable_content">{{ orderRecord.address }}</div>
+            </div>
+          </div>
+
+          <!-- 下拉式編輯 -->
+          <div class="detail_info_wrap">
+            <div class="detail_info_title">安裝狀態</div>
+            <div class="content_wrap">
+              <div
+                class="editable_content"
+                [class.unfold]="
+                  showInstallTypeDropdown.selectedIndex === i && showInstallTypeDropdown.isOpen
+                "
+              >
+                {{ orderRecord.install_type }}
+              </div>
+              <!-- <div *ngIf="showInstallTypeDropdown.isOpen ===true && showInstallTypeDropdown.selectedIndex === i"
+                class="toggle_dropdown">
+                <ul>
+                  <li dropdown *ngFor="let installType of installTypeList"
+                    (click)="selectType('installType',installType,i)" class="dropdown_list">
+                    {{ installType }}
+                  </li>
+                </ul>
+              </div> -->
+            </div>
+          </div>
+
+          <!-- 下拉式編輯 -->
+          <div class="detail_info_wrap">
+            <div class="detail_info_title">退換貨狀態</div>
+            <div class="content_wrap">
+              <div
+                class="editable_content"
+                [class.unfold]="
+                  showReturnExchangeDropdown.selectedIndex === i &&
+                  showReturnExchangeDropdown.isOpen
+                "
+              >
+                {{
+                  (orderRecord.return_exchange !== 'None' ? orderRecord.return_exchange : '無') ||
+                    '無'
+                }}
+              </div>
+              <!-- <div *ngIf="showReturnExchangeDropdown.isOpen && showReturnExchangeDropdown.selectedIndex === i"
+                class="toggle_dropdown">
+                <ul>
+                  <li dropdown *ngFor="let returnExchange of returnExchangeList"
+                    (click)="selectType('return_exchange',returnExchange,i)" class="dropdown_list">
+                    {{ returnExchange }}
+                  </li>
+                  <li (click)="selectType('return_exchange','None',i)" class="dropdown_list">無</li>
+                </ul>
+              </div> -->
+            </div>
+          </div>
+        </div>
+      </ng-container>
+    </ng-container>
+    <ng-template #noDataSection>
+      <div class="section_detail">無資料</div>
+    </ng-template>
+  </section>
+
+  <!-- 維修保養紀錄- -->
+  <section class="content-box section">
+    <div class="section_title">維修保養紀錄</div>
+
+    <div class="time_wrap" *ngIf="productRepairs">
+      <div class="time_name">
+        <div class="establish_update_time">
+          <div class="title">建立時間</div>
+          <div class="date_time">{{ productRepairs[0]?.create_time }}</div>
+        </div>
+        <div class="establish_update_time">
+          <div class="title">人員:</div>
+          <div class="name">{{ productRepairs[0]?.create_name }}</div>
+        </div>
+      </div>
+      <!-- <div class="time_name">
+        <div class="time_name" *ngIf="ProdLastModify.modify_time">
+          <div class="establish_update_time">
+            <div class="title">最後修改</div>
+            <div class="date_time">{{ productOrderRecord.modify_time }}</div>
+          </div>
+          <div class="establish_update_time">
+            <div class="title">人員:</div>
+            <div class="name">{{ productOrderRecord.modify_name }}</div>
+          </div>
+        </div>
+      </div> -->
+    </div>
+
+    <ng-container *ngIf="productRepairs; else noDataSection">
+      <ng-container *ngFor="let repair of productRepairs; let i = index">
+        <div class="section_detail equip_list">
+          <div class="detail_info_wrap">
+            <div class="detail_info_title">維修單號</div>
+            <div class="content_wrap">
+              <div class="uneditable_content">{{ repair.order_no }}</div>
+            </div>
+          </div>
+          <div class="detail_info_wrap">
+            <div class="detail_info_title">名稱</div>
+            <div class="content_wrap">
+              <div class="uneditable_content">{{ repair.user_name }}</div>
+            </div>
+          </div>
+          <div class="detail_info_wrap">
+            <div class="detail_info_title">電話</div>
+            <div class="content_wrap">
+              <div class="uneditable_content">{{ repair.phone }}</div>
+            </div>
+          </div>
+          <div class="detail_info_wrap">
+            <div class="detail_info_title">地址</div>
+            <div class="content_wrap">
+              <div class="uneditable_content">{{ repair.address }}</div>
+            </div>
+          </div>
+
+          <!-- 下拉式編輯 -->
+          <div class="detail_info_wrap">
+            <div class="detail_info_title">類型</div>
+            <div class="content_wrap">
+              <div class="editable_content">
+                {{ repair.repair_type }}
+              </div>
+              <!-- <div *ngIf="
+                  showRepairTypeDropdown.isOpen === true &&
+                  showRepairTypeDropdown.selectedIndex === i
+                " class="toggle_dropdown">
+                <ul>
+                  <li dropdown *ngFor="let repairType of repairTypeList"
+                    (click)="selectType('repairType', repairType, i)" class="dropdown_list">
+                    {{ repairType }}
+                  </li>
+                </ul>
+              </div> -->
+            </div>
+          </div>
+        </div>
+      </ng-container>
+    </ng-container>
+    <ng-template #noDataSection>
+      <div class="section_detail">無資料</div>
+    </ng-template>
+  </section>
+
+  <section *ngIf="targetProdInfo" class="section">
+    <div class="device_img_descrip">
+      <div class="img">
+        <img
+          *ngIf="productDetail.model_name"
+          [src]="modelImgPath + productDetail.model_img"
+          [alt]="productDetail.model_name"
+        />
+        <img
+          *ngIf="!productDetail.model_name"
+          [src]="modelImgPath + '/img/unknown.png'"
+          [alt]="productDetail.model_name"
+        />
+      </div>
+      <div class="device_detail">
+        <div class="detailcol">
+          <div class="device_info">
+            <div class="title">型號:</div>
+            <div class="info">{{ productDetail.model_name }}</div>
+          </div>
+          <div class="device_info">
+            <div class="title">類型:</div>
+            <div class="info">{{ targetProdInfo.product_type }}</div>
+          </div>
+          <div class="device_info">
+            <div class="title">序號:</div>
+            <div class="info">{{ targetProdInfo.serial_no }}</div>
+          </div>
+          <div class="device_info">
+            <div class="title">註冊日期:</div>
+            <div class="info">{{ targetProdInfo.register_time }}</div>
+          </div>
+          <div class="device_info">
+            <div class="title">出廠日期:</div>
+            <div class="info">{{ getManufactureTimestamp(targetProdInfo.serial_no) }}</div>
+          </div>
+        </div>
+        <div class="detailcol">
+          <div class="device_info">
+            <div class="title">總里程數:</div>
+            <div class="info">
+              {{ equipRecord?.total_use_meter[equipRecord?.total_use_meter.length - 1] || 0 }}
+            </div>
+          </div>
+          <div class="device_info">
+            <div class="title">時數:</div>
+            <div class="info">
+              {{
+                calculateRound(
+                  equipRecord?.total_use_time_second[
+                    equipRecord?.total_use_time_second.length - 1
+                  ] / 3600
+                ) || 0
+              }}
+            </div>
+          </div>
+          <div class="device_info">
+            <div class="title">開機次數:</div>
+            <div class="info">
+              {{
+                equipRecord?.total_number_of_enable[
+                  equipRecord?.total_number_of_enable.length - 1
+                ] || 0
+              }}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section_title">裝置紀錄</div>
+    <div class="choose_date">
+      <i class="time__icon icon-svg_web-icon_p2_019-time"></i>
+      <!-- 預設時間 -->
+      <div #selectOption class="select_option">
+        <div (click)="dateSelect()" class="date_select">
+          <span>{{ uiFlag.dateOption }}</span>
+        </div>
+        <div class="date_option" [class.active]="uiFlag.isDateSelect">
+          <ul>
+            <li
+              class="options"
+              [class.active]="uiFlag.dateOption === dateOptions[option]"
+              *ngFor="let option of getObjectKeys(dateOptions)"
+              (click)="dateOption(option)"
+            >
+              {{ dateOptions[option] }}
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- 自訂日期 -->
+      <!-- startTime -->
+      <div class="filter_start_time">
+        <button mat-raised-button (click)="openStartDatePicker.open()">
+          <input
+            readonly
+            matInput
+            [matDatepicker]="openStartDatePicker"
+            (dateChange)="changeStartTime($event.value)"
+            [(ngModel)]="logDate.start_date"
+            [max]="logDate.end_date"
+          />
+        </button>
+        <mat-datepicker [touchUi]="isMobile" #openStartDatePicker disabled="false"></mat-datepicker>
+      </div>
+      ~
+      <!-- endTime -->
+      <div class="filter_end_time">
+        <button mat-raised-button (click)="openEndDatePicker.open()">
+          <input
+            readonly
+            matInput
+            [matDatepicker]="openEndDatePicker"
+            (dateChange)="changeEndTime($event.value)"
+            [(ngModel)]="logDate.end_date"
+            [min]="logDate.start_date"
+          />
+        </button>
+        <!-- <mat-datepicker touchUi #openEndDatePicker></mat-datepicker> -->
+        <mat-datepicker [touchUi]="isMobile" #openEndDatePicker disabled="false"></mat-datepicker>
+      </div>
+    </div>
+    <ng-container *ngIf="equipRecord; else noEquipRecord">
+      <div class="device_chart">
+        <canvas id="deviceChart"></canvas>
+      </div>
+    </ng-container>
+    <ng-template #noEquipRecord>
+      <div class="device_chart">此時間區間無裝置紀錄</div>
+    </ng-template>
+
+    <div class="section_title">裝置日誌</div>
+    <div>
+      <table id="log__table">
+        <thead>
+          <tr id="log__header">
+            <th>上傳時間</th>
+            <th>訊息</th>
+          </tr>
+        </thead>
+        <tbody id="log__body">
+          <ng-container *ngIf="equipmentLog; else noEquipmentLog">
+            <ng-container *ngFor="let _log of equipmentLog">
+              <tr>
+                <td class="log__time">
+                  {{ _log.uploadTime }}
+                </td>
+                <td class="log__msg">
+                  {{ _log.code }}
+                  <!-- {{
+                  'errorCode_' + deviceInfo.modelTypeName + '_' + _log.code.split('_')[0]
+                  | productErrorLog
+                  }} -->
+                </td>
+              </tr>
+            </ng-container>
+          </ng-container>
+          <ng-template #noEquipmentLog>
+            <span> 此時間區間無資料 </span>
+          </ng-template>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- 編輯-銷貨單連結之產品基本資料 -->
+  <app-edit-equipment
+    [(editing)]="editProd"
+    [(isNewForm)]="isNewForm"
+    (infoChange)="fetchOrderList()"
+  >
+  </app-edit-equipment>
+
+  <!-- 編輯-銷貨單_叫修 -->
+  <!-- <section class="section">
+    <app-edit-maintenance-requirement [(editing)]="editFixReq" [(isNewForm)]="isNewForm"
+      (infoChange)="fetchOrderList()">
+    </app-edit-maintenance-requirement>
+  </section> -->
+</div>

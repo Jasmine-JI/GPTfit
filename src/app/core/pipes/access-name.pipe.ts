@@ -20,6 +20,8 @@ export class AccessNamePipe implements PipeTransform {
           return 'universal_group_systemMaintenance';
         case AccessRight.auditor:
           return '系統審核員';
+        case AccessRight.deviceManager:
+          return '裝置管理員';
         case AccessRight.pusher:
           return '系統推播員';
         case AccessRight.marketing:
@@ -45,6 +47,8 @@ export class AccessNamePipe implements PipeTransform {
           return 'universal_group_systemMaintenance';
         case AccessRight.auditor:
           return '系統審核員';
+        case AccessRight.deviceManager:
+          return '裝置管理員';
         case AccessRight.pusher:
           return '系統推播員';
         case AccessRight.marketing:

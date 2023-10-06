@@ -1,0 +1,85 @@
+<div class="log_in_section" (click)="$event.stopPropagation()">
+  <div class="log_in_title">英達客戶設備管理系統</div>
+  <div class="log_in_content">
+    <div class="log_in_form">
+      <div class="account_input">
+        <ng-container *ngIf="!authInfo.signInType">
+          <mat-icon class="sign__icon">account_box</mat-icon>
+        </ng-container>
+        <ng-container *ngIf="authInfo.signInType === SignTypeEnum.phone">
+          <mat-icon class="sign__icon">smartphone</mat-icon>
+          <div
+            class="official-countryCodeSelector"
+            [class.official-selector--active]="uiFlag.showCountryCodeList"
+            (click)="showCountryCodeList($event)"
+          >
+            <span> +{{ authInfo?.countryCode }} </span>
+            <ul class="official-countryCodeList" *ngIf="uiFlag.showCountryCodeList">
+              <li
+                class="flexRow"
+                (click)="selectCountryCode($event, _list.code)"
+                *ngFor="let _list of countryCodeList"
+              >
+                <span class="official-countryNumber">
+                  {{ _list.code }}
+                </span>
+                <span class="official-countryName">
+                  {{ _list.name }}
+                </span>
+              </li>
+            </ul>
+          </div>
+        </ng-container>
+        <ng-container *ngIf="authInfo.signInType === SignTypeEnum.email">
+          <mat-icon class="sign__icon">email</mat-icon>
+        </ng-container>
+        <input
+          #accountInput
+          type="text"
+          [placeholder]="'請輸入您的GPTfit帳號'"
+          (keyup)="checkAccountType($event)"
+          (change)="checkAccountFormat($event)"
+          (focusout)="checkAccountFormat($event)"
+        />
+      </div>
+      <span [class.form__alert]="authAlert.account !== null" [attr.data-pass]="!authAlert.account">
+        <ng-container *ngIf="authAlert.account === 'empty'"> 請完整填寫欄位 </ng-container>
+        <ng-container *ngIf="authAlert.account === 'format'"> 錯誤的格式 </ng-container>
+      </span>
+    </div>
+    <div class="log_in_form">
+      <div class="password_input">
+        <mat-icon class="sign__icon">vpn_key</mat-icon>
+        <input
+          #passwordInput
+          [type]="uiFlag.showPassword ? 'text' : 'password'"
+          [placeholder]="'請輸入您的密碼'"
+          maxlength="20"
+          (keyup)="checkEnter($event, 'passwordInput')"
+          (change)="checkPassword($event)"
+          (focusout)="checkPassword($event)"
+        />
+        <button
+          class="hide_password"
+          [class.show_password]="uiFlag.showPassword"
+          (click)="showPassword()"
+        >
+          <i class="icon-svg_web-icon_p1_081-watch"></i>
+        </button>
+      </div>
+      <span
+        [class.form__alert]="authAlert.password !== null"
+        [attr.data-pass]="!authAlert.password"
+      >
+        <ng-container *ngIf="authAlert.password === 'empty'"> 請完整填寫欄位 </ng-container>
+        <ng-container *ngIf="authAlert.password === 'format'">
+          密碼必須包含大小寫英文字母與數字，且需要8到20個字
+        </ng-container>
+      </span>
+    </div>
+    <span class="form__alert" *ngIf="authAlert.account === 'mistake' && !authAlert.password">
+      錯誤的帳號或密碼
+    </span>
+  </div>
+  <button class="submit_button" (click)="submit()">登入</button>
+</div>

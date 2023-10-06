@@ -45,6 +45,16 @@
           }
         "
       ></tr>
+      <!-- 裝置管理 -->
+      <tr
+        *ngTemplateOutlet="
+          tableRow;
+          context: {
+            accessright: AccessRight.deviceManager,
+            adminList: deviceManagers
+          }
+        "
+      ></tr>
       <tr
         *ngTemplateOutlet="
           tableRow;
@@ -88,6 +98,8 @@
       <ng-container *ngSwitchCase="AccessRight.marketing">
         {{ 'universal_group_systemMarketing' | translate }}
       </ng-container>
+      <!-- 裝置管理 -->
+      <ng-container *ngSwitchCase="AccessRight.deviceManager"> 系統-裝置管理員 </ng-container>
       {{ 'universal_group_permissionSetting' | translate }}({{ accessright }})
     </td>
     <td class="alatech-table__cell" *ngIf="adminList.length === 0">

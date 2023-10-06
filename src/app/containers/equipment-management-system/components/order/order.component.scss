@@ -1,0 +1,15 @@
+@import 'equipment-management.scss';
+.delete_button {
+  margin: auto;
+  background-color: $main-color;
+  color: #fff;
+}
+
+.delete_icon {
+  &::before {
+    content: '\e908';
+    font-family: 'icomoon';
+    margin-right: 5px;
+    font-size: 18px;
+  }
+}
