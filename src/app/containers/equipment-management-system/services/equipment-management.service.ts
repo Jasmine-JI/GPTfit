@@ -19,10 +19,12 @@ export class EquipmentManagementService {
   orderParameters$ = new ReplaySubject(1);
   productParameters$ = new ReplaySubject(1);
   fixReqParameters$ = new ReplaySubject(1);
-  channelList$ = new ReplaySubject<any>(null);
+  channelList$ = new BehaviorSubject<any>(null);
   orderDetail$ = new BehaviorSubject<orderListResponse>(null);
-  prodDetail$ = new BehaviorSubject<orderListResponse>(null);
+  prodDetail$ = new BehaviorSubject<any>(null);
+  fixReqDetail$ = new BehaviorSubject<any>(null);
   targetProdInfo$ = new BehaviorSubject<any>(null);
+  partsList$ = new BehaviorSubject<any>(null);
   constructor(private http: HttpClient) {}
 
   /**
@@ -39,7 +41,7 @@ export class EquipmentManagementService {
     if (body.order_no !== null && body.order_no !== undefined) {
       orderParams = orderParams.set('order_no', body.order_no);
     }
-    console.log(orderParams);
+    // console.log(orderParams);
 
     return this.http.get<orderListResponse>('/ems/order/getList', { params: orderParams }).pipe(
       catchError((err) => {
@@ -83,7 +85,7 @@ export class EquipmentManagementService {
     let deleteOrderParams = new HttpParams();
     if (order_no !== null && order_no !== undefined) {
       deleteOrderParams = deleteOrderParams.set('order_no', order_no);
-      console.log('deleteOrderParams:', deleteOrderParams);
+      // console.log('deleteOrderParams:', deleteOrderParams);
     }
     return this.http.delete<any>('/ems/order', { params: deleteOrderParams }).pipe(
       catchError((err) => {
@@ -135,6 +137,62 @@ export class EquipmentManagementService {
   }
 
   /**
+   * 儲存API回傳之叫修單詳細頁資料
+   * @param fixReqDetail
+   */
+  setFixReqDetail(fixReqDetail: any) {
+    this.fixReqDetail$.next(fixReqDetail);
+  }
+
+  /**
+   * 新增銷售通路
+   * post api /ems/salesChannel/addChannel
+   * @returns
+   */
+  addSalesChannelsApi(name: string) {
+    return this.http.post<any>(`/ems/salesChannel/addChannel?name=${name}`, name).pipe(
+      catchError((err) => {
+        return throwRxError(err);
+      })
+    );
+  }
+
+  /**
+   * 刪除銷售通路
+   * post api /ems/salesChannel
+   * @returns
+   */
+  deleteSalesChannelsApi(channel_id: any) {
+    return this.http.delete<any>(`/ems/salesChannel?channel_id=${channel_id}`).pipe(
+      catchError((err) => {
+        return throwRxError(err);
+      })
+    );
+  }
+  /**
+   * 修改銷售通路
+   * post api /ems/salesChannel/updateChannelName
+   * @returns
+   */
+  updateSalesChannelsApi(channel_id: any, name: string) {
+    if (channel_id && name) {
+      const updateSalesChannelParams = new HttpParams()
+        .set('channel_id', channel_id)
+        .set('name', name);
+      // console.log('updateSalesChannelParams:', updateSalesChannelParams);
+      return this.http
+        .post<any>(`/ems/salesChannel/updateChannelName`, null, {
+          params: updateSalesChannelParams,
+        })
+        .pipe(
+          catchError((err) => {
+            return throwRxError(err);
+          })
+        );
+    }
+  }
+
+  /**
    * get api 查詢銷售通路列表
    * @returns
    */
@@ -162,12 +220,6 @@ export class EquipmentManagementService {
   }
 
   /**
-   * 修改銷售通路列表
-   * @returns
-   */
-  updateSalesChannelsApi() {}
-
-  /**
    * 儲存 getOrderList 所需 Parameters
    * @param orderParameters
    */
@@ -185,7 +237,7 @@ export class EquipmentManagementService {
 
   /**
    * 儲存 getFixReqList 所需 Parameters
-   * @param orderParameters
+   * @param fixReqParameters
    */
   setFixReqParameters(fixReqParameters: fixReqListParameters) {
     this.fixReqParameters$.next(fixReqParameters);
@@ -207,7 +259,7 @@ export class EquipmentManagementService {
     if (body.end_date !== null && body.end_date !== undefined) {
       productParams = productParams.set('end_date', body.end_date);
     }
-    console.log(productParams);
+    // console.log(productParams);
 
     return this.http.get<any>('/ems/product/getList', { params: productParams }).pipe(
       catchError((err) => {
@@ -253,7 +305,7 @@ export class EquipmentManagementService {
     if (body.equipment_sn !== null && body.equipment_sn !== undefined) {
       registerParams = registerParams.set('equipment_sn', body.equipment_sn);
     }
-    console.log(registerParams);
+    // console.log(registerParams);
 
     return this.http.get<any>('/ems/register/getList', { params: registerParams }).pipe(
       catchError((err) => {
@@ -275,9 +327,126 @@ export class EquipmentManagementService {
     if (body.repair_id !== null && body.repair_id !== undefined) {
       registerParams = registerParams.set('repair_id', body.repair_id);
     }
-    console.log(registerParams);
+    // console.log(registerParams);
 
     return this.http.get<any>('/ems/repair_form/getList', { params: registerParams }).pipe(
+      catchError((err) => {
+        return throwRxError(err);
+      })
+    );
+  }
+
+  /**
+   * 取得已儲存之叫修單詳細頁資料
+   * @returns
+   */
+  getFixReqDetail() {
+    return this.fixReqDetail$;
+  }
+
+  /**
+   *  post api /ems/repair_form/addRepairForm 新增叫修單
+   * @param body
+   * @returns
+   */
+  addFixReqfoApi(body: any) {
+    return this.http.post<any>('/ems/repair_form/addRepairForm', body).pipe(
+      catchError((err) => {
+        return throwRxError(err);
+      })
+    );
+  }
+
+  /**
+   * post api /ems/repair_form/updateRepairForm 修改叫修單
+   * @param body
+   * @returns
+   */
+  updateFixReqApi(body: any) {
+    return this.http.post<any>('/ems/repair_form/updateRepairForm', body).pipe(
+      catchError((err) => {
+        return throwRxError(err);
+      })
+    );
+  }
+
+  /**
+   *  post api /ems/repair_form/addRepairInfo 新增維修單
+   * @param body
+   * @returns
+   */
+  addRepairInfodApi(body: any) {
+    return this.http.post<any>('/ems/repair_form/addRepairInfo', body).pipe(
+      catchError((err) => {
+        return throwRxError(err);
+      })
+    );
+  }
+
+  /**
+   * post api /ems/repair_form/updateRepairInfo 修改維修單
+   * @param body
+   * @returns
+   */
+  updateRepairInfoApi(body: any) {
+    return this.http.post<any>('/ems/repair_form/updateRepairInfo', body).pipe(
+      catchError((err) => {
+        return throwRxError(err);
+      })
+    );
+  }
+
+  /**
+   * get api /ems/parts/getList 取得零件列表
+   * @param body
+   * @returns
+   */
+  getpartListstApi() {
+    return this.http.get<any>('/ems/parts/getList').pipe(
+      catchError((err) => {
+        return throwRxError(err);
+      })
+    );
+  }
+
+  /**
+   *  儲存已取得之零件列表
+   * @param body
+   * @returns
+   */
+  setpartListst(partsList: any) {
+    this.partsList$.next(partsList);
+  }
+
+  /**
+   *  取得已儲存之零件列表
+   * @param body
+   * @returns
+   */
+  getSavedpartListst() {
+    return this.partsList$;
+  }
+
+  /**
+   * post api /ems/parts/addNewParts 新增料件
+   * @param body
+   * @returns
+   */
+  addNewPartsApi(body: any) {
+    return this.http.post<any>('/ems/parts/addNewParts', body).pipe(
+      catchError((err) => {
+        return throwRxError(err);
+      })
+    );
+  }
+
+  /**
+   * post api /ems/parts/updatePartsList 修改料件列表
+   * @param body
+   * @returns
+   */
+  updatePartsListApi(body: any) {
+    return this.http.post<any>('/ems/parts/updatePartsList', body).pipe(
       catchError((err) => {
         return throwRxError(err);
       })

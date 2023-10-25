@@ -1,5 +1,6 @@
+import { UserProfile } from './../../core/models/api/api-10xx/api-10xx-common.model';
 import { RouterOutlet } from '@angular/router';
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { SearchBarComponent } from './components/search/search-bar/search-bar.component';
 import { AuthService, UserService } from '../../core/services';
@@ -15,6 +16,7 @@ import { Subject, takeUntil } from 'rxjs';
 export class EquipmentManagementComponent implements OnInit, OnDestroy {
   private ngUnsubscribe = new Subject();
   token = this.auth.token;
+  avatarUrl: string;
   isLogin: boolean;
   constructor(private auth: AuthService, private userService: UserService) {}
 
@@ -23,6 +25,15 @@ export class EquipmentManagementComponent implements OnInit, OnDestroy {
     this.auth.isLogin.pipe(takeUntil(this.ngUnsubscribe)).subscribe((ifLogin) => {
       this.isLogin = ifLogin;
     });
+    if (this.isLogin) {
+      const id = this.userService.getUser().userId;
+      this.userService
+        .getTargetUserInfo(id)
+        .pipe(takeUntil(this.ngUnsubscribe))
+        .subscribe((user) => {
+          this.avatarUrl = user.avatarUrl;
+        });
+    }
   }
 
   ngOnDestroy(): void {

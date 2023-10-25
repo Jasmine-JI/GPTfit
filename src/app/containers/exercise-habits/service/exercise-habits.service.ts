@@ -84,7 +84,7 @@ export class ExerciseHabitsService {
     this.ifNoDataSubject.next(value);
   }
 
-  // 获取 ifNoData 的可观察对象
+  // 取得 ifNoData 的asObservable
   getIfNoDataObservable() {
     return this.ifNoDataSubject.asObservable();
   }

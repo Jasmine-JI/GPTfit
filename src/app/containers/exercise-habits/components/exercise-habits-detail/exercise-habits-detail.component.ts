@@ -1,4 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { CommonModule, NgFor } from '@angular/common';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
+import { TranslateModule } from '@ngx-translate/core';
+import { Subject, takeUntil } from 'rxjs';
+import { appPath } from '../../../../app-path.const';
+import { HashIdService } from '../../../../core/services';
+import { ProfessionalService } from '../../../professional/services/professional.service';
 import {
   Api531Response,
   ExerciseHabitsService,
@@ -6,12 +13,6 @@ import {
   latest_two_weeks_days,
   subData,
 } from '../../service/exercise-habits.service';
-import { CommonModule, NgFor } from '@angular/common';
-import { ProfessionalService } from '../../../professional/services/professional.service';
-import { Router } from '@angular/router';
-import { appPath } from '../../../../app-path.const';
-import { HashIdService } from '../../../../core/services';
-import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-exercise-habits-detail',
@@ -20,7 +21,8 @@ import { TranslateModule } from '@ngx-translate/core';
   standalone: true,
   imports: [CommonModule, NgFor, TranslateModule],
 })
-export class ExerciseHabitsDetailComponent implements OnInit {
+export class ExerciseHabitsDetailComponent implements OnInit, OnDestroy {
+  private ngUnsubscribe = new Subject();
   // post Response
   api531Response: Api531Response;
   ifNoData: boolean;
@@ -59,15 +61,21 @@ export class ExerciseHabitsDetailComponent implements OnInit {
    * 取回已儲存的 531API response
    */
   get531Response() {
-    this.exerciseHabitsService.getIfNoDataObservable().subscribe((value) => {
-      this.ifNoData = value;
-    });
+    this.exerciseHabitsService
+      .getIfNoDataObservable()
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe((value) => {
+        this.ifNoData = value;
+      });
     if (this.ifNoData === false) {
       //有運動資料
-      this.exerciseHabitsService.get531Response().subscribe((response: Api531Response) => {
-        this.api531Response = response;
-        this.getData(response);
-      });
+      this.exerciseHabitsService
+        .get531Response()
+        .pipe(takeUntil(this.ngUnsubscribe))
+        .subscribe((response: Api531Response) => {
+          this.api531Response = response;
+          this.getData(response);
+        });
     }
   }
 
@@ -207,7 +215,7 @@ export class ExerciseHabitsDetailComponent implements OnInit {
    */
   routerDetailPage(id: string) {
     const targetGroupLevel = this.professionalService.getCurrentGroupInfo().groupLevel;
-    console.log(targetGroupLevel);
+    // console.log(targetGroupLevel);
     const { dashboard, personal, professional } = appPath;
     if (targetGroupLevel === 60) {
       //前往個人頁
@@ -220,5 +228,10 @@ export class ExerciseHabitsDetailComponent implements OnInit {
       const url = `/${dashboard.home}/${professional.groupDetail.home}/${hashGroupId}/${professional.groupDetail.exerciseHabits}`;
       window.open(url, '_blank');
     }
+  }
+
+  ngOnDestroy(): void {
+    this.ngUnsubscribe.next(null);
+    this.ngUnsubscribe.complete();
   }
 }

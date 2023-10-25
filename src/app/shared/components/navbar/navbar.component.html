@@ -37,16 +37,13 @@
         />
         <i
           class="icon-svg_web-icon_p1_069-about alert__icon__enable"
-          *ngIf="(accountStatus | async) === false || (accountStatus | async) === 1"
+          *ngIf="accountStatus === 1"
         ></i>
       </div>
       <ul [class.member_activ]="menu.memberMenu" class="member">
         <p class="member_list member-name">{{ userProfile.nickname }}</p>
         <!-- 啟用帳號 -->
-        <li
-          class="member_list enableAccount"
-          *ngIf="(accountStatus | async) === false || (accountStatus | async) === 1"
-        >
+        <li class="member_list enableAccount" *ngIf="accountStatus === 1">
           <a [routerLink]="['']" (click)="toEnableAccount()">
             <i class="icon-svg_web-icon_p1_069-about alert__icon__enable list_icon"></i>
             <span

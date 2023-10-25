@@ -1,7 +1,6 @@
 import { LayoutModule } from '@angular/cdk/layout';
 import { CommonModule, NgFor, NgIf } from '@angular/common';
-import { HttpClient } from '@angular/common/http';
-import { Component, ElementRef, OnDestroy, OnInit, Renderer2 } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import {
   MAT_MOMENT_DATE_ADAPTER_OPTIONS,
@@ -16,7 +15,7 @@ import {
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { RouterLink } from '@angular/router';
 import { Chart, ChartOptions, CoreInteractionOptions } from 'chart.js/auto';
 import dayjs from 'dayjs';
 import { Subject, takeUntil } from 'rxjs';
@@ -75,8 +74,8 @@ export class EquipmentComponent implements OnInit, OnDestroy {
   productDetail: any;
 
   productOrderRecord: any; // 產品訂單紀錄
-  targetProdInfo: any; // 銷貨單連結後之產品基本資料
-  prodOfflineInfo: any; // 銷貨單連結後之產品基本資料
+  targetProdInfo: any; // 銷貨單連結後之產品基本資料(online)
+  prodOfflineInfo: any; // 銷貨單連結後之產品基本資料(offline)
   productRepairs: any; // 產品維修保養紀錄
 
   /**
@@ -110,11 +109,6 @@ export class EquipmentComponent implements OnInit, OnDestroy {
   equipmentLog: any;
 
   /**
-   * 裝置相關資訊
-   */
-  deviceInfo = {};
-
-  /**
    *日期快速選單
    */
   dateOptions = {
@@ -138,25 +132,20 @@ export class EquipmentComponent implements OnInit, OnDestroy {
   showReturnExchangeDropdown = { isOpen: false, selectedIndex: null };
   showRepairTypeDropdown = { isOpen: false, selectedIndex: null };
 
-  readonly imgPath = `http://${
+  readonly imgPath = `https://${
     location.hostname.includes(WebIp.develop) ? Domain.uat : location.hostname
   }/img/`;
 
-  readonly modelImgPath = `http://${
+  readonly modelImgPath = `https://${
     location.hostname.includes(WebIp.develop) ? Domain.uat : location.hostname
   }/app/public_html/products`;
 
   constructor(
-    private http: HttpClient,
     private userService: UserService,
-    private route: ActivatedRoute,
-    private equipmentManagementService: EquipmentManagementService,
-    private renderer: Renderer2,
-    private elementRef: ElementRef
+    private equipmentManagementService: EquipmentManagementService
   ) {}
 
   ngOnInit(): void {
-    // this.getSalesChannels();
     this.getProductParameters();
   }
 
@@ -298,46 +287,46 @@ export class EquipmentComponent implements OnInit, OnDestroy {
     }
   }
 
-  selectType(type: string, selected: string, i: number) {
-    this.closeAllDropdown();
-    switch (type) {
-      case 'return_exchange':
-        this.productOrderRecord[i].return_exchange = selected;
+  // selectType(type: string, selected: string, i: number) {
+  //   this.closeAllDropdown();
+  //   switch (type) {
+  //     case 'return_exchange':
+  //       this.productOrderRecord[i].return_exchange = selected;
 
-        // this.updateOrderRecord(i); // ++寫入資料庫
+  //       // this.updateOrderRecord(i); // ++寫入資料庫
 
-        console.log(
-          'this.orderProds[i]',
-          this.productOrderRecord[i],
-          this.productOrderRecord[i].return_exchange
-        );
-        break;
+  //       console.log(
+  //         'this.orderProds[i]',
+  //         this.productOrderRecord[i],
+  //         this.productOrderRecord[i].return_exchange
+  //       );
+  //       break;
 
-      case 'installType':
-        this.productOrderRecord[i].install_type = selected;
+  //     case 'installType':
+  //       this.productOrderRecord[i].install_type = selected;
 
-        // this.updateOrderRecord(i); // ++寫入資料庫
+  //       // this.updateOrderRecord(i); // ++寫入資料庫
 
-        console.log(
-          'this.orderProds[i]',
-          this.productOrderRecord[i],
-          this.productOrderRecord[i].install_type
-        );
-        break;
+  //       console.log(
+  //         'this.orderProds[i]',
+  //         this.productOrderRecord[i],
+  //         this.productOrderRecord[i].install_type
+  //       );
+  //       break;
 
-      case 'repairType':
-        this.productRepairs[i].repair_type = selected;
+  //     case 'repairType':
+  //       this.productRepairs[i].repair_type = selected;
 
-        // this.updateOrderRecord(i); // ++寫入資料庫
+  //       // this.updateOrderRecord(i); // ++寫入資料庫
 
-        console.log(
-          'this.orderProds[i]',
-          this.productRepairs[i],
-          this.productRepairs[i].repair_type
-        );
-        break;
-    }
-  }
+  //       console.log(
+  //         'this.orderProds[i]',
+  //         this.productRepairs[i],
+  //         this.productRepairs[i].repair_type
+  //       );
+  //       break;
+  //   }
+  // }
 
   editForm(type: string) {
     this.closeAllDropdown();
@@ -393,12 +382,12 @@ export class EquipmentComponent implements OnInit, OnDestroy {
 
   setProdInfo() {
     this.productOrderRecord = this.productDetail.order;
-    this.productRepairs = this.productDetail.repair;
+    this.productRepairs = this.productDetail.repair?.reverse();
     this.equipRecord = this.productDetail.equipment;
     this.equipmentLog = this.productDetail.error_code;
-    console.log(this.productOrderRecord);
-    console.log('productRepairs:', this.productRepairs);
-    console.log('equipRecord:', this.equipRecord);
+    // console.log(this.productOrderRecord);
+    // console.log('productRepairs:', this.productRepairs);
+    // console.log('equipRecord:', this.equipRecord);
     // console.log('total_use_time_second:', this.equipRecord.total_use_time_second);
     if (this.productOrderRecord) {
       this.setTargetProdInfo();
@@ -432,17 +421,30 @@ export class EquipmentComponent implements OnInit, OnDestroy {
     );
     this.targetProdInfo = this.productOrderRecord[targetOrderIndex];
     this.equipmentManagementService.setTargetProdInfo(this.targetProdInfo);
-    this.setProdOfflineInfo();
-    console.log('targetProdInfo:', this.targetProdInfo);
+    // console.log('targetProdInfo:', this.targetProdInfo);
     if (this.targetProdInfo) {
       this.setFileArray();
+      this.getRegisterNickname();
+    } else {
+      this.setProdOfflineInfo();
     }
   }
 
+  getRegisterNickname() {
+    // 使用userService來獲取nickname
+    this.userService
+      .getTargetUserInfo(this.targetProdInfo.register_id)
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe((res) => {
+        // console.log(res);
+        const nickname = res.nickname;
+        this.targetProdInfo.registerName = nickname; // 將獲取的nickname添加到對象中
+      });
+  }
+
   setProdOfflineInfo() {
-    const { create_name, create_time, serial_no, product_type } = this.productOrderRecord[0];
-    const { modify_name, modify_time, status } =
-      this.productOrderRecord[this.productOrderRecord.length - 1];
+    const { create_name, create_time, serial_no, product_type, modify_name, modify_time } =
+      this.productOrderRecord[0];
     this.prodOfflineInfo = {
       create_name,
       create_time,
@@ -450,9 +452,9 @@ export class EquipmentComponent implements OnInit, OnDestroy {
       modify_time,
       serial_no,
       product_type,
-      status,
+      status: 'offline',
     };
-    console.log(status);
+    // console.log('prodOfflineInfo:', this.prodOfflineInfo);
   }
 
   /**
@@ -462,7 +464,7 @@ export class EquipmentComponent implements OnInit, OnDestroy {
     this.equipmentManagementService.productParameters$
       .pipe(takeUntil(this.ngUnsubscribe))
       .subscribe((_productParameters) => {
-        console.log(_productParameters);
+        // console.log(_productParameters);
         this.productParameters = _productParameters;
         if (this.productParameters) {
           this.fetchOrderList();
@@ -484,7 +486,7 @@ export class EquipmentComponent implements OnInit, OnDestroy {
       total_use_meter = this.equipRecord?.total_use_meter ?? [];
       total_number_of_enable = this.equipRecord?.total_number_of_enable ?? [];
       update_time = this.equipRecord.update_time ?? [];
-      console.log(update_time);
+      // console.log(update_time);
     }
     const data = {
       labels: update_time,

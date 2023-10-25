@@ -24,7 +24,6 @@ textarea {
 .section_wrapper {
   position: relative;
   width: 100vw;
-  // height: 100vh;
 }
 
 .section {
@@ -137,13 +136,21 @@ textarea {
 
 .memo_wrap {
   .memo_content {
+    overflow-wrap: anywhere;
     font-size: 12px;
     padding: 10px;
   }
 }
 
+.textLength {
+  display: block;
+  text-align: end;
+  color: $tile-color2;
+}
+
 .dropdown_list {
   cursor: pointer;
+  overflow-wrap: anywhere;
 
   &:hover {
     font-weight: 700;
@@ -158,6 +165,8 @@ textarea {
   cursor: pointer;
   display: flex;
   justify-content: space-between;
+  align-items: center;
+  flex-grow: 1;
 
   &::after {
     content: '\e905';
@@ -173,6 +182,10 @@ textarea {
 }
 
 .device_system_button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
   width: max-content;
   min-width: 80px;
   padding: 5px 15px;
@@ -252,7 +265,7 @@ textarea {
 
 .icon_button {
   cursor: pointer;
-  font-size: 34px;
+  font-size: 40px;
   color: $tile-color1;
 }
 
@@ -260,7 +273,7 @@ textarea {
   position: absolute;
   top: 0;
   right: 0;
-  padding: 20px;
+  padding: 20px 0;
   line-height: 1;
 
   &::before {
@@ -274,6 +287,7 @@ textarea {
   width: 18px;
   height: 18px;
   color: $main-color;
+
   &:hover {
     color: #ffffff;
     border-radius: 50%;
@@ -283,8 +297,10 @@ textarea {
 }
 
 .edit_section {
-  max-height: 100vh;
+  max-height: 90vh;
   overflow: auto;
+  max-width: 620px;
+  width: 90vw;
 
   position: fixed;
   top: 50%;
@@ -294,26 +310,24 @@ textarea {
   border-radius: 10px;
   background: white;
   box-shadow: 1px 1px 5px 0px $box-shadow-color;
-  width: max-content;
-  min-width: 620px;
-  padding: 20px;
+  padding: 0 20px 20px;
 
   .title {
     text-align: center;
     font-size: 18px;
     font-weight: 700;
+    flex-grow: 1;
 
     border-bottom: 1px solid red;
-    margin-bottom: 20px;
-    padding: 10px;
+    padding: 10px 10px 15px;
   }
 
   .edit_detail {
-    width: 350px;
     margin: auto;
     display: flex;
     flex-direction: column;
     align-items: center;
+    padding: 0 10%;
 
     // gap: 15px;
     .label_input {
@@ -335,8 +349,21 @@ textarea {
   }
 }
 
+.edit_header {
+  position: sticky;
+  top: 0;
+  right: 0;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  padding: 20px 0;
+  background: white;
+  z-index: 1;
+}
+
 .input_select {
   position: relative;
+  display: flex;
 }
 
 .label_input,
@@ -355,8 +382,7 @@ textarea {
   .input {
     width: 100%;
     border: 1px solid $box-shadow-color;
-    min-height: 100px;
-    height: 100px;
+    min-height: 80px;
   }
 }
 
@@ -374,6 +400,8 @@ textarea {
 }
 
 .date_icon {
+  flex-grow: 1;
+
   &::after {
     content: '\e962';
     font-family: 'icomoon';
@@ -446,4 +474,9 @@ textarea {
 
 .input_uneditable {
   cursor: not-allowed;
+}
+
+.link,
+.pointer {
+  cursor: pointer;
 }
