@@ -1,14 +1,14 @@
+import { AsyncPipe, NgIf } from '@angular/common';
 import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { Chart, ChartOptions } from 'chart.js/auto';
+import { Subject, Subscription, takeUntil } from 'rxjs';
 import {
   Api531Response,
   ExerciseHabitsService,
   latest_two_month_response,
   latest_two_weeks_days,
 } from '../../service/exercise-habits.service';
-import { Chart, ChartOptions } from 'chart.js/auto';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import { Subscription } from 'rxjs';
-import { AsyncPipe, NgIf } from '@angular/common';
 
 @Component({
   selector: 'app-completion-rate-doughnut-chart',
@@ -19,6 +19,7 @@ import { AsyncPipe, NgIf } from '@angular/common';
 })
 export class CompletionRateDoughnutChartComponent implements OnInit, AfterViewInit, OnDestroy {
   private languageChangeSubscription: Subscription;
+  private ngUnsubscribe = new Subject();
   @ViewChild('week_month_chart') weekMonthChart: ElementRef;
 
   // post Response
@@ -58,11 +59,13 @@ export class CompletionRateDoughnutChartComponent implements OnInit, AfterViewIn
   }
 
   ngAfterViewInit() {
-    this.languageChangeSubscription = this.translate.onLangChange.subscribe(() => {
-      if (this.api531Response) {
-        this.initChart();
-      }
-    });
+    this.languageChangeSubscription = this.translate.onLangChange
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe(() => {
+        if (this.api531Response) {
+          this.initChart();
+        }
+      });
 
     // 監聽 week_month_chart 寬度變化事件，並直接執行圖表 resize() 方法
     new ResizeObserver(() => {
@@ -86,15 +89,21 @@ export class CompletionRateDoughnutChartComponent implements OnInit, AfterViewIn
    * 取回已儲存的 531API response
    */
   get531Response() {
-    this.exerciseHabitsService.getIfNoDataObservable().subscribe((value) => {
-      this.ifNoData = value;
-    });
+    this.exerciseHabitsService
+      .getIfNoDataObservable()
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe((value) => {
+        this.ifNoData = value;
+      });
     if (this.ifNoData === false) {
       //有運動資料
-      this.exerciseHabitsService.get531Response().subscribe((response: Api531Response) => {
-        this.api531Response = response;
-        this.getData(response);
-      });
+      this.exerciseHabitsService
+        .get531Response()
+        .pipe(takeUntil(this.ngUnsubscribe))
+        .subscribe((response: Api531Response) => {
+          this.api531Response = response;
+          this.getData(response);
+        });
     }
   }
 
@@ -106,7 +115,9 @@ export class CompletionRateDoughnutChartComponent implements OnInit, AfterViewIn
     if (this.api531Response) {
       this.latest_two_month_response = response.latest_two_month_response;
       this.latest_two_weeks_days = response.latest_two_weeks_days;
-      this.initChart();
+      setTimeout(() => {
+        this.initChart();
+      }, 500);
     }
   }
 
@@ -446,5 +457,7 @@ export class CompletionRateDoughnutChartComponent implements OnInit, AfterViewIn
     if (this.languageChangeSubscription) {
       this.languageChangeSubscription.unsubscribe();
     }
+    this.ngUnsubscribe.next(null);
+    this.ngUnsubscribe.complete();
   }
 }

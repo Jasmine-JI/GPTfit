@@ -1,153 +1,106 @@
-<!-- 產品編輯複製 -->
 <ng-container *ngIf="editing">
   <div class="edit_section">
-    <div class="title">叫修單編輯</div>
+    <div class="edit_header">
+      <div *ngIf="isNewForm" class="title">叫修單新增</div>
+      <div *ngIf="!isNewForm" class="title">叫修單編輯</div>
+      <div (click)="clickCloseBtn()" class="close_button icon_button"></div>
+    </div>
     <div class="edit_detail">
-      <!-- <div class="label_input">
-        <label class="edit_item_label">類型</label>
-        <div class="input_select input">
-          <div
-            class="foldable"
-            [class.unfold]="showProductTypeDropdown"
-            (click)="toggleDropdown('product_type')"
-          >
-            {{ orderProd.product_type ? orderProd.product_type : '請選擇' }}
-          </div>
-          <div *ngIf="showProductTypeDropdown" class="toggle_dropdown">
-            <ul>
-              <li
-                *ngFor="let productType of productTypeList"
-                (click)="selectType('product_type', productType)"
-                class="dropdown_list"
-              >
-                {{ productType }}
-              </li>
-              <li *ngIf="!orderProd.product_type" class="dropdown_list default-option">請選擇</li>
-            </ul>
-          </div>
-        </div>
-      </div>
       <div class="label_input">
-        <label class="edit_item_label">產品序號</label>
+        <label class="edit_item_label">銷貨單號</label>
         <input
           class="input"
-          [class.input_uneditable]="!isNewForm"
-          [(ngModel)]="orderProd.serial_no"
-          placeholder="serial_no"
-          [disabled]="!isNewForm"
+          name="order_no"
+          maxlength="11"
+          oninput="value=value.replace(/[^\d]/g,'')"
+          [class.input_uneditable]="!NewFixReq"
+          [(ngModel)]="fixReqInfo.order_no"
+          placeholder="Order No"
+          [disabled]="!NewFixReq"
+          required
         />
       </div>
       <div class="label_input">
-        <label class="edit_item_label">所屬訂貨單</label>
+        <label class="edit_item_label">名稱</label>
         <input
           class="input"
-          [class.input_uneditable]="isNewForm || !isNewForm"
-          [(ngModel)]="orderProd.order_no"
-          placeholder="order_no"
-          [disabled]="isNewForm || !isNewForm"
+          name="user_name"
+          maxlength="128"
+          [(ngModel)]="fixReqInfo.user_name"
+          placeholder="User Name"
+          required
         />
       </div>
       <div class="label_input">
-        <label class="edit_item_label">安裝日期</label>
-        <input class="input" [(ngModel)]="orderProd.install_date" placeholder="install_date" />
+        <label class="edit_item_label">電話</label>
+        <input
+          class="input"
+          name="phone"
+          maxlength="32"
+          oninput="value=value.replace(/[^\d]/g,'')"
+          [(ngModel)]="fixReqInfo.phone"
+          placeholder="Phone"
+        />
       </div>
       <div class="label_input">
-        <label class="edit_item_label">保固開始日</label>
-        <input class="input" [(ngModel)]="orderProd.warranty_start" placeholder="warranty_start" />
+        <label class="edit_item_label">E-mail</label>
+        <input
+          class="input"
+          name="e_mail"
+          type="email"
+          maxlength="32"
+          [(ngModel)]="fixReqInfo.e_mail"
+          placeholder="email"
+          email
+        />
       </div>
       <div class="label_input">
-        <label class="edit_item_label">保固結束日</label>
-        <input class="input" [(ngModel)]="orderProd.warranty_end" placeholder="warranty_end" />
+        <label class="edit_item_label">地址</label>
+        <input
+          class="input"
+          maxlength="128"
+          [(ngModel)]="fixReqInfo.address"
+          placeholder="Address"
+        />
       </div>
-      <div class="label_input">
-        <label class="edit_item_label">退換貨狀態</label>
+      <div *ngIf="!isNewForm" class="label_input">
+        <label class="edit_item_label">狀態</label>
         <div class="input_select input">
           <div
             class="foldable"
-            [class.unfold]="showSalesChannelDropdown"
-            (click)="toggleDropdown('return_exchange')"
+            [class.unfold]="showRepairStatusDropdown"
+            (click)="toggleDropdown('repairStatus')"
           >
-            {{ (orderProd.return_exchange !== 'None' ? orderProd.return_exchange : '無') || '無' }}
+            {{ fixReqInfo.status }}
           </div>
-          <div *ngIf="showReturnExchangeDropdown" class="toggle_dropdown">
+          <div *ngIf="showRepairStatusDropdown" class="toggle_dropdown">
             <ul>
               <li
-                dropdown
-                *ngFor="let returnExchange of returnExchangeList"
-                (click)="selectType('return_exchange', returnExchange)"
+                *ngFor="let repairStatus of repairStatusList"
+                (click)="selectStatus(repairStatus)"
                 class="dropdown_list"
               >
-                {{ returnExchange !== 'None' ? returnExchange : '無' }}
-              </li>
-              <li (click)="selectType('return_exchange', 'None')" class="dropdown_list">無</li>
-            </ul>
-          </div>
-        </div>
-      </div>
-      <div class="label_input">
-        <label class="edit_item_label">安裝狀態</label>
-        <div class="input_select input">
-          <div
-            class="foldable"
-            [class.unfold]="showInstallTypeDropdown"
-            (click)="toggleDropdown('install_type')"
-          >
-            {{ orderProd.install_type }}
-          </div>
-          <div *ngIf="showInstallTypeDropdown" class="toggle_dropdown">
-            <ul>
-              <li
-                dropdown
-                *ngFor="let installType of installTypeList"
-                (click)="selectType('install_type', installType)"
-                class="dropdown_list"
-              >
-                {{ installType }}
+                {{ repairStatus }}
               </li>
             </ul>
           </div>
         </div>
       </div>
       <div class="memo_label_input">
-        <label class="edit_item_label">備註</label>
-        <textarea class="input" [(ngModel)]="orderProd.memo" placeholder="memo"></textarea>
+        <label class="edit_item_label">問題描述</label>
+        <textarea
+          (input)="countTextLength($event.target.value)"
+          maxlength="300"
+          class="input"
+          [(ngModel)]="fixReqInfo.description"
+          placeholder="description"
+        ></textarea>
+        <span class="textLength">{{ textLength }}/300</span>
       </div>
-      <div class="img_label_input">
-        <label class="edit_item_label">附加檔案</label>
-
-        <input
-          #fileInput
-          (change)="previewImg(fileInput)"
-          type="file"
-          id="img_input"
-          name="img_input"
-          accept=".jpg,.jpeg,.png,.gif"
-        />
-
-        <div class="img_list">
-          <ng-container *ngFor="let fileName of fileNames; let index = i">
-            <div class="img_wrap">
-              <img
-                (click)="openImage(imgPath + fileName)"
-                [src]="imgPath + fileName"
-                alt="附加檔案"
-                id="image_preview"
-              />
-              <div (click)="deleteImg(fileName)" class="close_button delete_img_button"></div>
-            </div>
-          </ng-container>
-          <label *ngIf="!filesMax" class="img_wrap" for="img_input">
-            <div class="add_icon add_img_circle"></div>
-          </label>
-          <label *ngIf="filesMax">
-            <div>圖片數量達上限</div>
-          </label>
-        </div>
-      </div> -->
     </div>
-    <div (click)="clickCloseBtn()" class="close_button icon_button"></div>
-    <div (click)="clickSaveBtn()" class="save_button">
+
+    <button (click)="clickSaveBtn()" class="save_button">
       <mat-icon class="save_button_icon">save</mat-icon>儲存
-    </div>
+    </button>
   </div>
 </ng-container>

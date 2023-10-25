@@ -14,6 +14,7 @@ import { orderDetailResolver } from './resolvers/order-detail.resolver';
 import { equipmentDetailResolver } from './resolvers/equipment-detail.resolver';
 import { MaintenanceRequirementComponent } from './components/maintenance-requirement/maintenance-requirement.component';
 import { fixReqDetailResolver } from './resolvers/fixReq-detail.resolver';
+import { RepairComponent } from './components/repair/repair.component';
 
 const { equipmentManagement, pageNoPermission, pageNotFound } = appPath;
 const equipmentManagementNotFound = `${pageNotFound}`;
@@ -83,6 +84,18 @@ const routes: Routes = [
             component: MaintenanceRequirementComponent,
             resolve: { fixReq: fixReqDetailResolver },
           },
+          {
+            path: '',
+            redirectTo: equipmentManagementNotFound,
+            pathMatch: 'full',
+          },
+        ],
+      },
+      {
+        path: equipmentManagement.repair, //維修單
+        component: RepairComponent,
+        canActivate: [equipmentAdminGuard],
+        children: [
           {
             path: '',
             redirectTo: equipmentManagementNotFound,

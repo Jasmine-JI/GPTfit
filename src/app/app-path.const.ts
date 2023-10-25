@@ -66,11 +66,12 @@ export const appPath = {
     search: 'search',
     equipment: 'equipment',
     equipment_sn: 'equipment_sn',
-    repair_id: 'repair_id',
     order: 'order',
-    order_no: 'order_no',
+    order_no: 'order_no', //銷貨單號
     maintenanceRequirement: 'maintenance-requirement',
-    maintenance: 'maintenance',
+    repair_id: 'repair_id', //叫修單號
+    repair: 'repair',
+    id: 'id', //維修單號
   },
 
   /**

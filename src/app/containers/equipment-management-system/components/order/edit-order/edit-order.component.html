@@ -1,12 +1,17 @@
 <ng-container *ngIf="editing">
   <div class="edit_section">
-    <div *ngIf="isNewForm" class="title">銷貨單新增</div>
-    <div *ngIf="!isNewForm" class="title">銷貨單編輯</div>
+    <div class="edit_header">
+      <div *ngIf="isNewForm" class="title">銷貨單新增</div>
+      <div *ngIf="!isNewForm" class="title">銷貨單編輯</div>
+      <div (click)="clickCloseBtn()" class="close_button icon_button"></div>
+    </div>
     <div class="edit_detail">
       <div class="label_input">
         <label class="edit_item_label">銷貨單號</label>
         <input
           class="input"
+          maxlength="11"
+          oninput="value=value.replace(/[^\d]/g,'')"
           [class.input_uneditable]="!isNewForm"
           [(ngModel)]="orderInfo.order_no"
           placeholder="Order No"
@@ -15,15 +20,32 @@
       </div>
       <div class="label_input">
         <label class="edit_item_label">名稱</label>
-        <input class="input" [(ngModel)]="orderInfo.user_name" placeholder="User Name" />
+        <input
+          required
+          class="input"
+          maxlength="128"
+          [(ngModel)]="orderInfo.user_name"
+          placeholder="User Name"
+        />
       </div>
       <div class="label_input">
         <label class="edit_item_label">電話</label>
-        <input class="input" [(ngModel)]="orderInfo.phone" placeholder="Phone" />
+        <input
+          class="input"
+          maxlength="32"
+          oninput="value=value.replace(/[^\d]/g,'')"
+          [(ngModel)]="orderInfo.phone"
+          placeholder="Phone"
+        />
       </div>
       <div class="label_input">
         <label class="edit_item_label">地址</label>
-        <input class="input" [(ngModel)]="orderInfo.address" placeholder="Address" />
+        <input
+          class="input"
+          maxlength="128"
+          [(ngModel)]="orderInfo.address"
+          placeholder="Address"
+        />
       </div>
       <div class="label_input">
         <label class="edit_item_label">銷售渠道</label>
@@ -46,11 +68,22 @@
               </li>
             </ul>
           </div>
+          <i
+            (click)="editForm('salesChannel')"
+            class="icon-svg_web-icon_p2_026-more icon_button"
+          ></i>
         </div>
       </div>
       <div class="memo_label_input">
         <label class="edit_item_label">備註</label>
-        <textarea class="input" [(ngModel)]="orderInfo.memo" placeholder="memo"></textarea>
+        <textarea
+          (input)="countTextLength($event.target.value)"
+          maxlength="200"
+          class="input"
+          [(ngModel)]="orderInfo.memo"
+          placeholder="memo"
+        ></textarea>
+        <span class="textLength">{{ textLength }}/200</span>
       </div>
       <div class="img_label_input">
         <label class="edit_item_label">附加檔案</label>
@@ -87,9 +120,19 @@
         </div>
       </div>
     </div>
-    <div (click)="clickCloseBtn()" class="close_button icon_button"></div>
+
     <div (click)="clickSaveBtn()" class="save_button">
       <mat-icon class="save_button_icon">save</mat-icon>儲存
     </div>
   </div>
+</ng-container>
+
+<!-- 編輯-銷售渠道 -->
+<ng-container *ngIf="editSalesChannel">
+  <app-edit-sales-channel
+    [(editing)]="editing"
+    [(editSalesChannel)]="editSalesChannel"
+    (infoChange)="getSalesChannelsApi()"
+  >
+  </app-edit-sales-channel>
 </ng-container>

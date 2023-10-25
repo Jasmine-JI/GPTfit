@@ -1,4 +1,7 @@
-<div *ngIf="productOrderRecord && productDetail && targetProdInfo" class="section_wrapper">
+<div
+  *ngIf="productOrderRecord && productDetail && (targetProdInfo || prodOfflineInfo)"
+  class="section_wrapper"
+>
   <!-- 銷貨單-基本資料 -->
   <ng-container *ngIf="targetProdInfo; else ProdOffline">
     <section class="content-box section" *ngIf="targetProdInfo">
@@ -14,7 +17,7 @@
             <div class="name">{{ targetProdInfo.create_name }}</div>
           </div>
         </div>
-        <div class="time_name">
+        <div *ngIf="targetProdInfo.modify_time && targetProdInfo.modify_name" class="time_name">
           <div class="establish_update_time">
             <div class="title">最後修改</div>
             <div class="date_time">{{ targetProdInfo.modify_time }}</div>
@@ -34,7 +37,10 @@
         </div>
         <div class="detail_info_wrap">
           <div class="detail_info_title">所屬單號</div>
-          <div class="content_wrap">
+          <div
+            [routerLink]="['/equipment-management/order', targetProdInfo.order_no]"
+            class="content_wrap link"
+          >
             <div class="uneditable_content">{{ targetProdInfo.order_no }}</div>
           </div>
         </div>
@@ -74,7 +80,7 @@
           <div class="detail_info_title">GPTfit 註冊暱稱</div>
           <div class="content_wrap">
             <div *ngIf="targetProdInfo.register_id" class="uneditable_content">
-              {{ targetProdInfo.register_id }}
+              {{ targetProdInfo.registerName }}
             </div>
             <div *ngIf="!targetProdInfo.register_id" class="uneditable_content">未註冊</div>
           </div>
@@ -121,7 +127,7 @@
             <div class="name">{{ prodOfflineInfo.create_name }}</div>
           </div>
         </div>
-        <div class="time_name">
+        <div *ngIf="prodOfflineInfo.modify_time && prodOfflineInfo.modify_name" class="time_name">
           <div class="establish_update_time">
             <div class="title">最後修改</div>
             <div class="date_time">{{ prodOfflineInfo.modify_time }}</div>
@@ -172,25 +178,27 @@
           <div class="name">{{ productOrderRecord[0]?.create_name }}</div>
         </div>
       </div>
-      <div class="time_name">
-        <!-- <div class="time_name"  *ngIf="ProdLastModify.modify_time"> -->
+      <!-- <div class="time_name">
         <div class="establish_update_time">
           <div class="title">最後修改</div>
-          <div class="date_time">{{ targetProdInfo.modify_time }}</div>
+          <div class="date_time">{{ productOrderRecord.modify_time }}</div>
         </div>
         <div class="establish_update_time">
           <div class="title">人員:</div>
-          <div class="name">{{ targetProdInfo.modify_name }}</div>
+          <div class="name">{{ productOrderRecord.modify_name }}</div>
         </div>
-      </div>
+      </div> -->
     </div>
 
     <ng-container *ngIf="productOrderRecord; else noDataSection">
       <ng-container *ngFor="let orderRecord of productOrderRecord; let i = index">
         <div class="section_detail equip_list">
           <div class="detail_info_wrap">
-            <div class="detail_info_title">訂貨單號</div>
-            <div class="content_wrap">
+            <div class="detail_info_title">銷貨單號</div>
+            <div
+              [routerLink]="['/equipment-management/order', orderRecord.order_no]"
+              class="content_wrap link"
+            >
               <div class="uneditable_content">{{ orderRecord.order_no }}</div>
             </div>
           </div>
@@ -307,8 +315,21 @@
         <div class="section_detail equip_list">
           <div class="detail_info_wrap">
             <div class="detail_info_title">維修單號</div>
-            <div class="content_wrap">
-              <div class="uneditable_content">{{ repair.order_no }}</div>
+            <div
+              [routerLink]="['/equipment-management/repair']"
+              [queryParams]="{ repair_id: repair.repair_id, id: repair.id }"
+              class="content_wrap link"
+            >
+              <div class="uneditable_content">{{ repair.id }}</div>
+            </div>
+          </div>
+          <div class="detail_info_wrap">
+            <div class="detail_info_title">叫修單號</div>
+            <div
+              [routerLink]="['/equipment-management/maintenance-requirement', repair.repair_id]"
+              class="content_wrap link"
+            >
+              <div class="uneditable_content">{{ repair.repair_id }}</div>
             </div>
           </div>
           <div class="detail_info_wrap">
@@ -358,41 +379,51 @@
     </ng-template>
   </section>
 
-  <section *ngIf="targetProdInfo" class="section">
+  <section *ngIf="targetProdInfo || prodOfflineInfo" class="section">
     <div class="device_img_descrip">
       <div class="img">
         <img
-          *ngIf="productDetail.model_name"
-          [src]="modelImgPath + productDetail.model_img"
-          [alt]="productDetail.model_name"
+          *ngIf="productDetail.models_name"
+          [src]="modelImgPath + productDetail.models_img"
+          [alt]="productDetail.models_name"
         />
         <img
-          *ngIf="!productDetail.model_name"
+          *ngIf="!productDetail.models_name"
           [src]="modelImgPath + '/img/unknown.png'"
-          [alt]="productDetail.model_name"
+          [alt]="productDetail.models_name"
         />
       </div>
       <div class="device_detail">
         <div class="detailcol">
           <div class="device_info">
             <div class="title">型號:</div>
-            <div class="info">{{ productDetail.model_name }}</div>
+            <div class="info">{{ productDetail.models_name }}</div>
           </div>
           <div class="device_info">
             <div class="title">類型:</div>
-            <div class="info">{{ targetProdInfo.product_type }}</div>
+            <div class="info">
+              {{ targetProdInfo ? targetProdInfo.product_type : prodOfflineInfo.product_type }}
+            </div>
           </div>
           <div class="device_info">
             <div class="title">序號:</div>
-            <div class="info">{{ targetProdInfo.serial_no }}</div>
+            <div class="info">
+              {{ targetProdInfo ? targetProdInfo.serial_no : prodOfflineInfo.serial_no }}
+            </div>
           </div>
           <div class="device_info">
             <div class="title">註冊日期:</div>
-            <div class="info">{{ targetProdInfo.register_time }}</div>
+            <div class="info">{{ targetProdInfo ? targetProdInfo.register_time : '' }}</div>
           </div>
           <div class="device_info">
             <div class="title">出廠日期:</div>
-            <div class="info">{{ getManufactureTimestamp(targetProdInfo.serial_no) }}</div>
+            <div class="info">
+              {{
+                getManufactureTimestamp(
+                  targetProdInfo ? targetProdInfo.serial_no : prodOfflineInfo.serial_no
+                )
+              }}
+            </div>
           </div>
         </div>
         <div class="detailcol">
@@ -528,6 +559,7 @@
   <!-- 編輯-銷貨單連結之產品基本資料 -->
   <app-edit-equipment
     [(editing)]="editProd"
+    [models_name]="productDetail.models_name"
     [(isNewForm)]="isNewForm"
     (infoChange)="fetchOrderList()"
   >

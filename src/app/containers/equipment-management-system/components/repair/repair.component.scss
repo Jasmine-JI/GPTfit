@@ -1,0 +1,8 @@
+@import 'equipment-management.scss';
+
+.replace_part {
+  float: left;
+  & + .replace_part {
+    margin-inline-start: 10px;
+  }
+}

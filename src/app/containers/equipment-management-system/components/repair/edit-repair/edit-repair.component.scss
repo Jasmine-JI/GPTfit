@@ -1,0 +1,209 @@
+@import 'equipment-management.scss';
+
+.edit_header {
+  line-height: 1;
+}
+
+.device_system_button {
+  background-color: $main-color;
+  color: #fff;
+  margin: unset;
+}
+
+.device_system_button.go_lastpage {
+  background-color: #c3c3c3;
+}
+
+.device_system_button.add_icon,
+.device_system_button.edit_icon {
+  flex-grow: 1;
+  max-width: 120px;
+  margin: auto;
+  line-height: 1;
+}
+
+.edit_button,
+.delete_icon,
+.increase_icon {
+  flex-grow: 1;
+  text-align: center;
+}
+
+.edit_parts_section {
+  max-height: none;
+  max-width: 1200px;
+}
+
+.memo_label_input {
+  margin-bottom: 0;
+}
+
+.edit_item_label {
+  &:has(.edit_button) {
+    display: flex;
+    align-items: center;
+    width: 100%;
+
+    &:hover .edit_button {
+      &::after {
+        cursor: pointer;
+        color: $text-color1;
+      }
+    }
+  }
+}
+
+.edit_item_label .edit_button {
+  display: contents;
+
+  &::before {
+    content: none;
+  }
+
+  &::after {
+    content: '\e907';
+    font-family: 'icomoon';
+    margin-left: auto;
+    font-size: 24px;
+  }
+}
+
+.parts {
+  width: 100%;
+  flex-direction: column;
+  margin-bottom: 30px;
+
+  .edit_item_label {
+    border-bottom: 1px solid $text-color1;
+  }
+
+  .parts_li {
+    width: 100%;
+
+    .part_item {
+      display: flex;
+      justify-content: space-between;
+      border-bottom: 1px solid $border-bottom1;
+      padding: 5px;
+    }
+  }
+}
+
+.part_list_wrapper {
+  height: 70vh;
+  max-height: 70vh;
+  overflow-y: auto;
+}
+
+.part_list {
+  display: flex;
+  align-items: center;
+  padding: 8px 5px;
+  gap: 5px;
+}
+
+.part_list.pointer {
+  line-height: 28px;
+
+  &:hover {
+    background: papayawhip;
+  }
+
+  &.active {
+    background: papayawhip;
+  }
+
+  &.have_quantity {
+    border: 1px solid $main-color;
+    background: papayawhip;
+  }
+}
+
+.part_content {
+  flex: 23% 0 1;
+}
+
+.edit_footer {
+  border-top: 1px solid $text-color1;
+}
+
+input.part_content {
+  border: 1px solid $tile-color1;
+  width: 100%;
+}
+
+.part_content.quantity {
+  text-align: center;
+}
+
+.increase_icon {
+  &::after {
+    content: '\e95a';
+    font-family: 'icomoon';
+    margin-left: 5px;
+    font-size: 25px;
+    line-height: 28px;
+    color: $main-color;
+    cursor: pointer;
+  }
+
+  &:hover {
+    &::after {
+      font-size: 28px;
+    }
+  }
+}
+
+.delete_icon {
+  &::after {
+    content: '\e95b';
+    font-family: 'icomoon';
+    font-size: 25px;
+    line-height: 28px;
+    color: $main-color;
+    cursor: pointer;
+  }
+
+  &:hover {
+    &::after {
+      font-size: 28px;
+    }
+  }
+}
+
+.part_list:has(> .edit_button),
+:has(.add_icon).edit_footer,
+:has(.edit_button).edit_footer {
+  .part_content {
+    flex: 29% 0 1;
+  }
+}
+
+.part_list_wrapper > .part_list:has(> .edit_button) {
+  .edit_button {
+    display: none;
+  }
+}
+
+.part_list_wrapper > .part_list:has(> .edit_button):hover {
+  .edit_button {
+    display: block;
+    &::before {
+      font-size: 28px;
+      color: rgb(134, 134, 134);
+    }
+  }
+}
+
+.part_list_wrapper > .part_list:has(> .edit_button) {
+  .edit_button:hover {
+    &::before {
+      color: $main-color;
+    }
+  }
+}
+
+input.input_uneditable {
+  cursor: unset;
+  border: none;
+}

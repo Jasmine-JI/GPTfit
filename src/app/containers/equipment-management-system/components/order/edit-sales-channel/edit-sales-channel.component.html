@@ -1,0 +1,57 @@
+<ng-container *ngIf="editing && editSalesChannel">
+  <div class="edit_section edit_sales_channel">
+    <div class="edit_header">
+      <div class="title">渠道編輯</div>
+    </div>
+    <div *ngIf="salesChannelList" class="sales_channel_wrapper">
+      <ng-container *ngFor="let salesChannel of salesChannelList; let i = index">
+        <div class="sales_channel">
+          <div
+            class="channel"
+            *ngIf="!salesChannelEditing.editing || salesChannelEditing.index !== i"
+            (click)="startEditing(i)"
+          >
+            {{ salesChannel }}
+          </div>
+
+          <input
+            #salesChannelInput
+            *ngIf="salesChannelEditing.editing && salesChannelEditing.index === i"
+            [class.input_channel]="salesChannelEditing.editing && salesChannelEditing.index === i"
+            class="channel"
+            maxlength="128"
+            [value]="salesChannel"
+            (blur)="updateSalesChannelName(i, salesChannelInput.value)"
+            (keyup.enter)="updateSalesChannelName(i, salesChannelInput.value)"
+            (keyup.esc)="cancelEditing()"
+          />
+
+          <div
+            (click)="deleteSalesChannel(i, salesChannel)"
+            class="pointer channel_delete_icon"
+          ></div>
+        </div>
+      </ng-container>
+    </div>
+    <div class="edit_channel_footer">
+      <div class="sales_channel">
+        <input
+          #addChannelInput
+          class="channel add_channel_input"
+          [class.input_channel]="!salesChannelEditing.editing"
+          maxlength="128"
+          (click)="cancelEditing()"
+          (keyup.enter)="addSalesChannelName(addChannelInput.value)"
+          (blur)="addSalesChannelName(addChannelInput.value)"
+          (keyup.esc)="cancelEditing()"
+        />
+        <div
+          (click)="addSalesChannelName(addChannelInput.value)"
+          class="pointer channel_add_icon"
+        ></div>
+      </div>
+      <div (click)="closeEdit()" class="device_system_button">確認</div>
+    </div>
+    <!-- <div (click)="closeEdit()" class="close_button icon_button"></div> -->
+  </div>
+</ng-container>
