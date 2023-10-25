@@ -200,7 +200,13 @@
         <div class="section_detail">
           <div class="detail_info_wrap">
             <div class="detail_info_title">叫修單號</div>
-            <div class="content_wrap">
+            <div
+              [routerLink]="[
+                '/equipment-management/maintenance-requirement',
+                orderFixReq[r].repair_id
+              ]"
+              class="content_wrap link"
+            >
               <div class="uneditable_content">{{ orderFixReq[r].repair_id }}</div>
             </div>
           </div>
@@ -226,9 +232,9 @@
         </div>
         <div class="section_detail equip_list">
           <div class="detail_info_wrap">
-            <div class="detail_info_title">備註</div>
+            <div class="detail_info_title">問題描述</div>
             <div class="memo_wrap">
-              <div class="memo_content">{{ orderFixReq[r].memo }}</div>
+              <div class="memo_content">{{ orderFixReq[r].description }}</div>
             </div>
           </div>
         </div>
@@ -238,7 +244,7 @@
       <div class="section_detail">無資料</div>
     </ng-template>
 
-    <!-- <div (click)="editForm('fixReq')" class="edit_button device_system_button">新增</div> -->
+    <div (click)="editForm('fixReq')" class="edit_button device_system_button">新增</div>
   </section>
 
   <div *ngIf="!orderProds && !orderFixReq" class="section">
@@ -248,13 +254,13 @@
   </div>
 
   <!-- 編輯-銷貨單 -->
-  <section class="section">
+  <ng-container *ngIf="editing">
     <app-edit-order [(editing)]="editing" [(isNewForm)]="isNewForm" (infoChange)="fetchOrderList()">
     </app-edit-order>
-  </section>
+  </ng-container>
 
   <!-- 編輯-銷貨單_產品 -->
-  <section class="section">
+  <ng-container *ngIf="editProd">
     <app-edit-equipment
       [(editing)]="editProd"
       [(isNewForm)]="isNewForm"
@@ -262,15 +268,15 @@
       (anotherProdAdd)="changeProdModify($event)"
     >
     </app-edit-equipment>
-  </section>
+  </ng-container>
 
   <!-- 編輯-銷貨單_叫修 -->
-  <section class="section">
+  <ng-container *ngIf="editFixReq">
     <app-edit-maintenance-requirement
       [(editing)]="editFixReq"
       [(isNewForm)]="isNewForm"
       (infoChange)="fetchOrderList()"
     >
     </app-edit-maintenance-requirement>
-  </section>
+  </ng-container>
 </div>

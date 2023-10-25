@@ -1,1 +1,345 @@
-<p>edit-repair works!</p>
+<ng-container *ngIf="editing && repairInfo">
+  <div class="edit_section">
+    <div class="edit_header">
+      <div *ngIf="isNewForm" class="title">維修單新增</div>
+      <div *ngIf="!isNewForm" class="title">維修單編輯</div>
+      <div (click)="clickCloseBtn()" class="close_button icon_button"></div>
+    </div>
+    <div class="edit_detail">
+      <div class="label_input">
+        <label class="edit_item_label">產品序號</label>
+        <input
+          class="input"
+          name="serial_no"
+          maxlength="30"
+          [class.input_uneditable]="!isNewForm"
+          [(ngModel)]="repairInfo.serial_no"
+          placeholder="serial_no"
+          [disabled]="!isNewForm"
+          required
+        />
+      </div>
+      <div class="label_input">
+        <label class="edit_item_label">類型</label>
+        <div class="input_select input">
+          <div
+            class="foldable"
+            [class.unfold]="showRepairTypeDropdown"
+            (click)="toggleDropdown('repair_type')"
+          >
+            {{ repairInfo.repair_type }}
+          </div>
+          <div *ngIf="showRepairTypeDropdown" class="toggle_dropdown">
+            <ul>
+              <li
+                *ngFor="let repairType of repairTypeList"
+                (click)="selectStatus('repair_type', repairType)"
+                class="dropdown_list"
+              >
+                {{ repairType }}
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="label_input date_icon" mat-raised-button (click)="openRepairDatePicker.open()">
+        <label for="repair_date" class="edit_item_label">維修日期</label>
+        <input
+          id="repair_date"
+          class="input pointer"
+          name="repair_date"
+          readonly
+          matInput
+          [matDatepicker]="openRepairDatePicker"
+          (dateChange)="changeDate('repair_date', $event.value)"
+          [(ngModel)]="repairInfo.repair_date"
+          [max]="today"
+          placeholder="repair_date"
+        />
+        <mat-datepicker
+          [touchUi]="isMobile"
+          #openRepairDatePicker
+          disabled="false"
+        ></mat-datepicker>
+      </div>
+      <div class="label_input">
+        <label for="member" class="edit_item_label">維修人員</label>
+        <input
+          id="member"
+          class="input"
+          name="member"
+          maxlength="64"
+          [(ngModel)]="repairInfo.member"
+          placeholder="member"
+          required
+        />
+      </div>
+      <div class="label_input">
+        <label for="machine_status" class="edit_item_label">機台狀態</label>
+        <input
+          id="machine_status"
+          class="input"
+          name="machine_status"
+          maxlength="100"
+          [(ngModel)]="repairInfo.machine_status"
+          placeholder="machine_status"
+          required
+        />
+      </div>
+      <div class="label_input">
+        <label class="edit_item_label">異常原因</label>
+        <input
+          id="root_causes"
+          class="input"
+          name="root_causes"
+          maxlength="200"
+          [(ngModel)]="repairInfo.root_causes"
+          placeholder="root_causes"
+          required
+        />
+        <!-- <textarea (input)="countTextLength('causesTextLength',$event.target.value)" maxlength=200 class="input"
+            [(ngModel)]="repairInfo.root_causes" placeholder="root_causes"></textarea> -->
+
+        <!-- <span class="textLength">{{causesTextLength}}/200</span> -->
+      </div>
+      <div class="parts">
+        <label class="edit_item_label"
+          >更換料件
+          <div (click)="editForm('parts_replacement')" class="edit_button"></div>
+        </label>
+        <ul class="parts_li" *ngIf="repairInfo.parts_replace_item && partList">
+          <ng-container *ngFor="let item of repairInfo.parts_replace_item">
+            <li class="part_item">
+              <span class="part_name">{{ getPartName(item.part_no) }}</span>
+              <span class="part_no">X{{ item.quantity }}</span>
+            </li>
+          </ng-container>
+        </ul>
+      </div>
+      <div class="label_input">
+        <label for="total_meter" class="edit_item_label">總使用里程</label>
+        <input
+          id="total_meter"
+          class="input"
+          name="total_meter"
+          maxlength="11"
+          oninput="value=value.replace(/[^\d]/g,'')"
+          [(ngModel)]="repairInfo.total_meter"
+          placeholder="total_meter"
+        />
+      </div>
+      <div class="label_input">
+        <label for="total_use_time" class="edit_item_label">總使用時間</label>
+        <input
+          id="total_use_time"
+          class="input"
+          name="total_use_time"
+          maxlength="11"
+          oninput="value=value.replace(/[^\d]/g,'')"
+          [(ngModel)]="repairInfo.total_use_time"
+          placeholder="total_use_time"
+        />
+      </div>
+
+      <div class="memo_label_input">
+        <label class="edit_item_label"
+          >詳細說明
+          <textarea
+            (input)="countTextLength('detailTextLength', $event.target.value)"
+            maxlength="300"
+            class="input"
+            [(ngModel)]="repairInfo.detail"
+            placeholder="detail"
+          ></textarea>
+        </label>
+        <span class="textLength">{{ detailTextLength }}/300</span>
+      </div>
+      <!-- <div class="memo_label_input">
+        <label class="edit_item_label">備忘錄
+          <textarea (input)="countTextLength('memoTextLength',$event.target.value)" maxlength=300 class="input"
+            [(ngModel)]="repairInfo.memo" placeholder="memo"></textarea>
+        </label>
+        <span class="textLength">{{memoTextLength}}/300</span>
+      </div> -->
+    </div>
+
+    <button (click)="clickSaveBtn()" class="save_button">
+      <mat-icon class="save_button_icon">save</mat-icon>儲存
+    </button>
+  </div>
+</ng-container>
+
+<ng-container *ngIf="editParts">
+  <div class="edit_section edit_parts_section">
+    <div class="edit_header">
+      <div *ngIf="!editPartList" (click)="editList()" class="device_system_button">編輯料件</div>
+      <div
+        *ngIf="editPartList"
+        (click)="completeEditList()"
+        class="device_system_button go_lastpage"
+      >
+        返回
+      </div>
+      <div (click)="closeEditParts()" class="close_button icon_button"></div>
+    </div>
+    <ng-container
+      *ngIf="
+        filteredPartList && (partInput.part_no || partInput.part_name || partInput.specifications);
+        else showAll
+      "
+    >
+      <ul class="part_list_wrapper">
+        <ng-container *ngFor="let item of filteredPartList; let i = index">
+          <li
+            (click)="selectPart(item)"
+            class="part_list pointer"
+            [class.active]="
+              item.part_no === partInput.part_no &&
+              item.part_name === partInput.part_name &&
+              item.specifications === partInput.specifications
+            "
+            [class.have_quantity]="!editPartList && getQuantity(item.part_no)"
+          >
+            <span class="part_content">{{ item.part_no }}</span>
+            <span class="part_content">{{ item.part_name }}</span>
+            <span class="part_content">{{ item.specifications }}</span>
+            <!-- <span class="part_content">{{ item.description }}</span> -->
+            <span
+              *ngIf="!editPartList && getQuantity(item.part_no)"
+              class="part_content quantity"
+              >{{ getQuantity(item.part_no) }}</span
+            >
+            <span
+              *ngIf="!editPartList && getQuantity(item.part_no)"
+              (click)="deletePartsReplaceItem(item.part_no); $event.stopPropagation()"
+              class="delete_icon"
+            ></span>
+            <span
+              (click)="clickUpdatePartListItem(item); $event.stopPropagation()"
+              *ngIf="editPartList"
+              class="edit_button"
+            ></span>
+          </li>
+        </ng-container>
+      </ul>
+    </ng-container>
+    <ng-template #showAll>
+      <ul class="part_list_wrapper" *ngIf="partList">
+        <ng-container *ngFor="let item of partList">
+          <li
+            (click)="selectPart(item)"
+            class="part_list pointer"
+            [class.active]="
+              (item.part_no === partInput.part_no &&
+                item.part_name === partInput.part_name &&
+                item.specifications === partInput.specifications) ||
+              (editPartListItem && item.part_no === partInput.part_no)
+            "
+            [class.have_quantity]="!editPartList && getQuantity(item.part_no)"
+          >
+            <span class="part_content">{{ item.part_no }}</span>
+            <span class="part_content">{{ item.part_name }}</span>
+            <span class="part_content">{{ item.specifications }}</span>
+            <!-- <span class="part_content">{{item.description}}</span> -->
+            <span
+              *ngIf="!editPartList && getQuantity(item.part_no)"
+              class="part_content quantity"
+              >{{ getQuantity(item.part_no) }}</span
+            >
+            <span
+              *ngIf="!editPartList && getQuantity(item.part_no)"
+              (click)="deletePartsReplaceItem(item.part_no); $event.stopPropagation()"
+              class="delete_icon"
+            ></span>
+            <button
+              (click)="clickUpdatePartListItem(item); $event.stopPropagation()"
+              *ngIf="editPartList"
+              class="edit_button"
+            ></button>
+          </li>
+        </ng-container>
+      </ul>
+    </ng-template>
+    <div class="edit_footer">
+      <div class="part_list">
+        <span class="part_content">品號</span>
+        <span class="part_content">品名</span>
+        <span class="part_content">規格</span>
+        <!-- <span class="part_content">備註</span> -->
+        <span *ngIf="!editPartList" class="part_content">數量</span>
+      </div>
+      <ng-container *ngIf="!editPartList; else editPartListTemplate">
+        <div class="part_list">
+          <input
+            (input)="filterPartsList()"
+            (keyup.enter)="filterPartsList()"
+            (compositionend)="filterPartsList()"
+            [(ngModel)]="partInput.part_no"
+            type="text"
+            class="part_content"
+          />
+          <input
+            (input)="filterPartsList()"
+            (keyup.enter)="filterPartsList()"
+            (compositionend)="filterPartsList()"
+            [(ngModel)]="partInput.part_name"
+            type="text"
+            class="part_content"
+          />
+          <input
+            (input)="filterPartsList()"
+            (keyup.enter)="filterPartsList()"
+            (compositionend)="filterPartsList()"
+            [(ngModel)]="partInput.specifications"
+            type="text"
+            class="part_content"
+          />
+          <input #quantity type="number" min="1" class="part_content" />
+          <span (click)="updatePartsReplaceItem(partInput.part_no)" class="increase_icon"></span>
+        </div>
+      </ng-container>
+      <ng-template #editPartListTemplate>
+        <div class="part_list">
+          <input
+            (input)="filterPartsList()"
+            (keyup.enter)="filterPartsList()"
+            (compositionend)="filterPartsList()"
+            [(ngModel)]="partInput.part_no"
+            [class.input_uneditable]="editPartListItem"
+            [disabled]="editPartListItem"
+            type="text"
+            class="part_content"
+          />
+          <input
+            (input)="filterPartsList()"
+            (keyup.enter)="filterPartsList()"
+            (compositionend)="filterPartsList()"
+            [(ngModel)]="partInput.part_name"
+            type="text"
+            class="part_content"
+          />
+          <input
+            (input)="filterPartsList()"
+            (keyup.enter)="filterPartsList()"
+            (compositionend)="filterPartsList()"
+            [(ngModel)]="partInput.specifications"
+            type="text"
+            class="part_content"
+          />
+          <span
+            *ngIf="!editPartListItem"
+            (click)="addPartListItem(partInput); $event.stopPropagation()"
+            class="device_system_button add_icon"
+            >新增項目</span
+          >
+          <span
+            *ngIf="editPartListItem"
+            (click)="updatePartListItem(partInput); $event.stopPropagation()"
+            class="device_system_button edit_button"
+            >修改項目</span
+          >
+        </div>
+      </ng-template>
+    </div>
+  </div>
+</ng-container>

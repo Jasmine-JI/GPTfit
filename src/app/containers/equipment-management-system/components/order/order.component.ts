@@ -80,15 +80,15 @@ export class OrderComponent implements OnInit, OnDestroy {
   };
 
   salesChannelList: string[] = [];
-  showSalesChannelDropdown = false;
-  showInstallTypeDropdown = { isOpen: false, selectedIndex: null };
+  // showSalesChannelDropdown = false;
+  // showInstallTypeDropdown = { isOpen: false, selectedIndex: null };
   fileNames: string[] = [];
   isNewForm: boolean;
   editing: boolean; // 銷貨單_基本資料
   editProd: boolean; // 銷貨單_產品
   editFixReq: boolean; // 銷貨單_叫修
 
-  readonly imgPath = `http://${
+  readonly imgPath = `https://${
     location.hostname.includes(WebIp.develop) ? Domain.uat : location.hostname
   }/img/`;
 
@@ -106,13 +106,12 @@ export class OrderComponent implements OnInit, OnDestroy {
   }
 
   changeProdModify(serialNo: string) {
-    console.log(serialNo);
+    // console.log(serialNo);
     this.serialNo = serialNo;
-    // this.ProdLastModify.modify_name=
   }
 
   editForm(type: string) {
-    this.closeAllDropdown();
+    // this.closeAllDropdown();
     this.closeAllEdit();
     switch (type) {
       case 'info':
@@ -141,10 +140,10 @@ export class OrderComponent implements OnInit, OnDestroy {
     this.isNewForm = false;
   }
 
-  closeAllDropdown() {
-    this.showInstallTypeDropdown.isOpen = false;
-    this.showSalesChannelDropdown = false;
-  }
+  // closeAllDropdown() {
+  //   this.showInstallTypeDropdown.isOpen = false;
+  //   this.showSalesChannelDropdown = false;
+  // }
 
   openImage(imageUrl: string) {
     window.open(imageUrl, '_blank');
@@ -209,143 +208,135 @@ export class OrderComponent implements OnInit, OnDestroy {
 
   setOrderProd() {
     this.originOrderProds = cloneDeep(this.orderDetail.product);
-    this.orderProds = cloneDeep(this.orderDetail.product);
-    console.log('orderProds:', this.orderProds);
+    this.orderProds = cloneDeep(this.orderDetail.product?.reverse());
+    // console.log('orderProds:', this.orderProds);
   }
 
   setOrderFixReq() {
-    this.orderFixReq = cloneDeep(this.orderDetail.repair);
-    console.log('orderFixReq:', this.orderFixReq);
+    this.orderFixReq = cloneDeep(this.orderDetail.repair?.reverse());
+    // console.log('orderFixReq:', this.orderFixReq);
   }
 
-  toggleDropdown(type: string, i: number) {
-    switch (type) {
-      case 'salesChannel':
-        this.showInstallTypeDropdown.isOpen = false;
-        this.showSalesChannelDropdown = !this.showSalesChannelDropdown;
-        break;
-      case 'installType':
-        this.showSalesChannelDropdown = false;
-        if (this.showInstallTypeDropdown.selectedIndex === i) {
-          this.showInstallTypeDropdown.isOpen = !this.showInstallTypeDropdown.isOpen;
-        } else {
-          this.showInstallTypeDropdown.isOpen = true;
-        }
-        this.showInstallTypeDropdown.selectedIndex = i;
-        break;
+  // toggleDropdown(type: string, i: number) {
+  //   switch (type) {
+  //     case 'salesChannel':
+  //       this.showInstallTypeDropdown.isOpen = false;
+  //       this.showSalesChannelDropdown = !this.showSalesChannelDropdown;
+  //       break;
+  //     case 'installType':
+  //       this.showSalesChannelDropdown = false;
+  //       if (this.showInstallTypeDropdown.selectedIndex === i) {
+  //         this.showInstallTypeDropdown.isOpen = !this.showInstallTypeDropdown.isOpen;
+  //       } else {
+  //         this.showInstallTypeDropdown.isOpen = true;
+  //       }
+  //       this.showInstallTypeDropdown.selectedIndex = i;
+  //       break;
 
-      default:
-        break;
-    }
-  }
+  //     default:
+  //       break;
+  //   }
+  // }
 
-  selectChannel(salesChannel: string) {
-    console.log('Selected Channel:', salesChannel);
-    this.orderInfo.sales_channel = salesChannel;
-    this.showSalesChannelDropdown = false;
-    this.updateOrderInfo(); // 寫入資料庫
-  }
+  // selectChannel(salesChannel: string) {
+  //   // console.log('Selected Channel:', salesChannel);
+  //   this.orderInfo.sales_channel = salesChannel;
+  //   this.showSalesChannelDropdown = false;
+  //   this.updateOrderInfo(); // 寫入資料庫
+  // }
 
-  selectInstallType(installType: string, i: number) {
-    console.log('Selected installType:', installType);
-    this.showInstallTypeDropdown.isOpen = false;
-    this.orderProds[i].install_type = installType;
+  // /**
+  //  * 更新銷貨單資本資料
+  //  */
+  // updateOrderInfo() {
+  //   const { order_no, user_name, phone, address, sales_channel, memo, attach_file } =
+  //     this.orderInfo;
 
-    this.updateOrderProd(i); // ++寫入資料庫
+  //   const updateData: updateOrderInfoBody = {
+  //     order_no,
+  //     user_name,
+  //     phone,
+  //     address,
+  //     sales_channel,
+  //     memo,
+  //     modify_name: this.modify_name,
+  //     attach_file,
+  //   };
 
-    console.log('this.orderProds[i]', this.orderProds[i], this.orderProds[i].install_type);
-    console.log('index_id', this.orderProds[i].index_id);
-  }
+  //   // console.log('內容是否相同:', _.isEqual(this.orderInfo, this.originOrderInfo));
 
-  /**
-   * 更新銷貨單資本資料
-   */
-  updateOrderInfo() {
-    const { order_no, user_name, phone, address, sales_channel, memo, attach_file } =
-      this.orderInfo;
+  //   if (!_.isEqual(this.orderInfo, this.originOrderInfo)) {
+  //     // 有改變
+  //     this.equipmentManagementService
+  //       .updateOrderInfoApi(updateData)
+  //       .pipe(takeUntil(this.ngUnsubscribe))
+  //       .subscribe((response) => {
+  //         // console.log(response);
+  //         if (!response.error) {
+  //           // alert('編輯成功')
+  //           this.fetchOrderList();
+  //         }
+  //       });
+  //   }
+  // }
 
-    const updateData: updateOrderInfoBody = {
-      order_no,
-      user_name,
-      phone,
-      address,
-      sales_channel,
-      memo,
-      modify_name: this.modify_name,
-      attach_file,
-    };
+  //   /**
+  //  * 更新銷貨單資本資料
+  //  */
+  // updateOrderProd(i: number) {
+  //   const {
+  //     index_id,
+  //     product_type,
+  //     serial_no,
+  //     install_date,
+  //     install_type,
+  //     status,
+  //     return_exchange,
+  //     warranty_start,
+  //     warranty_end,
+  //     attach_file,
+  //     memo,
+  //   } = this.orderProds[i];
+  //   // console.log(this.orderProds[i]);
+  //   // console.log(this.originOrderProds[i]);
 
-    console.log('內容是否相同:', _.isEqual(this.orderInfo, this.originOrderInfo));
+  //   const updateData = {
+  //     index_id,
+  //     product_type,
+  //     serial_no,
+  //     install_date,
+  //     install_type,
+  //     status,
+  //     return_exchange,
+  //     warranty_start,
+  //     warranty_end,
+  //     attach_file,
+  //     memo,
+  //     modify_name: this.modify_name,
+  //   };
 
-    if (!_.isEqual(this.orderInfo, this.originOrderInfo)) {
-      // 有改變
-      this.equipmentManagementService
-        .updateOrderInfoApi(updateData)
-        .pipe(takeUntil(this.ngUnsubscribe))
-        .subscribe((response) => {
-          console.log(response);
-          if (!response.error) {
-            // alert('編輯成功')
-            this.fetchOrderList();
-          }
-        });
-    }
-  }
+  //   // console.log(
+  //   //   'this.orderProds[i]:',
+  //   //   this.orderProds[i],
+  //   //   'this.originOrderProds[i]:',
+  //   //   this.originOrderProds[i]
+  //   // );
+  //   // console.log('內容是否相同:', _.isEqual(this.orderProds[i], this.originOrderProds[i]));
 
-  updateOrderProd(i: number) {
-    const {
-      index_id,
-      product_type,
-      serial_no,
-      install_date,
-      install_type,
-      status,
-      return_exchange,
-      warranty_start,
-      warranty_end,
-      attach_file,
-      memo,
-    } = this.orderProds[i];
-    console.log(this.orderProds[i]);
-    console.log(this.originOrderProds[i]);
-
-    const updateData = {
-      index_id,
-      product_type,
-      serial_no,
-      install_date,
-      install_type,
-      status,
-      return_exchange,
-      warranty_start,
-      warranty_end,
-      attach_file,
-      memo,
-      modify_name: this.modify_name,
-    };
-
-    console.log(
-      'this.orderProds[i]:',
-      this.orderProds[i],
-      'this.originOrderProds[i]:',
-      this.originOrderProds[i]
-    );
-    console.log('內容是否相同:', _.isEqual(this.orderProds[i], this.originOrderProds[i]));
-
-    if (!_.isEqual(this.orderProds[i], this.originOrderProds[i])) {
-      // 有改變
-      this.equipmentManagementService
-        .updateOrderProdApi(updateData)
-        .pipe(takeUntil(this.ngUnsubscribe))
-        .subscribe((response) => {
-          console.log(response);
-          if (!response.error) {
-            // alert('編輯成功')
-            this.fetchOrderList();
-          }
-        });
-    }
-  }
+  //   if (!_.isEqual(this.orderProds[i], this.originOrderProds[i])) {
+  //     // 有改變
+  //     this.equipmentManagementService
+  //       .updateOrderProdApi(updateData)
+  //       .pipe(takeUntil(this.ngUnsubscribe))
+  //       .subscribe((response) => {
+  //         console.log(response);
+  //         if (!response.error) {
+  //           // alert('編輯成功')
+  //           this.fetchOrderList();
+  //         }
+  //       });
+  //   }
+  // }
 
   deleteOrder() {
     if (confirm(`確定刪除銷貨單${this.orderInfo.order_no}?`) == true) {

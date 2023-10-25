@@ -1,0 +1,95 @@
+@import 'equipment-management.scss';
+
+.edit_section {
+  max-height: none;
+}
+
+.sales_channel_wrapper {
+  min-height: 20vh;
+  max-height: 30vh;
+  overflow-y: auto;
+  padding: 1px 10px;
+
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.edit_sales_channel {
+  min-width: 350px;
+  max-width: 350px;
+  padding: 0 20px 20px;
+}
+
+.sales_channel {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+}
+
+.channel {
+  flex-grow: 1;
+  overflow-wrap: anywhere;
+}
+
+.input_channel {
+  outline: 1px solid $backgroundColor;
+}
+
+.add_channel_input {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.16);
+}
+
+.channel_delete_icon {
+  min-width: fit-content;
+  &::after {
+    content: '\e91d';
+    font-family: 'icomoon';
+    font-size: 18px;
+    line-height: 18px;
+    color: $main-color;
+  }
+
+  &:hover {
+    &::after {
+      content: '刪除';
+      font-size: 12px;
+      line-height: 18px;
+      color: $main-color;
+    }
+  }
+}
+
+.channel_add_icon {
+  &::after {
+    content: '\e91c';
+    font-family: 'icomoon';
+    font-size: 18px;
+    line-height: 18px;
+    color: rgb(10, 14, 73);
+  }
+
+  &:hover {
+    &::after {
+      content: '新增';
+      font-size: 12px;
+      color: rgb(10, 14, 73);
+    }
+  }
+}
+
+.edit_channel_footer {
+  position: sticky;
+  top: auto;
+  // margin-top: 10px;
+  padding: 10px 10px 0;
+
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.device_system_button {
+  margin: auto;
+}

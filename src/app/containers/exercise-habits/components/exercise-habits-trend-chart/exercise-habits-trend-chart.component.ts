@@ -1,17 +1,43 @@
+import { BreakpointObserver, LayoutModule } from '@angular/cdk/layout';
 import { CommonModule, NgFor, NgIf } from '@angular/common';
 import {
   AfterViewInit,
   Component,
   ElementRef,
+  HostListener,
+  Input,
+  OnChanges,
   OnDestroy,
   OnInit,
-  ViewChild,
-  HostListener,
-  ChangeDetectorRef,
-  OnChanges,
   SimpleChanges,
-  Input,
+  ViewChild,
 } from '@angular/core';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import {
+  MAT_MOMENT_DATE_ADAPTER_OPTIONS,
+  MomentDateAdapter,
+} from '@angular/material-moment-adapter';
+import {
+  DateAdapter,
+  MAT_DATE_FORMATS,
+  MAT_DATE_LOCALE,
+  MatNativeDateModule,
+} from '@angular/material/core';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import {
+  BorderRadius,
+  Chart,
+  ChartData,
+  ChartOptions,
+  CoreInteractionOptions,
+} from 'chart.js/auto';
+import zoomPlugin from 'chartjs-plugin-zoom';
+import { ZoomPluginOptions } from 'chartjs-plugin-zoom/types/options';
+import dayjs from 'dayjs';
+import { Subject, Subscription, takeUntil } from 'rxjs';
 import {
   Api531Post,
   Api531Response,
@@ -20,33 +46,6 @@ import {
   typePercent,
   weekGroup,
 } from '../../service/exercise-habits.service';
-import {
-  BorderRadius,
-  Chart,
-  ChartData,
-  ChartOptions,
-  CoreInteractionOptions,
-} from 'chart.js/auto';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import { Subscription } from 'rxjs';
-import dayjs from 'dayjs';
-import { MatDatepickerModule } from '@angular/material/datepicker';
-import {
-  MAT_DATE_LOCALE,
-  MAT_DATE_FORMATS,
-  MatNativeDateModule,
-  DateAdapter,
-} from '@angular/material/core';
-import { MatInputModule } from '@angular/material/input';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { BreakpointObserver, LayoutModule } from '@angular/cdk/layout';
-import zoomPlugin from 'chartjs-plugin-zoom';
-import { ZoomPluginOptions } from 'chartjs-plugin-zoom/types/options';
-import {
-  MAT_MOMENT_DATE_ADAPTER_OPTIONS,
-  MomentDateAdapter,
-} from '@angular/material-moment-adapter';
 Chart.register(zoomPlugin);
 
 const DATE_FORMAT = {
@@ -95,7 +94,7 @@ export class ExerciseHabitsTrendChartComponent
   @ViewChild('selectOption') selectOption: ElementRef;
   private languageChangeSubscription: Subscription;
   private exerciseHabitsSubscription: Subscription;
-
+  private ngUnsubscribe = new Subject();
   /**
    *日期快速選單
    */
@@ -272,6 +271,7 @@ export class ExerciseHabitsTrendChartComponent
     this.ifNoData = false; //fetchAPI前，假設有資料
     this.exerciseHabitsSubscription = this.exerciseHabitsService
       .fetchExerciseHabits(this.Api531Post)
+      .pipe(takeUntil(this.ngUnsubscribe))
       .subscribe((response) => {
         this.checkIfNoData(response);
       });
@@ -287,11 +287,13 @@ export class ExerciseHabitsTrendChartComponent
   }
 
   ngAfterViewInit() {
-    this.languageChangeSubscription = this.translate.onLangChange.subscribe(() => {
-      if (this.api531Response) {
-        this.initChart();
-      }
-    });
+    this.languageChangeSubscription = this.translate.onLangChange
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe(() => {
+        if (this.api531Response) {
+          this.initChart();
+        }
+      });
   }
 
   /**
@@ -299,18 +301,26 @@ export class ExerciseHabitsTrendChartComponent
    */
   get531Response() {
     this.getApiRequest();
-    this.exerciseHabitsService.getIfNoDataObservable().subscribe((value) => {
-      if (value === false) {
-        //有運動資料
-        this.ifNoData === false;
-        this.exerciseHabitsService.get531Response().subscribe((response: Api531Response) => {
-          this.api531Response = response;
-          this.getData(response);
-        });
-      } else {
-        this.ifNoData = true;
-      }
-    });
+    this.exerciseHabitsService
+      .getIfNoDataObservable()
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe((value) => {
+        if (value === false) {
+          //有運動資料
+          this.ifNoData === false;
+          this.exerciseHabitsService
+            .get531Response()
+            .pipe(takeUntil(this.ngUnsubscribe))
+            .subscribe((response: Api531Response) => {
+              if (response !== null) {
+                this.api531Response = response;
+                this.getData(response);
+              }
+            });
+        } else {
+          this.ifNoData = true;
+        }
+      });
   }
 
   /**
@@ -322,7 +332,9 @@ export class ExerciseHabitsTrendChartComponent
       this.week_group = response.week_group;
       this.month_group = response.month_group;
       this.type_percent = response.type_percent;
-      this.initChart();
+      setTimeout(() => {
+        this.initChart();
+      }, 500);
     }
   }
 
@@ -330,10 +342,12 @@ export class ExerciseHabitsTrendChartComponent
    * 繪製圖表
    */
   initChart() {
-    this.effectValue();
-    this.calories();
-    this.sportDayTime();
-    this.getSvgValue();
+    if (this.week_group && this.month_group && this.type_percent) {
+      this.effectValue();
+      this.calories();
+      this.sportDayTime();
+      this.getSvgValue();
+    }
   }
 
   /**
@@ -883,5 +897,8 @@ export class ExerciseHabitsTrendChartComponent
     if (this.exerciseHabitsSubscription) {
       this.exerciseHabitsSubscription.unsubscribe();
     }
+
+    this.ngUnsubscribe.next(null);
+    this.ngUnsubscribe.complete();
   }
 }

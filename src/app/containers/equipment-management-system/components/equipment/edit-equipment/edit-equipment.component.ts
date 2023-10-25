@@ -28,13 +28,13 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
+import dayjs from 'dayjs';
 import _, { cloneDeep } from 'lodash';
 import { Subject, takeUntil } from 'rxjs';
 import { Domain, WebIp } from '../../../../../core/enums/common';
 import { UserService } from '../../../../../core/services';
 import { orderListResponse } from '../../../models/order-api.model';
 import { EquipmentManagementService } from '../../../services/equipment-management.service';
-import dayjs from 'dayjs';
 
 const DATE_FORMAT = {
   parse: {
@@ -62,7 +62,6 @@ const DATE_FORMAT = {
     MatDatepickerModule,
     MatNativeDateModule,
     MatInputModule,
-    FormsModule,
     ReactiveFormsModule,
     LayoutModule,
   ],
@@ -82,6 +81,7 @@ export class EditEquipmentComponent implements OnInit, OnChanges, OnDestroy {
   @Input() isNewForm: boolean;
   @Input() rigisterProd: boolean;
   @Input() serial_no: string;
+  @Input() models_name: string;
   @Output() editingChange = new EventEmitter();
   // @Output() isNewFormChange = new EventEmitter();
   @Output() infoChange = new EventEmitter();
@@ -128,10 +128,11 @@ export class EditEquipmentComponent implements OnInit, OnChanges, OnDestroy {
     modify_time: '',
   };
 
+  textLength: number;
   filesMaxLength = 260;
   filesMax = false;
   fileNames: string[] = [];
-  productTypeList: string[] = ['飛輪', '跑步機', '划船機']; //產品類型清單
+  productTypeList: string[] = ['飛輪', '跑步機', '划船機', '其他']; //產品類型清單
   returnExchangeList: string[] = ['退貨', '換貨']; //退換貨狀態
   installTypeList: string[] = ['新裝', '換裝']; //安裝狀態清單
 
@@ -139,7 +140,7 @@ export class EditEquipmentComponent implements OnInit, OnChanges, OnDestroy {
   showReturnExchangeDropdown = false;
   showInstallTypeDropdown = false;
 
-  readonly imgPath = `http://${
+  readonly imgPath = `https://${
     location.hostname.includes(WebIp.develop) ? Domain.uat : location.hostname
   }/img/`;
 
@@ -155,10 +156,15 @@ export class EditEquipmentComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes.isNewForm) {
-      // 这里执行当 isNewForm 变化时的逻辑
+    if (changes.isNewForm || changes.serial_no) {
       this.judgeEdmitMode();
+      this.textLength = this.orderProd?.memo?.length;
     }
+  }
+
+  countTextLength(text: string) {
+    // this.textLength = this.orderProd.memo.length
+    this.textLength = text.length;
   }
 
   /**
@@ -199,7 +205,7 @@ export class EditEquipmentComponent implements OnInit, OnChanges, OnDestroy {
     if (file) {
       const formData = new FormData();
       formData.append('file', file);
-      console.log(formData);
+      // console.log(formData);
 
       this.uploadImage(formData);
       fileInput.value = '';
@@ -211,7 +217,7 @@ export class EditEquipmentComponent implements OnInit, OnChanges, OnDestroy {
     this.equipmentManagementService.uploadImageApi(formData, dataType).subscribe((res) => {
       if (res.error) {
         //上傳失敗(非圖片檔)
-        alert(res.description);
+        alert('上傳失敗\n原因:' + res.description);
       } else {
         //上傳成功
         if (this.orderProd.attach_file) {
@@ -232,7 +238,7 @@ export class EditEquipmentComponent implements OnInit, OnChanges, OnDestroy {
           this.orderProd.attach_file = res.imgUrl;
         }
         this.setFileArray();
-        console.log(this.fileNames);
+        // console.log(this.fileNames);
       }
     });
   }
@@ -294,17 +300,23 @@ export class EditEquipmentComponent implements OnInit, OnChanges, OnDestroy {
    */
   judgeEdmitMode() {
     if (this.editing) {
-      if (this.isNewForm) {
+      if (this.rigisterProd) {
+        // console.log('新增待審核產品');
+        // console.log('this.serial_no:', this.serial_no);
+
+        this.orderProd.serial_no = this.serial_no ? this.serial_no : null;
+        this.originOrderProd = cloneDeep(this.orderProd);
+      } else if (this.isNewForm) {
         //新增視窗
-        console.log('新增產品');
+        // console.log('新增產品');
         this.getOrderListDetail();
       } else {
         //修改視窗
-        console.log('修改產品');
+        // console.log('修改產品');
         this.equipmentManagementService.targetProdInfo$.subscribe((_targetProdInfo) => {
           this.orderProd = cloneDeep(_targetProdInfo);
-          this.originOrderProd = cloneDeep(_targetProdInfo);
           this.setFileArray();
+          this.originOrderProd = cloneDeep(_targetProdInfo);
         });
       }
     }
@@ -317,9 +329,7 @@ export class EditEquipmentComponent implements OnInit, OnChanges, OnDestroy {
       .subscribe((res) => {
         this.orderDetail = res;
         if (this.orderDetail) {
-          this.orderProd.serial_no = this.serial_no ? this.serial_no : '';
-          console.log(this.orderProd.serial_no);
-
+          // console.log(this.orderProd.serial_no);
           this.orderProd.order_no = this.orderDetail.order[0].order_no;
           this.setFileArray();
           this.originOrderProd = cloneDeep(this.orderProd);
@@ -348,8 +358,8 @@ export class EditEquipmentComponent implements OnInit, OnChanges, OnDestroy {
   checkInfoChange(btn: string) {
     if (!_.isEqual(this.orderProd, this.originOrderProd)) {
       //物件內容深層比較，有變更
-      console.log('orderProd:', this.orderProd);
-      console.log('originOrderProd:', this.originOrderProd);
+      // console.log('orderProd:', this.orderProd);
+      // console.log('originOrderProd:', this.originOrderProd);
 
       switch (btn) {
         case 'save':
@@ -367,18 +377,16 @@ export class EditEquipmentComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   checkoutContent() {
-    const { product_type, serial_no, install_date, return_exchange, warranty_start, warranty_end } =
+    const { serial_no, order_no, install_date, return_exchange, warranty_start, warranty_end } =
       this.orderProd;
     this.orderProd.status =
       return_exchange === '' || return_exchange === 'None' ? 'online' : 'offline';
-    console.log('lenth:', serial_no.length);
+    // console.log('lenth:', serial_no.length);
 
-    if (product_type === null || product_type === '') {
-      alert('請選擇產品類型');
-    } else if (serial_no.length !== 14) {
-      console.log(serial_no.length);
-
-      alert('產品序號長度須為14碼');
+    if (serial_no.length == 0) {
+      alert('請輸入產品序號');
+    } else if (order_no == null || order_no === '') {
+      alert('請輸入銷貨單號');
     } else if (install_date === null || install_date === '') {
       alert('請輸入安裝日期');
     } else if (warranty_start === null || warranty_start === '') {
@@ -387,24 +395,56 @@ export class EditEquipmentComponent implements OnInit, OnChanges, OnDestroy {
       alert('請輸入保固結束日期');
     } else {
       if (this.isNewForm) {
-        const params = { serial_no: serial_no };
-        this.equipmentManagementService
-          .getProdDetailApi(params)
-          .pipe(takeUntil(this.ngUnsubscribe))
-          .subscribe((prodsList) => {
-            const new_install_type = prodsList.order ? '換裝' : '新裝';
-            console.log('new_install_type;', new_install_type);
-            if (this.orderProd.install_type !== new_install_type) {
-              alert('此產品為換裝設備');
-              // this.orderProd.install_type = new_install_type
-              // this.addOrderInfo();
-            } else {
-              this.addOrderInfo();
-            }
-          });
+        this.orderProd.product_type = this.determineProductType(serial_no);
+        if (!this.rigisterProd) {
+          // 為新產品且不為註冊產品
+          const params = { serial_no: serial_no };
+          this.equipmentManagementService
+            .getProdDetailApi(params)
+            .pipe(takeUntil(this.ngUnsubscribe))
+            .subscribe((res) => {
+              // console.log(res);
+              if (res.error) {
+                alert(res.description);
+              } else {
+                const new_install_type = res.order ? '換裝' : '新裝';
+                // console.log('new_install_type;', new_install_type);
+                if (this.orderProd.install_type !== new_install_type) {
+                  alert(`此產品為${new_install_type}設備`);
+                } else {
+                  this.addOrderInfo();
+                }
+              }
+            });
+        } else {
+          //為註冊新產品
+          this.addOrderInfo();
+        }
       } else {
+        //修改產品
         this.updateOrderInfo();
       }
+    }
+  }
+
+  /**
+   * 依輸入序號判斷裝置類型
+   */
+  determineProductType(serial_no: string): string {
+    if (serial_no.length >= 4) {
+      const prodTypeChar = serial_no[3];
+      switch (prodTypeChar) {
+        case 'T':
+          return '跑步機';
+        case 'P':
+          return '飛輪';
+        case 'R':
+          return '划船機';
+        default:
+          return '其他';
+      }
+    } else {
+      return '其他';
     }
   }
 
@@ -453,21 +493,21 @@ export class EditEquipmentComponent implements OnInit, OnChanges, OnDestroy {
       create_name: this.modifyCteateName,
     };
 
-    console.log('addOrderProdApi addProdData:', addProdData);
+    // console.log('addOrderProdApi addProdData:', addProdData);
 
     this.equipmentManagementService
       .addOrderProdApi(addProdData)
       .pipe(takeUntil(this.ngUnsubscribe))
       .subscribe((response) => {
         if (response.error) {
-          alert(response.description);
+          alert('新增失敗\n原因:' + response.description);
         } else if (!response.error) {
           alert('新增成功');
-          console.log('addOrderProdApi:', response);
+          // console.log('addOrderProdApi:', response);
 
           this.closeEdit();
           this.infoChange.emit();
-          if (this.orderDetail.product.length > 0) {
+          if (this.orderDetail?.product?.length > 0) {
             //回傳更新時間-待廢棄
             this.anotherProdAdd.emit(this.orderProd.serial_no);
           }
@@ -492,8 +532,8 @@ export class EditEquipmentComponent implements OnInit, OnChanges, OnDestroy {
       attach_file,
       memo,
     } = this.orderProd;
-    console.log(this.orderProd);
-    console.log(this.originOrderProd);
+    // console.log(this.orderProd);
+    // console.log(this.originOrderProd);
 
     const updateData = {
       index_id,
@@ -517,10 +557,10 @@ export class EditEquipmentComponent implements OnInit, OnChanges, OnDestroy {
         .pipe(takeUntil(this.ngUnsubscribe))
         .subscribe((response) => {
           if (response.error) {
-            alert(response.description);
+            alert('修改失敗\n原因:' + response.description);
           } else if (!response.error) {
             alert('修改成功');
-            console.log('addOrderProdApi:', response);
+            // console.log('addOrderProdApi:', response);
             this.closeEdit();
             this.infoChange.emit();
           }

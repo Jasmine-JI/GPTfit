@@ -342,7 +342,7 @@ export class ActivityListFilterComponent implements OnInit, OnDestroy {
     this.uiFlag.dateOption = this.dateOptions.custom;
     this.date.type = 'custom';
     this.FilterEndTime = dayjs(FilterEndTime).format('YYYY-MM-DDT23:59:59.999+08:00');
-    this.date.endTimestamp = dayjs(FilterEndTime).valueOf();
+    this.date.endTimestamp = dayjs(FilterEndTime).endOf('day').valueOf();
     this.TimeoutSubmit();
   }
 
@@ -404,9 +404,9 @@ export class ActivityListFilterComponent implements OnInit, OnDestroy {
           this.uiFlag.currentType = pageType;
 
           // 運動列表預設不展開條件篩選器
-          if (pageType === 'file') {
-            this.uiFlag.showConditionSelector = false;
-          }
+          // if (pageType === 'file') {
+          //   this.uiFlag.showConditionSelector = false;
+          // }
         }
 
         // 確認雲跑的地圖資訊是否載入

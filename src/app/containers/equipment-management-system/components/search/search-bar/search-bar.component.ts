@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { EquipmentManagementService } from '../../../services/equipment-management.service';
 import { AuthService } from '../../../../../core/services';
 import { Router, RouterLink } from '@angular/router';
@@ -17,6 +17,8 @@ export class SearchBarComponent {
     private equipmentManagementService: EquipmentManagementService,
     private router: Router
   ) {}
+
+  @Input() avatarUrl: string;
 
   /**
    * 登出

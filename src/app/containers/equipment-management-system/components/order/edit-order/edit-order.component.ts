@@ -15,16 +15,16 @@ import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import _, { cloneDeep } from 'lodash';
 import { Subject, takeUntil } from 'rxjs';
-import { AuthService, UserService } from '../../../../../core/services';
-import { channelListResponse } from '../../../models/channels-api.model';
+import { Domain, WebIp } from '../../../../../core/enums/common';
+import { UserService } from '../../../../../core/services';
 import { orderListResponse, updateOrderInfoBody } from '../../../models/order-api.model';
 import { EquipmentManagementService } from '../../../services/equipment-management.service';
-import { Domain, WebIp } from '../../../../../core/enums/common';
+import { EditSalesChannelComponent } from '../edit-sales-channel/edit-sales-channel.component';
 
 @Component({
   selector: 'app-edit-order',
   standalone: true,
-  imports: [CommonModule, NgIf, CommonModule, FormsModule, MatIconModule],
+  imports: [CommonModule, NgIf, FormsModule, MatIconModule, EditSalesChannelComponent],
   templateUrl: './edit-order.component.html',
   styleUrls: ['./edit-order.component.scss'],
 })
@@ -55,36 +55,46 @@ export class EditOrderComponent implements OnInit, OnChanges, OnDestroy {
     user_name: '',
     phone: null,
     address: '',
-    sales_channel: '',
-    attach_file: 'MOMO',
+    sales_channel: 'MOMO',
+    attach_file: '',
     memo: '',
   };
 
+  textLength: number;
   filesMaxLength = 260;
   filesMax = false;
   fileNames: string[] = [];
   salesChannelList: string[] = [];
   showSalesChannelDropdown = false;
+  editSalesChannel = false;
 
-  readonly imgPath = `http://${
+  readonly imgPath = `https://${
     location.hostname.includes(WebIp.develop) ? Domain.uat : location.hostname
   }/img/`;
 
   constructor(
-    private authService: AuthService,
     private userService: UserService,
     private equipmentManagementService: EquipmentManagementService
   ) {}
 
   ngOnInit(): void {
-    this.getSalesChannelsApi();
     this.fileNames = [];
   }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes.isNewForm) {
       this.judgeEdmitMode();
+      this.textLength = this.orderInfo.memo.length;
     }
+    if (changes.editing) {
+      this.closeAllDropdown();
+      this.closeAllEdit();
+      this.getSavedChannelList();
+    }
+  }
+
+  countTextLength(text: string) {
+    this.textLength = text.length;
   }
 
   /**
@@ -94,12 +104,12 @@ export class EditOrderComponent implements OnInit, OnChanges, OnDestroy {
     if (this.editing) {
       if (this.isNewForm) {
         //新增視窗
-        console.log('新增銷貨單');
+        // console.log('新增銷貨單');
         this.originOrderInfo = cloneDeep(this.orderInfo);
         this.setFileArray();
       } else {
         //修改視窗
-        console.log('修改銷貨單');
+        // console.log('修改銷貨單');
         this.getOrderListDetail();
       }
     }
@@ -191,8 +201,9 @@ export class EditOrderComponent implements OnInit, OnChanges, OnDestroy {
       .pipe(takeUntil(this.ngUnsubscribe))
       .subscribe((res) => {
         if (!res.error && res.data.name) {
-          // this.salesChannelList = res.data.name;
-          this.equipmentManagementService.setSalesChannels(res.data.name);
+          this.equipmentManagementService.setSalesChannels(res.data);
+        } else if (res.error) {
+          alert(res.description);
         }
       });
   }
@@ -210,17 +221,15 @@ export class EditOrderComponent implements OnInit, OnChanges, OnDestroy {
       .getSalesChannels()
       .pipe(takeUntil(this.ngUnsubscribe))
       .subscribe((res) => {
-        this.salesChannelList = res;
+        if (!res) {
+          // console.log(res);
+          this.getSalesChannelsApi();
+        } else {
+          // console.log(res);
+          this.salesChannelList = res.name;
+        }
       });
   }
-
-  // /**
-  //  * 儲存頁面所需銷貨渠道列表
-  //  * @param res
-  //  */
-  // setSalesChannelList(res:any) {
-
-  // }
 
   selectChannel(salesChannel: string) {
     // console.log('Selected Channel:', salesChannel);
@@ -359,8 +368,11 @@ export class EditOrderComponent implements OnInit, OnChanges, OnDestroy {
       .pipe(takeUntil(this.ngUnsubscribe))
       .subscribe((response) => {
         // console.log(response);
-        if (!response.error) {
-          console.log('編輯成功');
+        if (response.error) {
+          alert(response.description);
+        } else if (!response.error) {
+          alert('修改成功');
+          // console.log('修改成功');
           // console.log(updateData);
           // console.log(this.orderInfo);
 
@@ -368,6 +380,27 @@ export class EditOrderComponent implements OnInit, OnChanges, OnDestroy {
           this.infoChange.emit();
         }
       });
+  }
+
+  editForm(type: string) {
+    this.closeAllDropdown();
+    this.closeAllEdit();
+    switch (type) {
+      case 'salesChannel':
+        this.editSalesChannel = true;
+        break;
+
+      default:
+        break;
+    }
+  }
+
+  closeAllEdit() {
+    this.editSalesChannel = false;
+  }
+
+  closeAllDropdown() {
+    this.showSalesChannelDropdown = false;
   }
 
   /**
@@ -390,8 +423,9 @@ export class EditOrderComponent implements OnInit, OnChanges, OnDestroy {
    */
   closeEdit() {
     this.orderInfo = cloneDeep(this.originOrderInfo);
-    this.showSalesChannelDropdown = false;
     this.editing = false;
+    this.closeAllDropdown();
+    this.closeAllEdit();
     this.editingChange.emit(this.editing);
   }
 

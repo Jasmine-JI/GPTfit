@@ -1,9 +1,12 @@
 <ng-container *ngIf="editing && orderProd">
   <div class="edit_section">
-    <div *ngIf="isNewForm" class="title">產品新增</div>
-    <div *ngIf="!isNewForm" class="title">產品編輯</div>
+    <div class="edit_header">
+      <div *ngIf="isNewForm" class="title">產品新增</div>
+      <div *ngIf="!isNewForm" class="title">產品編輯</div>
+      <div (click)="clickCloseBtn()" class="close_button icon_button"></div>
+    </div>
     <div class="edit_detail">
-      <div class="label_input">
+      <div *ngIf="!isNewForm && !models_name" class="label_input">
         <label class="edit_item_label">類型</label>
         <div class="input_select input">
           <div
@@ -31,16 +34,18 @@
         <label class="edit_item_label">產品序號</label>
         <input
           class="input"
-          [class.input_uneditable]="!isNewForm"
+          maxlength="14"
+          [class.input_uneditable]="!isNewForm || rigisterProd"
           [(ngModel)]="orderProd.serial_no"
           placeholder="serial_no"
-          [disabled]="!isNewForm"
+          [disabled]="!isNewForm || rigisterProd"
         />
       </div>
       <div class="label_input">
-        <label class="edit_item_label">所屬訂貨單</label>
+        <label class="edit_item_label">所屬銷貨單</label>
         <input
           class="input"
+          maxlength="11"
           [class.input_uneditable]="(isNewForm || !isNewForm) && !rigisterProd"
           [(ngModel)]="orderProd.order_no"
           placeholder="order_no"
@@ -50,7 +55,7 @@
       <div class="label_input date_icon" mat-raised-button (click)="openInstallDatePicker.open()">
         <label class="edit_item_label">安裝日期</label>
         <input
-          class="input"
+          class="input pointer"
           readonly
           matInput
           [matDatepicker]="openInstallDatePicker"
@@ -72,7 +77,7 @@
       >
         <label class="edit_item_label">保固開始日</label>
         <input
-          class="input"
+          class="input pointer"
           readonly
           matInput
           [matDatepicker]="openWarrantyStartDatePicker"
@@ -95,7 +100,7 @@
       >
         <label class="edit_item_label">保固結束日</label>
         <input
-          class="input"
+          class="input pointer"
           readonly
           matInput
           [matDatepicker]="openWarrantyEndDatePicker"
@@ -162,7 +167,14 @@
       </div>
       <div class="memo_label_input">
         <label class="edit_item_label">備註</label>
-        <textarea class="input" [(ngModel)]="orderProd.memo" placeholder="memo"></textarea>
+        <textarea
+          (input)="countTextLength($event.target.value)"
+          maxlength="300"
+          class="input"
+          [(ngModel)]="orderProd.memo"
+          placeholder="memo"
+        ></textarea>
+        <span class="textLength">{{ textLength }}/300</span>
       </div>
       <div class="img_label_input">
         <label class="edit_item_label">附加檔案</label>
@@ -197,7 +209,6 @@
         </div>
       </div>
     </div>
-    <div (click)="clickCloseBtn()" class="close_button icon_button"></div>
     <div (click)="clickSaveBtn()" class="save_button">
       <mat-icon class="save_button_icon">save</mat-icon>儲存
     </div>

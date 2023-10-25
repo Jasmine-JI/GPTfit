@@ -4,6 +4,8 @@ $card_width: 550px;
 .section {
   .title {
     font-size: 26px;
+    font-weight: 700;
+    letter-spacing: 1px;
   }
 }
 
@@ -94,6 +96,7 @@ $card_width: 550px;
     }
 
     .detail_content {
+      overflow-wrap: anywhere;
     }
   }
 }
@@ -104,10 +107,19 @@ $card_width: 550px;
   padding: 10px 15px;
 }
 
+.section:has(> .main_button) {
+  position: fixed;
+  bottom: 5%;
+  left: 80%;
+  margin: unset;
+  padding: unset;
+}
+
 .add_list {
   display: flex;
   position: relative;
   margin: 0 50px 0 auto;
+
   ul {
     margin-left: auto;
     position: absolute;

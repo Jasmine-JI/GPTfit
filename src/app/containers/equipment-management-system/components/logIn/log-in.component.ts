@@ -92,36 +92,23 @@ export class LogInComponent implements OnInit, OnDestroy {
       // this.getUserProfile();
       this.checkIfAccessRight();
     } else {
-      console.log('未登入');
+      // console.log('未登入');
     }
   }
 
   checkIfAccessRight() {
-    console.log('已登入，判斷是否有權限');
+    // console.log('已登入，判斷是否有權限');
     const accessRight = this.userService.getUser().systemAccessright;
     if (accessRight <= AccessRight.marketing) {
-      console.log('權限<=29');
+      // console.log('權限<=29');
       location.replace(equipmentManagementSearch);
       // this.router.navigateByUrl(equipmentManagementSearch);
     } else {
-      console.log('無權限,權限:', this.userService.getUser().systemAccessright);
+      // console.log('無權限,權限:', this.userService.getUser().systemAccessright);
       location.replace(equipmentManagementSearch);
       // this.router.navigateByUrl(equipmentManagementNoPermission);
     }
   }
-
-  //   /**
-  //  * 取得登入者資訊
-  //  */
-  //   getUserProfile() {
-  //     this.userService
-  //       .getUser().rxUserProfile
-  //       .pipe(filter((userProfile: any) => userProfile.userId > 0),takeUntil(this.ngUnsubscribe))
-  //       .subscribe((res) => {
-
-  //         this.token = this.auth.token;
-  //       });
-  //   }
 
   /**
    * 顯示完整密碼與否
@@ -176,7 +163,7 @@ export class LogInComponent implements OnInit, OnDestroy {
     this.token = token;
     this.auth.setToken(token);
     this.auth.tokenLogin();
-    console.log('輸入登入成功');
+    // console.log('輸入登入成功');
     this.checkIfAccessRight();
   }
 
@@ -191,7 +178,7 @@ export class LogInComponent implements OnInit, OnDestroy {
       const accountPasswordError = [2096, 2097, 2098];
       if (accountPasswordError.includes(apiReturnCode)) {
         this.authAlert.account = 'mistake';
-        console.log('mistake');
+        // console.log('mistake');
       } else {
         this.hintDialogService.showSnackBar(errorMessage);
       }

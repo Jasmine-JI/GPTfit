@@ -236,7 +236,7 @@ export class ActivityListComponent implements OnInit, AfterViewInit, OnChanges, 
     this.activityList = this.activityList.sort(
       (a, b) => b.activityInfoLayer.avgHeartRateBpm - a.activityInfoLayer.avgHeartRateBpm
     );
-    console.log(this.activityList);
+    // console.log(this.activityList);
   }
 
   /**

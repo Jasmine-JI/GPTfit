@@ -1,6 +1,6 @@
 import { NgFor, NgIf } from '@angular/common';
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { Subject, takeUntil } from 'rxjs';
 import { UserService } from '../../../../core/services';
 import {
@@ -10,9 +10,10 @@ import {
   registerListParameters,
 } from '../../models/order-api.model';
 import { EquipmentManagementService } from '../../services/equipment-management.service';
+import { EditEquipmentComponent } from '../equipment/edit-equipment/edit-equipment.component';
 import { EditMaintenanceRequirementComponent } from '../maintenance-requirement/edit-maintenance-requirement/edit-maintenance-requirement.component';
 import { EditOrderComponent } from '../order/edit-order/edit-order.component';
-import { EditEquipmentComponent } from '../equipment/edit-equipment/edit-equipment.component';
+import { EditRepairComponent } from '../repair/edit-repair/edit-repair.component';
 
 @Component({
   selector: 'app-search',
@@ -26,13 +27,15 @@ import { EditEquipmentComponent } from '../equipment/edit-equipment/edit-equipme
     EditOrderComponent,
     EditMaintenanceRequirementComponent,
     EditEquipmentComponent,
+    EditRepairComponent,
   ],
 })
 export class SearchComponent implements OnInit, OnDestroy {
   private ngUnsubscribe = new Subject();
   constructor(
     private EquipmentManagementService: EquipmentManagementService,
-    private userService: UserService
+    private userService: UserService,
+    private router: Router
   ) {}
 
   uiFlag = {
@@ -42,6 +45,7 @@ export class SearchComponent implements OnInit, OnDestroy {
     selectOption: 'order',
   };
 
+  NewFixReq: boolean; //在首頁新增叫修單
   rigisterProd: boolean;
   serial_no: string;
   isNewForm: boolean;
@@ -56,12 +60,12 @@ export class SearchComponent implements OnInit, OnDestroy {
   };
 
   orderBody: orderListParameters = {
-    item_count: 3, //最新銷貨單數量
+    item_count: 5, //最新銷貨單數量
     // order_no:0,
   };
 
   fixReqBody: fixReqListParameters = {
-    item_count: 3,
+    item_count: 5,
     // repair_id:0,
   };
 
@@ -90,12 +94,13 @@ export class SearchComponent implements OnInit, OnDestroy {
         this.isNewForm = true;
         break;
 
-      case 'fixReq':
+      case 'fixReq': //叫修
         this.editFixReq = true;
         this.isNewForm = true;
+        this.NewFixReq = true;
         break;
 
-      case 'repair':
+      case 'repair': //在首頁不新增維修頁
         this.editrRepair = true;
         this.isNewForm = true;
         break;
@@ -118,6 +123,7 @@ export class SearchComponent implements OnInit, OnDestroy {
     this.editrRepair = false;
     this.editProd = false;
     this.isNewForm = false;
+    this.rigisterProd = false;
   }
 
   closeAllDropdown() {
@@ -144,7 +150,6 @@ export class SearchComponent implements OnInit, OnDestroy {
           this.showRigisterProdDropdown.item = i;
         }
         break;
-
       default:
         break;
     }
@@ -160,6 +165,10 @@ export class SearchComponent implements OnInit, OnDestroy {
         this.OrderListResponse = res;
         if (this.OrderListResponse) {
           this.uiFlag.orderList = res.order.reverse();
+          if (this.isNewForm) {
+            const order_no = this.uiFlag.orderList[0].order_no;
+            this.router.navigateByUrl(`/equipment-management/order/${order_no}`);
+          }
         }
       });
   }
@@ -174,7 +183,10 @@ export class SearchComponent implements OnInit, OnDestroy {
         this.fixReqListResponse = res;
         if (this.fixReqListResponse) {
           this.uiFlag.fixReqList = res.repair_form?.reverse();
-          console.log('fixReqList:', this.uiFlag.fixReqList);
+          if (this.NewFixReq) {
+            const repair_id = this.uiFlag.fixReqList[0].repair_id;
+            this.router.navigateByUrl(`/equipment-management/maintenance-requirement/${repair_id}`);
+          }
         }
       });
   }
@@ -189,10 +201,16 @@ export class SearchComponent implements OnInit, OnDestroy {
         this.registerListResponse = res;
         if (this.registerListResponse) {
           this.uiFlag.registerList = res.data?.reverse();
-          console.log(this.uiFlag.registerList);
-          this.getRegisterNickname();
+          // console.log(this.uiFlag.registerList);
+          if (this.uiFlag.registerList) {
+            this.getRegisterNickname();
+          }
         }
       });
+    if (this.rigisterProd) {
+      // console.log('進行navigateByUrl');
+      this.router.navigateByUrl(`/equipment-management/equipment/${this.serial_no}`);
+    }
   }
 
   getRegisterNickname() {
@@ -204,7 +222,7 @@ export class SearchComponent implements OnInit, OnDestroy {
         .getTargetUserInfo(userId)
         .pipe(takeUntil(this.ngUnsubscribe))
         .subscribe((res) => {
-          console.log(res);
+          // console.log(res);
 
           // 假設獲取的nickname存儲在res.nickname中
           const nickname = res.nickname;
