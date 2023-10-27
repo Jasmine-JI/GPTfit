@@ -11,7 +11,13 @@ import {
   SimpleChanges,
   ViewChild,
 } from '@angular/core';
-import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import {
+  FormBuilder,
+  FormControl,
+  FormsModule,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
 import {
   MAT_MOMENT_DATE_ADAPTER_OPTIONS,
   MomentDateAdapter,
@@ -76,6 +82,7 @@ export class EditRepairComponent implements OnInit, OnChanges, OnDestroy {
   @Input() targetRepairInfo: any;
   @Input() editing: boolean;
   @Input() isNewForm: boolean;
+  @Input() fixReqSerialArray: string[]; //叫修單之產品序號list
   @Input() repair_id: number; //叫修單號
   @Input() id: number; //維修單id
   @Output() editingChange = new EventEmitter();
@@ -96,6 +103,18 @@ export class EditRepairComponent implements OnInit, OnChanges, OnDestroy {
   modifyCteateName = this.userService.getUser().nickname;
   repairDetail: any;
   partList: any;
+  filteredSerialNo: any;
+  isListVisible = false;
+
+  repairForm = this.formBuilder.group({
+    serial_no: ['', Validators.required],
+    repair_date: ['', Validators.required],
+    member: ['', Validators.required],
+    machine_status: ['', Validators.required],
+    root_causes: ['', Validators.required],
+    total_meter: ['', Validators.required],
+    total_use_time: ['', Validators.required],
+  });
 
   repairInfo: any = {
     // repair_id: null,//叫修單號
@@ -166,7 +185,8 @@ export class EditRepairComponent implements OnInit, OnChanges, OnDestroy {
 
   constructor(
     private userService: UserService,
-    private equipmentManagementService: EquipmentManagementService
+    private equipmentManagementService: EquipmentManagementService,
+    private formBuilder: FormBuilder
   ) {}
 
   ngOnInit(): void {
@@ -220,6 +240,26 @@ export class EditRepairComponent implements OnInit, OnChanges, OnDestroy {
     return part ? part.quantity : null;
   }
 
+  filterSerialNo() {
+    if (this.repairInfo.serial_no === '') {
+      this.filteredSerialNo = this.fixReqSerialArray?.filter((tag) => tag !== '');
+    } else {
+      this.filteredSerialNo = this.fixReqSerialArray?.filter((tag) =>
+        tag.toLowerCase().includes(this.repairInfo.serial_no.toLowerCase())
+      );
+    }
+    this.filteredSerialNo = Array.from(new Set(this.filteredSerialNo)); // 使用 Set 来去除重复的元素
+    this.isListVisible = this.filteredSerialNo.length !== 0 ? true : false;
+    console.log('filteredSerialNo', this.filteredSerialNo);
+  }
+
+  addSerialNo(serialNo?: string) {
+    this.repairInfo.serial_no = serialNo;
+    this.isListVisible = false;
+    console.log('fixReqSerialArray', this.fixReqSerialArray);
+    console.log(this.repairInfo.serial_no);
+  }
+
   filterPartsList() {
     if (!this.editPartListItem && !this.editPartList) {
       const partNoRegex = new RegExp(this.partInput.part_no);
@@ -248,7 +288,9 @@ export class EditRepairComponent implements OnInit, OnChanges, OnDestroy {
     this.partInput.specifications = item.specifications;
     this.partInput.description = item.description;
     if (this.quantityInput) {
-      this.quantityInput.nativeElement.value = this.getQuantity(item.part_no);
+      this.quantityInput.nativeElement.value = this.getQuantity(item.part_no)
+        ? this.getQuantity(item.part_no)
+        : 1;
     }
   }
 
@@ -328,7 +370,7 @@ export class EditRepairComponent implements OnInit, OnChanges, OnDestroy {
       case 'repair_type':
         this.showRepairTypeDropdown = !this.showRepairTypeDropdown;
         if (this.showRepairTypeDropdown) {
-          // this.showReturnExchangeDropdown = false;
+          this.isListVisible = false;
           // this.showInstallTypeDropdown = false;
         }
         break;
@@ -470,6 +512,7 @@ export class EditRepairComponent implements OnInit, OnChanges, OnDestroy {
 
   closeAllDropdown() {
     this.showRepairTypeDropdown = false;
+    this.isListVisible = false;
   }
 
   countTextLength(target: string, text: string) {
@@ -512,27 +555,38 @@ export class EditRepairComponent implements OnInit, OnChanges, OnDestroy {
       total_meter,
       total_use_time,
     } = this.repairInfo;
-
-    if (serial_no.length === 0) {
-      alert('請輸入產品序號');
-    } else if (repair_date === '') {
-      alert('請輸入維修日期');
-    } else if (member === '') {
-      alert('請輸入維修人員');
-    } else if (machine_status === '') {
-      alert('請輸入機台狀態');
-    } else if (root_causes === '') {
-      alert('請輸入異常原因');
-    } else if (total_meter === null) {
-      alert('請輸入總使用里程');
-    } else if (total_use_time === null) {
-      alert('請輸入總使用時間');
-    } else {
+    this.repairForm.patchValue({
+      serial_no: serial_no,
+      repair_date: repair_date,
+      member: member,
+      machine_status: machine_status,
+      root_causes: root_causes,
+      total_meter: total_meter,
+      total_use_time: total_use_time,
+    });
+    // if (serial_no.length === 0) {
+    //   alert('請輸入產品序號');
+    // } else if (repair_date === '') {
+    //   alert('請輸入維修日期');
+    // } else if (member === '') {
+    //   alert('請輸入維修人員');
+    // } else if (machine_status === '') {
+    //   alert('請輸入機台狀態');
+    // } else if (root_causes === '') {
+    //   alert('請輸入異常原因');
+    // } else if (total_meter === null) {
+    //   alert('請輸入總使用里程');
+    // } else if (total_use_time === null) {
+    //   alert('請輸入總使用時間');
+    // } else {
+    if (this.repairForm.valid) {
       if (this.isNewForm) {
         this.addRepairInfo();
       } else {
         this.updateRepairInfo();
       }
+    } else {
+      alert('請檢查填寫欄位');
     }
   }
 

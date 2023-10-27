@@ -1,172 +1,252 @@
 <ng-container *ngIf="editing && repairInfo">
-  <div class="edit_section">
-    <div class="edit_header">
-      <div *ngIf="isNewForm" class="title">維修單新增</div>
-      <div *ngIf="!isNewForm" class="title">維修單編輯</div>
-      <div (click)="clickCloseBtn()" class="close_button icon_button"></div>
-    </div>
-    <div class="edit_detail">
-      <div class="label_input">
-        <label class="edit_item_label">產品序號</label>
-        <input
-          class="input"
-          name="serial_no"
-          maxlength="30"
-          [class.input_uneditable]="!isNewForm"
-          [(ngModel)]="repairInfo.serial_no"
-          placeholder="serial_no"
-          [disabled]="!isNewForm"
-          required
-        />
+  <form (ngSubmit)="clickSaveBtn()" #repairForm="ngForm">
+    <div class="edit_section">
+      <div class="edit_header">
+        <div *ngIf="isNewForm" class="title">維修單新增</div>
+        <div *ngIf="!isNewForm" class="title">維修單編輯</div>
+        <div (click)="clickCloseBtn()" class="close_button icon_button"></div>
       </div>
-      <div class="label_input">
-        <label class="edit_item_label">類型</label>
-        <div class="input_select input">
-          <div
-            class="foldable"
-            [class.unfold]="showRepairTypeDropdown"
-            (click)="toggleDropdown('repair_type')"
-          >
-            {{ repairInfo.repair_type }}
-          </div>
-          <div *ngIf="showRepairTypeDropdown" class="toggle_dropdown">
-            <ul>
-              <li
-                *ngFor="let repairType of repairTypeList"
-                (click)="selectStatus('repair_type', repairType)"
-                class="dropdown_list"
-              >
-                {{ repairType }}
-              </li>
-            </ul>
+      <div class="edit_detail">
+        <div class="label_input">
+          <label class="edit_item_label">產品序號</label>
+          <div class="input_select input">
+            <input
+              class="input"
+              (click)="filterSerialNo()"
+              (input)="filterSerialNo()"
+              (compositionend)="filterSerialNo()"
+              maxlength="30"
+              [class.input_uneditable]="!isNewForm"
+              [(ngModel)]="repairInfo.serial_no"
+              placeholder="serial_no"
+              name="serial_no"
+              [disabled]="!isNewForm"
+              autocomplete="off"
+              required
+            />
+            <div *ngIf="isListVisible" class="toggle_dropdown">
+              <ul class="dropdown_ul">
+                <li
+                  (click)="addSerialNo(serialNo)"
+                  class="dropdown_list"
+                  *ngFor="let serialNo of filteredSerialNo"
+                >
+                  {{ serialNo }}
+                </li>
+              </ul>
+            </div>
+            <div
+              class="error_message"
+              *ngIf="
+                repairForm.submitted && repairForm.form.controls.serial_no.hasError('required')
+              "
+            >
+              必填
+            </div>
           </div>
         </div>
-      </div>
-      <div class="label_input date_icon" mat-raised-button (click)="openRepairDatePicker.open()">
-        <label for="repair_date" class="edit_item_label">維修日期</label>
-        <input
-          id="repair_date"
-          class="input pointer"
-          name="repair_date"
-          readonly
-          matInput
-          [matDatepicker]="openRepairDatePicker"
-          (dateChange)="changeDate('repair_date', $event.value)"
-          [(ngModel)]="repairInfo.repair_date"
-          [max]="today"
-          placeholder="repair_date"
-        />
-        <mat-datepicker
-          [touchUi]="isMobile"
-          #openRepairDatePicker
-          disabled="false"
-        ></mat-datepicker>
-      </div>
-      <div class="label_input">
-        <label for="member" class="edit_item_label">維修人員</label>
-        <input
-          id="member"
-          class="input"
-          name="member"
-          maxlength="64"
-          [(ngModel)]="repairInfo.member"
-          placeholder="member"
-          required
-        />
-      </div>
-      <div class="label_input">
-        <label for="machine_status" class="edit_item_label">機台狀態</label>
-        <input
-          id="machine_status"
-          class="input"
-          name="machine_status"
-          maxlength="100"
-          [(ngModel)]="repairInfo.machine_status"
-          placeholder="machine_status"
-          required
-        />
-      </div>
-      <div class="label_input">
-        <label class="edit_item_label">異常原因</label>
-        <input
-          id="root_causes"
-          class="input"
-          name="root_causes"
-          maxlength="200"
-          [(ngModel)]="repairInfo.root_causes"
-          placeholder="root_causes"
-          required
-        />
-        <!-- <textarea (input)="countTextLength('causesTextLength',$event.target.value)" maxlength=200 class="input"
+        <div class="label_input">
+          <label class="edit_item_label">類型</label>
+          <div class="input_select input">
+            <div
+              class="foldable"
+              [class.unfold]="showRepairTypeDropdown"
+              (click)="toggleDropdown('repair_type')"
+            >
+              {{ repairInfo.repair_type }}
+            </div>
+            <div *ngIf="showRepairTypeDropdown" class="toggle_dropdown">
+              <ul>
+                <li
+                  *ngFor="let repairType of repairTypeList"
+                  (click)="selectStatus('repair_type', repairType)"
+                  class="dropdown_list"
+                >
+                  {{ repairType }}
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <div class="label_input date_icon" mat-raised-button (click)="openRepairDatePicker.open()">
+          <label for="repair_date" class="edit_item_label">維修日期</label>
+          <input
+            id="repair_date"
+            class="input pointer"
+            name="repair_date"
+            readonly
+            matInput
+            [matDatepicker]="openRepairDatePicker"
+            (dateChange)="changeDate('repair_date', $event.value)"
+            [(ngModel)]="repairInfo.repair_date"
+            [max]="today"
+            placeholder="repair_date"
+            name="repair_date"
+            required
+          />
+          <div
+            class="error_message"
+            *ngIf="
+              repairForm.submitted && repairForm.form.controls.repair_date.hasError('required')
+            "
+          >
+            必填
+          </div>
+          <mat-datepicker
+            [touchUi]="isMobile"
+            #openRepairDatePicker
+            disabled="false"
+          ></mat-datepicker>
+        </div>
+        <div class="label_input">
+          <label for="member" class="edit_item_label">維修人員</label>
+          <input
+            id="member"
+            class="input"
+            name="member"
+            maxlength="64"
+            [(ngModel)]="repairInfo.member"
+            placeholder="member"
+            name="member"
+            required
+          />
+          <div
+            class="error_message"
+            *ngIf="repairForm.submitted && repairForm.form.controls.member.hasError('required')"
+          >
+            必填
+          </div>
+        </div>
+        <div class="label_input">
+          <label for="machine_status" class="edit_item_label">機台狀態</label>
+          <input
+            id="machine_status"
+            class="input"
+            name="machine_status"
+            maxlength="100"
+            [(ngModel)]="repairInfo.machine_status"
+            placeholder="machine_status"
+            name="machine_status"
+            required
+          />
+          <div
+            class="error_message"
+            *ngIf="
+              repairForm.submitted && repairForm.form.controls.machine_status.hasError('required')
+            "
+          >
+            必填
+          </div>
+        </div>
+        <div class="label_input">
+          <label class="edit_item_label">異常原因</label>
+          <input
+            id="root_causes"
+            class="input"
+            name="root_causes"
+            maxlength="200"
+            [(ngModel)]="repairInfo.root_causes"
+            placeholder="root_causes"
+            name="root_causes"
+            required
+          />
+          <div
+            class="error_message"
+            *ngIf="
+              repairForm.submitted && repairForm.form.controls.root_causes.hasError('required')
+            "
+          >
+            必填
+          </div>
+          <!-- <textarea (input)="countTextLength('causesTextLength',$event.target.value)" maxlength=200 class="input"
             [(ngModel)]="repairInfo.root_causes" placeholder="root_causes"></textarea> -->
 
-        <!-- <span class="textLength">{{causesTextLength}}/200</span> -->
-      </div>
-      <div class="parts">
-        <label class="edit_item_label"
-          >更換料件
-          <div (click)="editForm('parts_replacement')" class="edit_button"></div>
-        </label>
-        <ul class="parts_li" *ngIf="repairInfo.parts_replace_item && partList">
-          <ng-container *ngFor="let item of repairInfo.parts_replace_item">
-            <li class="part_item">
-              <span class="part_name">{{ getPartName(item.part_no) }}</span>
-              <span class="part_no">X{{ item.quantity }}</span>
-            </li>
-          </ng-container>
-        </ul>
-      </div>
-      <div class="label_input">
-        <label for="total_meter" class="edit_item_label">總使用里程</label>
-        <input
-          id="total_meter"
-          class="input"
-          name="total_meter"
-          maxlength="11"
-          oninput="value=value.replace(/[^\d]/g,'')"
-          [(ngModel)]="repairInfo.total_meter"
-          placeholder="total_meter"
-        />
-      </div>
-      <div class="label_input">
-        <label for="total_use_time" class="edit_item_label">總使用時間</label>
-        <input
-          id="total_use_time"
-          class="input"
-          name="total_use_time"
-          maxlength="11"
-          oninput="value=value.replace(/[^\d]/g,'')"
-          [(ngModel)]="repairInfo.total_use_time"
-          placeholder="total_use_time"
-        />
-      </div>
-
-      <div class="memo_label_input">
-        <label class="edit_item_label"
-          >詳細說明
-          <textarea
-            (input)="countTextLength('detailTextLength', $event.target.value)"
-            maxlength="300"
+          <!-- <span class="textLength">{{causesTextLength}}/200</span> -->
+        </div>
+        <div class="parts">
+          <label class="edit_item_label"
+            >更換料件
+            <div (click)="editForm('parts_replacement')" class="edit_button"></div>
+          </label>
+          <ul class="parts_li" *ngIf="repairInfo.parts_replace_item && partList">
+            <ng-container *ngFor="let item of repairInfo.parts_replace_item">
+              <li class="part_item">
+                <span class="part_name">{{ getPartName(item.part_no) }}</span>
+                <span class="part_no">X{{ item.quantity }}</span>
+              </li>
+            </ng-container>
+          </ul>
+        </div>
+        <div class="label_input">
+          <label for="total_meter" class="edit_item_label">總使用里程</label>
+          <input
+            id="total_meter"
             class="input"
-            [(ngModel)]="repairInfo.detail"
-            placeholder="detail"
-          ></textarea>
-        </label>
-        <span class="textLength">{{ detailTextLength }}/300</span>
-      </div>
-      <!-- <div class="memo_label_input">
+            name="total_meter"
+            maxlength="11"
+            oninput="value=value.replace(/[^\d]/g,'')"
+            [(ngModel)]="repairInfo.total_meter"
+            placeholder="total_meter"
+            required
+          />
+          <div
+            class="error_message"
+            *ngIf="
+              repairForm.submitted && repairForm.form.controls.total_meter.hasError('required')
+            "
+          >
+            必填
+          </div>
+        </div>
+        <div class="label_input">
+          <label for="total_use_time" class="edit_item_label">總使用時間</label>
+          <input
+            id="total_use_time"
+            class="input"
+            name="total_use_time"
+            maxlength="11"
+            oninput="value=value.replace(/[^\d]/g,'')"
+            [(ngModel)]="repairInfo.total_use_time"
+            placeholder="total_use_time"
+            required
+          />
+          <div
+            class="error_message"
+            *ngIf="
+              repairForm.submitted && repairForm.form.controls.total_use_time.hasError('required')
+            "
+          >
+            必填
+          </div>
+        </div>
+
+        <div class="memo_label_input">
+          <label class="edit_item_label"
+            >詳細說明
+            <textarea
+              (input)="countTextLength('detailTextLength', $event.target.value)"
+              maxlength="300"
+              class="input"
+              [(ngModel)]="repairInfo.detail"
+              placeholder="detail"
+              name="detail"
+            ></textarea>
+          </label>
+          <span class="textLength">{{ detailTextLength }}/300</span>
+        </div>
+        <!-- <div class="memo_label_input">
         <label class="edit_item_label">備忘錄
           <textarea (input)="countTextLength('memoTextLength',$event.target.value)" maxlength=300 class="input"
             [(ngModel)]="repairInfo.memo" placeholder="memo"></textarea>
         </label>
         <span class="textLength">{{memoTextLength}}/300</span>
       </div> -->
+      </div>
+      <button type="submit" class="save_button">
+        <mat-icon class="save_button_icon">save</mat-icon>儲存
+      </button>
     </div>
-
-    <button (click)="clickSaveBtn()" class="save_button">
-      <mat-icon class="save_button_icon">save</mat-icon>儲存
-    </button>
-  </div>
+  </form>
 </ng-container>
 
 <ng-container *ngIf="editParts">
@@ -305,7 +385,7 @@
             (keyup.enter)="filterPartsList()"
             (compositionend)="filterPartsList()"
             [(ngModel)]="partInput.part_no"
-            [class.input_uneditable]="editPartListItem"
+            [class.part_no_uneditable]="editPartListItem"
             [disabled]="editPartListItem"
             type="text"
             class="part_content"

@@ -1,5 +1,5 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { EventEmitter, Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, ReplaySubject, catchError } from 'rxjs';
 import { throwRxError } from '../../../core/utils';
 import { channelListResponse } from '../models/channels-api.model';
@@ -11,6 +11,7 @@ import {
   registerListParameters,
   updateOrderInfoBody,
 } from '../models/order-api.model';
+import { ActivatedRoute } from '@angular/router';
 
 @Injectable({
   providedIn: 'root',
@@ -25,6 +26,10 @@ export class EquipmentManagementService {
   fixReqDetail$ = new BehaviorSubject<any>(null);
   targetProdInfo$ = new BehaviorSubject<any>(null);
   partsList$ = new BehaviorSubject<any>(null);
+  fliteredOrder$ = new BehaviorSubject<any>(null);
+  fliteredRepairForm$ = new BehaviorSubject<any>(null);
+  breadcrumbs$ = new BehaviorSubject<any>(null);
+  breadcrumbs = [];
   constructor(private http: HttpClient) {}
 
   /**
@@ -246,17 +251,17 @@ export class EquipmentManagementService {
   /**
    * get api /ems/product/getList-查詢產品設備
    */
-  getProdDetailApi(body: productListParameters): Observable<any> {
+  getProdDetailApi(body: any): Observable<any> {
     let productParams = new HttpParams();
 
     if (body.serial_no !== null && body.serial_no !== undefined) {
       productParams = productParams.set('serial_no', body.serial_no);
     }
 
-    if (body.start_date !== null && body.start_date !== undefined) {
+    if (body.start_date !== '' && body.start_date !== undefined) {
       productParams = productParams.set('start_date', body.start_date);
     }
-    if (body.end_date !== null && body.end_date !== undefined) {
+    if (body.end_date !== '' && body.end_date !== undefined) {
       productParams = productParams.set('end_date', body.end_date);
     }
     // console.log(productParams);
@@ -451,5 +456,162 @@ export class EquipmentManagementService {
         return throwRxError(err);
       })
     );
+  }
+
+  /**
+   * 搜尋 order
+   * get api /ems/order/getList/filter
+   * @returns
+   */
+  fliterOrderApi(body: any) {
+    let fliterParameters = new HttpParams();
+
+    if (body.user_name !== '' && body.user_name !== undefined) {
+      fliterParameters = fliterParameters.set('user_name', body.user_name);
+    }
+
+    if (body.phone !== '' && body.phone !== undefined) {
+      fliterParameters = fliterParameters.set('phone', body.phone);
+    }
+    if (body.address !== '' && body.address !== undefined) {
+      fliterParameters = fliterParameters.set('address', body.address);
+    }
+    if (body.sales_channel !== '' && body.sales_channel !== undefined) {
+      fliterParameters = fliterParameters.set('sales_channel', body.sales_channel);
+    }
+    if (body.start_date !== '' && body.start_date !== undefined) {
+      fliterParameters = fliterParameters.set('start_date', body.start_date);
+    }
+    if (body.end_date !== '' && body.end_date !== undefined) {
+      fliterParameters = fliterParameters.set('end_date', body.end_date);
+    }
+    if (body.serial_no !== '' && body.serial_no !== undefined) {
+      fliterParameters = fliterParameters.set('serial_no', body.serial_no);
+    }
+    console.log(fliterParameters);
+
+    return this.http.get<any>('/ems/order/getList/filter', { params: fliterParameters }).pipe(
+      catchError((err) => {
+        return throwRxError(err);
+      })
+    );
+  }
+
+  setFliteredOrder(fliteredOrder: any) {
+    this.fliteredOrder$.next(fliteredOrder);
+  }
+
+  getFliteredOrder() {
+    return this.fliteredOrder$;
+  }
+
+  /**
+   * 搜尋 repair_form
+   * get api /ems/repair_form/getList/filter
+   * @returns
+   */
+  fliterRepairFormApi(body: any) {
+    let fliterParameters = new HttpParams();
+
+    if (body.user_name !== '' && body.user_name !== undefined) {
+      fliterParameters = fliterParameters.set('user_name', body.user_name);
+    }
+
+    if (body.phone !== '' && body.phone !== undefined) {
+      fliterParameters = fliterParameters.set('phone', body.phone);
+    }
+    if (body.address !== '' && body.address !== undefined) {
+      fliterParameters = fliterParameters.set('address', body.address);
+    }
+    if (body.e_mail !== '' && body.e_mail !== undefined) {
+      fliterParameters = fliterParameters.set('e_mail', body.e_mail);
+    }
+    if (body.start_date !== '' && body.start_date !== undefined) {
+      fliterParameters = fliterParameters.set('start_date', body.start_date);
+    }
+    if (body.end_date !== '' && body.end_date !== undefined) {
+      fliterParameters = fliterParameters.set('end_date', body.end_date);
+    }
+    if (body.serial_no !== '' && body.serial_no !== undefined) {
+      fliterParameters = fliterParameters.set('serial_no', body.serial_no);
+    }
+    console.log(fliterParameters);
+
+    return this.http.get<any>('/ems/repair_form/getList/filter', { params: fliterParameters }).pipe(
+      catchError((err) => {
+        return throwRxError(err);
+      })
+    );
+  }
+
+  setFliteredRepairForm(fliteredRepairForm: any) {
+    this.fliteredRepairForm$.next(fliteredRepairForm);
+  }
+
+  getFliteredRepairForm() {
+    return this.fliteredRepairForm$;
+  }
+
+  createBreadcrumb(breadcrumb) {
+    // if(breadcrumb.label=='搜尋結果'){
+    //   const label = '首頁';
+    //   const params = null;
+    //   const url = '/equipment-management/news';
+    //   const newbreadcrumb =  { label,params, url };
+    //   this.breadcrumbs=[];
+    //   this.breadcrumbs.push(newbreadcrumb)
+    //   this.updateBreadcrumbs(breadcrumb)
+    // }else{
+    this.updateBreadcrumbs(breadcrumb);
+    // }
+  }
+
+  updateBreadcrumbs(newBreadcrumb: any) {
+    // const index = this.breadcrumbs.findIndex(breadcrumb => breadcrumb.url.includes(newBreadcrumb.url));
+    // if (index !== -1) { //路徑完全相同
+    //   if (newBreadcrumb.url == '/equipment-management/news') {
+    //     this.breadcrumbs = [];
+    //     this.breadcrumbs.push(newBreadcrumb)
+    //   } else {
+    //     this.breadcrumbs.splice(index, this.breadcrumbs.length - index, newBreadcrumb);
+    //   }
+    // } else { //第二層路徑是否重複出現
+    const index = this.breadcrumbs.findIndex((breadcrumb) => {
+      const previousSecondParam = this.getSecondParam(breadcrumb.url);
+      const newSecondParam = this.getSecondParam(newBreadcrumb.url);
+      return previousSecondParam === newSecondParam;
+    });
+
+    if (index !== -1) {
+      //重複
+      this.breadcrumbs.splice(index, this.breadcrumbs.length - index, newBreadcrumb);
+    } else {
+      if (newBreadcrumb.url == '/equipment-management/news') {
+        this.breadcrumbs.splice(0, this.breadcrumbs.length, newBreadcrumb);
+      } else if (newBreadcrumb.label == '搜尋結果') {
+        this.breadcrumbs.splice(1, this.breadcrumbs.length - 1, newBreadcrumb);
+      } else {
+        this.breadcrumbs.push(newBreadcrumb);
+      }
+    }
+    this.breadcrumbs$.next(this.breadcrumbs);
+  }
+
+  getSecondParam(url: string): string {
+    url = url.replace(/\?.*$/, ''); //使用正規表達式移除查詢參數
+    const parts = url.split('/');
+    if (parts.length >= 2) {
+      return parts[2];
+    }
+    return '';
+  }
+
+  saveBreadcrumbsToLocalStorage() {
+    localStorage.setItem('breadcrumbs', JSON.stringify(this.breadcrumbs));
+    console.log(this.breadcrumbs);
+  }
+
+  getBreadcrumbs() {
+    return this.breadcrumbs$;
   }
 }

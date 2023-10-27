@@ -28,25 +28,25 @@
       <div class="detail_info_wrap">
         <div class="detail_info_title">銷貨單號</div>
         <div class="content_wrap">
-          <div class="uneditable_content">{{ orderInfo.order_no }}</div>
+          <div class="editable_content">{{ orderInfo.order_no }}</div>
         </div>
       </div>
       <div class="detail_info_wrap">
         <div class="detail_info_title">名稱</div>
         <div class="content_wrap">
-          <div class="uneditable_content">{{ orderInfo.user_name }}</div>
+          <div class="editable_content">{{ orderInfo.user_name }}</div>
         </div>
       </div>
       <div class="detail_info_wrap">
         <div class="detail_info_title">電話</div>
         <div class="content_wrap">
-          <div class="uneditable_content">{{ orderInfo.phone }}</div>
+          <div class="editable_content">{{ orderInfo.phone }}</div>
         </div>
       </div>
       <div class="detail_info_wrap">
         <div class="detail_info_title">地址</div>
         <div class="content_wrap">
-          <div class="uneditable_content">{{ orderInfo.address }}</div>
+          <div class="editable_content">{{ orderInfo.address }}</div>
         </div>
       </div>
       <!-- 下拉式編輯 -->
@@ -96,72 +96,77 @@
 
   <!-- 銷貨單-設備列表 -->
   <section class="content-box section">
-    <div class="section_title">設備列表</div>
-    <div class="section_title"></div>
-
-    <div class="time_wrap" *ngIf="orderProds && orderProds[0]">
-      <div class="time_name">
-        <div class="establish_update_time">
-          <div class="title">建立時間</div>
-          <div class="date_time">{{ orderProds[0]?.create_time }}</div>
+    <div class="section_header">
+      <div class="section_title">設備列表</div>
+      <div class="time_wrap" *ngIf="orderProds && orderProds[0]">
+        <div class="time_name">
+          <div class="establish_update_time">
+            <div class="title">建立時間</div>
+            <div class="date_time">{{ orderProds[0]?.create_time }}</div>
+          </div>
+          <div class="establish_update_time">
+            <div class="title">人員:</div>
+            <div class="name">{{ orderProds[0]?.create_name }}</div>
+          </div>
         </div>
-        <div class="establish_update_time">
-          <div class="title">人員:</div>
-          <div class="name">{{ orderProds[0]?.create_name }}</div>
-        </div>
+        <!-- <div class="time_name" *ngIf="ProdLastModify.modify_time">
+          <div class="establish_update_time">
+            <div class="title">最後修改</div>
+            <div class="date_time">{{ ProdLastModify.modify_time }}</div>
+          </div>
+          <div class="establish_update_time">
+            <div class="title">人員:</div>
+            <div class="name">{{ ProdLastModify.modify_name }}</div>
+          </div>
+        </div> -->
       </div>
-      <!-- <div class="time_name" *ngIf="ProdLastModify.modify_time">
-        <div class="establish_update_time">
-          <div class="title">最後修改</div>
-          <div class="date_time">{{ ProdLastModify.modify_time }}</div>
-        </div>
-        <div class="establish_update_time">
-          <div class="title">人員:</div>
-          <div class="name">{{ ProdLastModify.modify_name }}</div>
-        </div>
-      </div> -->
     </div>
 
     <ng-container *ngIf="orderProds; else noDataSection">
-      <ng-container *ngFor="let orderProd of orderProds | keyvalue; let i = index">
-        <div class="section_detail equip_list">
-          <div class="detail_info_wrap">
-            <div class="detail_info_title">序號</div>
-            <div class="content_wrap">
-              <div class="uneditable_content">{{ orderProds[i].serial_no }}</div>
-            </div>
-          </div>
-          <div class="detail_info_wrap">
-            <div class="detail_info_title">保固開始日</div>
-            <div class="content_wrap">
-              <div class="editable_content">{{ orderProds[i].warranty_start }}</div>
-            </div>
-          </div>
-          <div class="detail_info_wrap">
-            <div class="detail_info_title">保固結束日</div>
-            <div class="content_wrap">
-              <div class="editable_content">{{ orderProds[i].warranty_end }}</div>
-            </div>
-          </div>
-          <!-- 下拉式編輯 -->
-          <div class="detail_info_wrap">
-            <div class="detail_info_title">安裝狀態</div>
-            <div class="content_wrap">
-              <div class="editable_content">
-                {{ orderProds[i].install_type }}
+      <div class="section_content">
+        <ng-container *ngFor="let orderProd of orderProds | keyvalue; let i = index">
+          <div class="section_detail equip_list">
+            <div class="detail_info_wrap">
+              <div class="detail_info_title">序號</div>
+              <div
+                [routerLink]="['/equipment-management/equipment', orderProds[i].serial_no]"
+                class="content_wrap link"
+              >
+                <div class="uneditable_content">{{ orderProds[i].serial_no }}</div>
               </div>
             </div>
-          </div>
-          <div class="detail_info_wrap more_button">
-            <div
-              [routerLink]="['/equipment-management/equipment', orderProds[i].serial_no]"
-              class="device_system_button more_icon"
-            >
-              更多
+            <div class="detail_info_wrap">
+              <div class="detail_info_title">保固開始日</div>
+              <div class="content_wrap">
+                <div class="editable_content">{{ orderProds[i].warranty_start }}</div>
+              </div>
             </div>
+            <div class="detail_info_wrap">
+              <div class="detail_info_title">保固結束日</div>
+              <div class="content_wrap">
+                <div class="editable_content">{{ orderProds[i].warranty_end }}</div>
+              </div>
+            </div>
+            <!-- 下拉式編輯 -->
+            <div class="detail_info_wrap">
+              <div class="detail_info_title">安裝狀態</div>
+              <div class="content_wrap">
+                <div class="editable_content">
+                  {{ orderProds[i].install_type }}
+                </div>
+              </div>
+            </div>
+            <!-- <div class="detail_info_wrap more_button">
+              <div
+                [routerLink]="['/equipment-management/equipment', orderProds[i].serial_no]"
+                class="device_system_button more_icon"
+              >
+                更多
+              </div>
+            </div> -->
           </div>
-        </div>
-      </ng-container>
+        </ng-container>
+      </div>
     </ng-container>
     <ng-template #noDataSection>
       <div class="section_detail">無資料</div>
@@ -172,73 +177,125 @@
 
   <!-- 銷貨單-叫修資料 -->
   <section class="content-box section">
-    <div class="section_title">叫修資料</div>
-    <div class="time_wrap" *ngIf="orderFixReq && orderFixReq[0]">
-      <div class="time_name">
-        <div class="establish_update_time">
-          <div class="title">建立時間</div>
-          <div class="date_time">{{ orderFixReq[0].create_time }}</div>
+    <div class="section_header">
+      <div class="section_title">叫修資料</div>
+      <div class="time_wrap" *ngIf="orderFixReq">
+        <div class="time_name">
+          <div class="establish_update_time">
+            <div class="title">建立時間</div>
+            <div class="date_time">{{ orderFixReq[orderFixReq.length - 1]?.create_time }}</div>
+          </div>
+          <div class="establish_update_time">
+            <div class="title">人員:</div>
+            <div class="name">{{ orderFixReq[orderFixReq.length - 1]?.create_name }}</div>
+          </div>
         </div>
-        <div class="establish_update_time">
-          <div class="title">人員:</div>
-          <div class="name">{{ orderFixReq[0].create_name }}</div>
+        <div class="time_name" *ngIf="orderFixReq.length > 1">
+          <div class="establish_update_time">
+            <div class="title">最後修改</div>
+            <div class="date_time">
+              {{
+                orderFixReq[0]?.modify_time
+                  ? orderFixReq[0]?.modify_time
+                  : orderFixReq[0]?.create_time
+              }}
+            </div>
+          </div>
+          <div class="establish_update_time">
+            <div class="title">人員</div>
+            <div class="name">
+              {{
+                orderFixReq[0]?.modify_name
+                  ? orderFixReq[0]?.modify_name
+                  : orderFixReq[0]?.create_name
+              }}
+            </div>
+          </div>
         </div>
       </div>
-      <!-- <div class="time_name">
-        <div class="establish_update_time">
-          <div class="title">最後修改</div>
-          <div class="date_time">{{ orderFixReq.modify_time }}</div>
-        </div>
-        <div class="establish_update_time">
-          <div class="title">人員</div>
-          <div class="name">{{ orderFixReq.modify_name }}</div>
-        </div>
-      </div> -->
     </div>
     <ng-container *ngIf="orderFixReq; else noOrderFixReq">
-      <ng-container *ngFor="let FixReq of orderFixReq | keyvalue; let r = index">
-        <div class="section_detail">
-          <div class="detail_info_wrap">
-            <div class="detail_info_title">叫修單號</div>
-            <div
-              [routerLink]="[
-                '/equipment-management/maintenance-requirement',
-                orderFixReq[r].repair_id
-              ]"
-              class="content_wrap link"
-            >
-              <div class="uneditable_content">{{ orderFixReq[r].repair_id }}</div>
+      <div class="section_content">
+        <ng-container *ngFor="let FixReq of orderFixReq | keyvalue; let r = index">
+          <div class="section_detail">
+            <div class="detail_info_wrap">
+              <div class="detail_info_title">叫修單號</div>
+              <div
+                [routerLink]="[
+                  '/equipment-management/maintenance-requirement',
+                  orderFixReq[r].repair_id
+                ]"
+                class="content_wrap link"
+              >
+                <div class="uneditable_content">{{ orderFixReq[r].repair_id }}</div>
+              </div>
+            </div>
+            <div class="detail_info_wrap">
+              <div class="detail_info_title">名稱</div>
+              <div class="content_wrap">
+                <div class="editable_content">{{ orderFixReq[r].user_name }}</div>
+              </div>
+            </div>
+            <div class="detail_info_wrap">
+              <div class="detail_info_title">電話</div>
+              <div class="content_wrap">
+                <div class="editable_content">{{ orderFixReq[r].phone }}</div>
+              </div>
+            </div>
+            <div class="detail_info_wrap">
+              <div class="detail_info_title">地址</div>
+              <div class="content_wrap">
+                <div class="editable_content">{{ orderFixReq[r].address }}</div>
+              </div>
+            </div>
+            <div class="detail_info_wrap">
+              <div class="detail_info_title">狀態</div>
+              <div class="content_wrap">
+                <div
+                  class="editable_content check"
+                  [class.warning]="orderFixReq[r].status === 'undone'"
+                >
+                  {{ orderFixReq[r].status === 'done' ? '完成' : '未完成' }}
+                </div>
+              </div>
             </div>
           </div>
-
-          <div class="detail_info_wrap">
-            <div class="detail_info_title">名稱</div>
-            <div class="content_wrap">
-              <div class="uneditable_content">{{ orderFixReq[r].user_name }}</div>
+          <div class="section_detail">
+            <div class="detail_info_wrap">
+              <div class="detail_info_title">機台序號</div>
+              <ng-container
+                *ngIf="orderFixReq[r].serial_no && getSerialNoArray(orderFixReq[r].serial_no)"
+              >
+                <ng-container *ngFor="let item of getSerialNoArray(orderFixReq[r].serial_no)">
+                  <div
+                    [routerLink]="['/equipment-management/equipment', item]"
+                    class="content_wrap link serial_no_list"
+                  >
+                    <div class="uneditable_content">
+                      <span class="serial_no">{{ item }}</span>
+                    </div>
+                  </div>
+                </ng-container>
+              </ng-container>
+              <ng-container *ngIf="!orderFixReq[r].serial_no">
+                <div class="content_wrap">
+                  <div class="editable_content">
+                    <span class="serial_no">無</span>
+                  </div>
+                </div>
+              </ng-container>
             </div>
           </div>
-          <div class="detail_info_wrap">
-            <div class="detail_info_title">電話</div>
-            <div class="content_wrap">
-              <div class="uneditable_content">{{ orderFixReq[r].phone }}</div>
+          <div class="section_detail equip_list">
+            <div class="detail_info_wrap">
+              <div class="detail_info_title">問題描述</div>
+              <div class="memo_wrap">
+                <div class="memo_content">{{ orderFixReq[r].description }}</div>
+              </div>
             </div>
           </div>
-          <div class="detail_info_wrap">
-            <div class="detail_info_title">地址</div>
-            <div class="content_wrap">
-              <div class="uneditable_content">{{ orderFixReq[r].address }}</div>
-            </div>
-          </div>
-        </div>
-        <div class="section_detail equip_list">
-          <div class="detail_info_wrap">
-            <div class="detail_info_title">問題描述</div>
-            <div class="memo_wrap">
-              <div class="memo_content">{{ orderFixReq[r].description }}</div>
-            </div>
-          </div>
-        </div>
-      </ng-container>
+        </ng-container>
+      </div>
     </ng-container>
     <ng-template #noOrderFixReq>
       <div class="section_detail">無資料</div>
@@ -275,6 +332,7 @@
     <app-edit-maintenance-requirement
       [(editing)]="editFixReq"
       [(isNewForm)]="isNewForm"
+      [(prodSerialArray)]="prodSerialArray"
       (infoChange)="fetchOrderList()"
     >
     </app-edit-maintenance-requirement>

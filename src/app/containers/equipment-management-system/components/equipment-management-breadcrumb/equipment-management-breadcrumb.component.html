@@ -1,0 +1,40 @@
+<div class="section">
+  <nav class="breadcrumb_nav">
+    <ul class="breadcrumb_ul">
+      <ng-container *ngFor="let breadcrumb of breadcrumbs; last as isLast">
+        <li *ngIf="breadcrumb.label" class="breadcrumb_li">
+          <a class="link" (click)="routerTo(breadcrumb?.url)" *ngIf="!isLast"
+            >{{ breadcrumb.label }}
+            <ng-container *ngIf="breadcrumb?.params.order_no"
+              >- {{ breadcrumb?.params.order_no }}
+            </ng-container>
+            <ng-container *ngIf="breadcrumb?.params.repair_id"
+              >- {{ breadcrumb?.params.repair_id }}
+            </ng-container>
+            <ng-container *ngIf="breadcrumb?.params.id"
+              >- {{ breadcrumb?.params.id }}
+            </ng-container>
+            <ng-container *ngIf="breadcrumb?.params.equipment_sn"
+              >- {{ breadcrumb?.params.equipment_sn }}
+            </ng-container>
+          </a>
+          <ng-container *ngIf="isLast">
+            {{ breadcrumb.label }}
+            <ng-container *ngIf="breadcrumb?.params.order_no"
+              >- {{ breadcrumb?.params.order_no }}
+            </ng-container>
+            <ng-container *ngIf="breadcrumb?.params.repair_id"
+              >- {{ breadcrumb?.params.repair_id }}
+            </ng-container>
+            <ng-container *ngIf="breadcrumb?.params.id"
+              >- {{ breadcrumb?.params.id }}
+            </ng-container>
+            <ng-container *ngIf="breadcrumb?.params.equipment_sn"
+              >- {{ breadcrumb?.params.equipment_sn }}
+            </ng-container>
+          </ng-container>
+        </li>
+      </ng-container>
+    </ul>
+  </nav>
+</div>

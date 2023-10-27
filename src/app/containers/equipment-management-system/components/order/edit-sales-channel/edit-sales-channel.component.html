@@ -19,7 +19,7 @@
             *ngIf="salesChannelEditing.editing && salesChannelEditing.index === i"
             [class.input_channel]="salesChannelEditing.editing && salesChannelEditing.index === i"
             class="channel"
-            maxlength="128"
+            maxlength="32"
             [value]="salesChannel"
             (blur)="updateSalesChannelName(i, salesChannelInput.value)"
             (keyup.enter)="updateSalesChannelName(i, salesChannelInput.value)"
@@ -39,7 +39,7 @@
           #addChannelInput
           class="channel add_channel_input"
           [class.input_channel]="!salesChannelEditing.editing"
-          maxlength="128"
+          maxlength="32"
           (click)="cancelEditing()"
           (keyup.enter)="addSalesChannelName(addChannelInput.value)"
           (blur)="addSalesChannelName(addChannelInput.value)"
