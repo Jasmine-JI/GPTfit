@@ -81,7 +81,7 @@ export class RepairComponent implements OnInit, OnDestroy {
 
   setRepairInfo() {
     // console.log('id:', this.id);
-    this.repairInfo = this.fixReqInfo.repair_info.find((info) => info.id === this.id);
+    this.repairInfo = this.fixReqInfo?.repair_info?.find((info) => info.id === this.id);
 
     if (this.repairInfo.parts_replacement == 0) {
       //沒有換零件

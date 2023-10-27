@@ -28,7 +28,7 @@
       <div class="detail_info_wrap">
         <div class="detail_info_title">叫修單號</div>
         <div class="content_wrap">
-          <div class="uneditable_content">{{ repairForm.repair_id }}</div>
+          <div class="editable_content">{{ repairForm.repair_id }}</div>
         </div>
       </div>
       <div class="detail_info_wrap">
@@ -44,32 +44,59 @@
       <div class="detail_info_wrap">
         <div class="detail_info_title">名稱</div>
         <div class="content_wrap">
-          <div class="uneditable_content">{{ repairForm.user_name }}</div>
+          <div class="editable_content">{{ repairForm.user_name }}</div>
         </div>
       </div>
       <div class="detail_info_wrap">
         <div class="detail_info_title">電話</div>
         <div class="content_wrap">
-          <div class="uneditable_content">{{ repairForm.phone }}</div>
+          <div class="editable_content">{{ repairForm.phone }}</div>
         </div>
       </div>
       <div class="detail_info_wrap">
         <div class="detail_info_title">E-mail</div>
         <div class="content_wrap">
-          <div class="uneditable_content">{{ repairForm.e_mail }}</div>
+          <div *ngIf="repairForm.e_mail" class="editable_content">{{ repairForm.e_mail }}</div>
+          <div *ngIf="!repairForm.e_mail" class="editable_content">無</div>
         </div>
       </div>
       <div class="detail_info_wrap">
         <div class="detail_info_title">地址</div>
         <div class="content_wrap">
-          <div class="uneditable_content">{{ repairForm.address }}</div>
+          <div class="editable_content">{{ repairForm.address }}</div>
         </div>
       </div>
       <div class="detail_info_wrap">
         <div class="detail_info_title">處理狀態</div>
         <div class="content_wrap">
-          <div class="uneditable_content">{{ repairForm.status }}</div>
+          <div class="editable_content check" [class.warning]="repairForm.status === 'undone'">
+            {{ repairForm.status === 'done' ? '完成' : '未完成' }}
+          </div>
         </div>
+      </div>
+    </div>
+    <div class="section_detail">
+      <div class="detail_info_wrap">
+        <div class="detail_info_title">機台序號</div>
+        <ng-container *ngIf="repairForm.serial_no && fixReqSerialArray">
+          <ng-container *ngFor="let item of fixReqSerialArray">
+            <div
+              [routerLink]="['/equipment-management/equipment', item]"
+              class="content_wrap link serial_no_list"
+            >
+              <div class="uneditable_content">
+                <span class="serial_no">{{ item }}</span>
+              </div>
+            </div>
+          </ng-container>
+        </ng-container>
+        <ng-container *ngIf="!repairForm.serial_no">
+          <div class="content_wrap">
+            <div class="editable_content">
+              <span class="serial_no">無</span>
+            </div>
+          </div>
+        </ng-container>
       </div>
     </div>
     <div class="section_detail equip_list">
@@ -90,74 +117,75 @@
 
 <!-- 維修保養紀錄- -->
 <section class="content-box section">
-  <div class="section_title">維修保養紀錄</div>
-
-  <div class="time_wrap" *ngIf="repairInfos">
-    <div class="time_name">
-      <div class="establish_update_time">
-        <div class="title">建立時間</div>
-        <div class="date_time">{{ repairInfos[0]?.create_time }}</div>
+  <div class="section_header">
+    <div class="section_title">維修保養紀錄</div>
+    <div class="time_wrap" *ngIf="repairInfos">
+      <div class="time_name">
+        <div class="establish_update_time">
+          <div class="title">建立時間</div>
+          <div class="date_time">{{ repairInfos[repairInfos.length - 1]?.create_date }}</div>
+        </div>
+        <div class="establish_update_time">
+          <div class="title">人員:</div>
+          <div class="name">{{ repairInfos[repairInfos.length - 1]?.create_name }}</div>
+        </div>
       </div>
-      <div class="establish_update_time">
-        <div class="title">人員:</div>
-        <div class="name">{{ repairInfos[0]?.create_name }}</div>
-      </div>
-    </div>
-    <!-- <div class="time_name">
-        <div class="time_name" *ngIf="ProdLastModify.modify_time">
-          <div class="establish_update_time">
-            <div class="title">最後修改</div>
-            <div class="date_time">{{ productOrderRecord.modify_time }}</div>
-          </div>
-          <div class="establish_update_time">
-            <div class="title">人員:</div>
-            <div class="name">{{ productOrderRecord.modify_name }}</div>
+      <!-- <div class="time_name" *ngIf="repairInfos.length > 1">
+        <div class="establish_update_time">
+          <div class="title">最後修改</div>
+          <div class="date_time">{{ repairInfos[0]?.modify_date?repairInfos[0]?.modify_date :
+            repairInfos[0]?.create_date }}</div>
+        </div>
+        <div class="establish_update_time">
+          <div class="title">人員:</div>
+          <div class="name">{{ repairInfos[0]?.modify_name?repairInfos[0]?.modify_name : repairInfos[0]?.create_name }}
           </div>
         </div>
       </div> -->
+    </div>
   </div>
 
   <ng-container *ngIf="repairInfos; else noDataSection">
-    <ng-container *ngFor="let repair of repairInfos; let i = index">
-      <div class="section_detail equip_list">
-        <div class="detail_info_wrap">
-          <div class="detail_info_title">維修單號</div>
-          <div
-            [routerLink]="['/equipment-management/repair']"
-            [queryParams]="{ repair_id: repair.repair_id, id: repair.id }"
-            class="content_wrap link"
-          >
-            <div class="uneditable_content">{{ repair.id }}</div>
+    <div class="section_content">
+      <ng-container *ngFor="let repair of repairInfos; let i = index">
+        <div class="section_detail equip_list">
+          <div class="detail_info_wrap">
+            <div class="detail_info_title">維修單號</div>
+            <div
+              [routerLink]="['/equipment-management/repair', repair.id]"
+              [queryParams]="{ repair_id: repair.repair_id, id: repair.id }"
+              class="content_wrap link"
+            >
+              <div class="uneditable_content">{{ repair.id }}</div>
+            </div>
           </div>
-        </div>
-        <div class="detail_info_wrap">
-          <div class="detail_info_title">序號</div>
-          <div
-            [routerLink]="['/equipment-management/equipment', repair.serial_no]"
-            class="content_wrap link"
-          >
-            <div class="uneditable_content">{{ repair.serial_no }}</div>
+          <div class="detail_info_wrap">
+            <div class="detail_info_title">序號</div>
+            <div
+              [routerLink]="['/equipment-management/equipment', repair.serial_no]"
+              class="content_wrap link"
+            >
+              <div class="uneditable_content">{{ repair.serial_no }}</div>
+            </div>
           </div>
-        </div>
-
-        <div class="detail_info_wrap">
-          <div class="detail_info_title">維修日期</div>
-          <div class="content_wrap">
-            <div class="uneditable_content">{{ repair.repair_date }}</div>
+          <div class="detail_info_wrap">
+            <div class="detail_info_title">維修日期</div>
+            <div class="content_wrap">
+              <div class="editable_content">{{ repair.repair_date }}</div>
+            </div>
           </div>
-        </div>
-
-        <!-- 下拉式編輯 -->
-        <div class="detail_info_wrap">
-          <div class="detail_info_title">類型</div>
-          <div class="content_wrap">
-            <div class="editable_content">
-              {{ repair.repair_type }}
+          <!-- 下拉式編輯 -->
+          <div class="detail_info_wrap">
+            <div class="detail_info_title">類型</div>
+            <div class="content_wrap">
+              <div class="editable_content">
+                {{ repair.repair_type }}
+              </div>
             </div>
           </div>
         </div>
-      </div>
-    </ng-container>
+      </ng-container>
+    </div>
   </ng-container>
   <ng-template #noDataSection>
     <div class="section_detail">無資料</div>
@@ -166,7 +194,7 @@
 </section>
 
 <!-- 編輯_叫修單 -->
-<ng-container *ngIf="repairForm">
+<ng-container *ngIf="editFixReq">
   <app-edit-maintenance-requirement
     [(editing)]="editFixReq"
     [(isNewForm)]="isNewForm"
@@ -182,6 +210,7 @@
     [(editing)]="editRepair"
     [(isNewForm)]="isNewForm"
     [repair_id]="repairForm.repair_id"
+    [fixReqSerialArray]="fixReqSerialArray"
     (infoChange)="fetchFixReqList()"
   >
   </app-edit-repair>

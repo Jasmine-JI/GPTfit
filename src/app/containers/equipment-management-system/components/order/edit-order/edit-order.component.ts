@@ -1,4 +1,4 @@
-import { CommonModule, NgIf } from '@angular/common';
+import { CommonModule, NgFor, NgIf } from '@angular/common';
 import {
   Component,
   ElementRef,
@@ -11,7 +11,7 @@ import {
   SimpleChanges,
   ViewChild,
 } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { FormBuilder, FormsModule, Validators } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import _, { cloneDeep } from 'lodash';
 import { Subject, takeUntil } from 'rxjs';
@@ -24,13 +24,13 @@ import { EditSalesChannelComponent } from '../edit-sales-channel/edit-sales-chan
 @Component({
   selector: 'app-edit-order',
   standalone: true,
-  imports: [CommonModule, NgIf, FormsModule, MatIconModule, EditSalesChannelComponent],
+  imports: [CommonModule, NgFor, NgIf, FormsModule, MatIconModule, EditSalesChannelComponent],
   templateUrl: './edit-order.component.html',
   styleUrls: ['./edit-order.component.scss'],
 })
 export class EditOrderComponent implements OnInit, OnChanges, OnDestroy {
   @ViewChild('fileInput') fileInput: ElementRef;
-
+  // orderForm: FormGroup;
   @Input() editing: boolean;
   @Input() isNewForm: boolean;
   @Output() editingChange = new EventEmitter();
@@ -39,6 +39,13 @@ export class EditOrderComponent implements OnInit, OnChanges, OnDestroy {
 
   orderDetail: orderListResponse;
   modifyCteateName = this.userService.getUser().nickname;
+
+  orderForm = this.formBuilder.group({
+    order_no: ['', Validators.required],
+    user_name: ['', Validators.required],
+    phone: ['', Validators.required],
+    address: ['', Validators.required],
+  });
 
   orderInfo = {
     order_no: null,
@@ -74,15 +81,14 @@ export class EditOrderComponent implements OnInit, OnChanges, OnDestroy {
 
   constructor(
     private userService: UserService,
-    private equipmentManagementService: EquipmentManagementService
+    private equipmentManagementService: EquipmentManagementService,
+    private formBuilder: FormBuilder
   ) {}
 
-  ngOnInit(): void {
-    this.fileNames = [];
-  }
+  ngOnInit(): void {}
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes.isNewForm) {
+    if (changes.isNewForm || changes.editing) {
       this.judgeEdmitMode();
       this.textLength = this.orderInfo.memo.length;
     }
@@ -106,7 +112,6 @@ export class EditOrderComponent implements OnInit, OnChanges, OnDestroy {
         //新增視窗
         // console.log('新增銷貨單');
         this.originOrderInfo = cloneDeep(this.orderInfo);
-        this.setFileArray();
       } else {
         //修改視窗
         // console.log('修改銷貨單');
@@ -175,7 +180,7 @@ export class EditOrderComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   setFileArray() {
-    if (this.orderInfo.attach_file) {
+    if (this.orderInfo && this.orderInfo.attach_file) {
       if (
         this.orderInfo.attach_file === 'None' ||
         this.orderInfo.attach_file === null ||
@@ -183,12 +188,16 @@ export class EditOrderComponent implements OnInit, OnChanges, OnDestroy {
       ) {
         this.fileNames = [];
         this.orderInfo.attach_file = '';
+        console.log(this.fileNames);
       } else {
         this.filesMax = this.orderInfo.attach_file.length > this.filesMaxLength ? true : false;
         this.fileNames = this.orderInfo.attach_file.split(',');
+        console.log(this.fileNames);
       }
     } else {
+      console.log(this.fileNames);
       this.fileNames = [];
+      console.log(this.fileNames);
     }
   }
 
@@ -245,10 +254,10 @@ export class EditOrderComponent implements OnInit, OnChanges, OnDestroy {
         this.orderDetail = res;
         if (this.orderDetail) {
           // console.log('orderDetail:', this.orderDetail.order[0]);
-          const targetOrderInfo = this.orderDetail.order[0];
-          this.orderInfo = cloneDeep(targetOrderInfo);
-          this.originOrderInfo = cloneDeep(targetOrderInfo);
+          // const targetOrderInfo = this.orderDetail.order[0];
+          this.orderInfo = cloneDeep(this.orderDetail.order[0]);
           this.setFileArray();
+          this.originOrderInfo = cloneDeep(this.orderDetail.order[0]);
         }
       });
   }
@@ -278,21 +287,29 @@ export class EditOrderComponent implements OnInit, OnChanges, OnDestroy {
 
   checkoutContent() {
     const { order_no, user_name, phone, address } = this.orderInfo;
-
-    if (order_no === null) {
-      alert('請輸入銷貨單號');
-    } else if (user_name === '') {
-      alert('請輸入名稱');
-    } else if (phone === null) {
-      alert('請輸入電話');
-    } else if (address === '') {
-      alert('請輸入地址');
-    } else {
+    this.orderForm.patchValue({
+      order_no: order_no,
+      user_name: user_name,
+      phone: phone,
+      address: address,
+    });
+    // if (order_no === null) {
+    //   alert('請輸入銷貨單號');
+    // } else if (user_name === '') {
+    //   alert('請輸入名稱');
+    // } else if (phone === null) {
+    //   alert('請輸入電話');
+    // } else if (address === '') {
+    //   alert('請輸入地址');
+    // } else {
+    if (this.orderForm.valid) {
       if (this.isNewForm) {
         this.addOrderInfo();
       } else {
         this.updateOrderInfo();
       }
+    } else {
+      alert('請檢查填寫欄位');
     }
   }
 
@@ -426,6 +443,7 @@ export class EditOrderComponent implements OnInit, OnChanges, OnDestroy {
     this.editing = false;
     this.closeAllDropdown();
     this.closeAllEdit();
+    this.setFileArray();
     this.editingChange.emit(this.editing);
   }
 

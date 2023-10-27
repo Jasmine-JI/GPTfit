@@ -111,10 +111,55 @@ textarea {
   }
 }
 
+.content_wrap:has(> .online),
+.content_wrap:has(> .offline),
+.content_wrap:has(> .check),
+.content_wrap:has(> .warning) {
+  padding-left: 22px;
+}
+
 // prouct status : oneline
 .online {
+  padding-left: 3px;
+
   &::before {
-    background: $oneline-color;
+    content: '';
+    position: absolute;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 8px;
+    height: 8px;
+    right: 100%;
+    border-radius: 50%;
+    background: #53f982;
+    box-shadow: inset 1px 1px 5px 0px #d3d3d3;
+  }
+}
+
+.offline {
+  &::before {
+    background: $main-color;
+  }
+}
+
+.check {
+  padding-left: 3px;
+
+  &::before {
+    content: '\e92a';
+    position: absolute;
+    font-family: 'icomoon';
+    top: 50%;
+    transform: translate(-100%, -50%);
+    font-size: 20px;
+    color: #53f982;
+  }
+}
+
+.warning {
+  &::before {
+    content: '\e961';
+    color: $main-color;
   }
 }
 
@@ -148,6 +193,12 @@ textarea {
   color: $tile-color2;
 }
 
+.dropdown_ul {
+  max-height: 20vh;
+  height: fit-content;
+  overflow: auto;
+}
+
 .dropdown_list {
   cursor: pointer;
   overflow-wrap: anywhere;
@@ -167,6 +218,7 @@ textarea {
   justify-content: space-between;
   align-items: center;
   flex-grow: 1;
+  overflow-wrap: anywhere;
 
   &::after {
     content: '\e905';
@@ -261,6 +313,7 @@ textarea {
 .save_button_icon {
   margin-right: 5px;
   font-size: 20px;
+  line-height: 1.2;
 }
 
 .icon_button {
@@ -273,30 +326,30 @@ textarea {
   position: absolute;
   top: 0;
   right: 0;
-  padding: 20px 0;
+  padding: 15px 0;
   line-height: 1;
 
   &::before {
     content: '\e90b';
     font-family: 'icomoon';
+    vertical-align: baseline;
   }
 }
 
 .delete_img_button {
   padding: 0px;
-  width: 18px;
-  height: 18px;
   color: $main-color;
+}
 
-  &:hover {
-    color: #ffffff;
-    border-radius: 50%;
-    border: 1px solid #ffffff;
-    background-color: #7a7a7aab;
-  }
+.delete_img_button:hover.close_button::before {
+  color: #ffffff;
+  border-radius: 50%;
+  border: 1px solid #ffffff;
+  background-color: #7a7a7aab;
 }
 
 .edit_section {
+  z-index: 2;
   max-height: 90vh;
   overflow: auto;
   max-width: 620px;
@@ -344,6 +397,8 @@ textarea {
       .input {
         flex-grow: 1;
         height: fit-content;
+        display: flex;
+        flex-wrap: wrap;
       }
     }
   }
@@ -359,6 +414,17 @@ textarea {
   padding: 20px 0;
   background: white;
   z-index: 1;
+}
+
+.section_header {
+  position: sticky;
+  padding-bottom: 15px;
+}
+
+.section_content {
+  height: fit-content;
+  max-height: 55vh;
+  overflow: auto;
 }
 
 .input_select {
@@ -479,4 +545,38 @@ textarea {
 .link,
 .pointer {
   cursor: pointer;
+}
+
+.error_message {
+  font-size: 14px;
+  color: $main-color;
+}
+
+.serial_input {
+  position: relative;
+  width: 50%;
+}
+
+.serial_input:has(> input) {
+  flex-grow: 1;
+
+  input {
+    width: 100%;
+  }
+}
+
+.serial_no_list {
+  float: left;
+
+  & + .serial_no_list {
+    margin-inline-start: 10px;
+  }
+}
+
+.replace_part {
+  float: left;
+
+  & + .replace_part {
+    margin-inline-start: 10px;
+  }
 }

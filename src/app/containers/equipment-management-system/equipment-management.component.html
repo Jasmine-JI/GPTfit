@@ -1,4 +1,9 @@
 <div class="router_outlet">
-  <app-search-bar *ngIf="isLogin" [avatarUrl]="avatarUrl"></app-search-bar>
+  <div class="header_nav">
+    <app-search-bar *ngIf="isLogin" [avatarUrl]="avatarUrl"></app-search-bar>
+  </div>
+
+  <app-equipment-management-breadcrumb *ngIf="isLogin"></app-equipment-management-breadcrumb>
+
   <router-outlet></router-outlet>
 </div>

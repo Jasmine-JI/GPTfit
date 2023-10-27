@@ -9,11 +9,16 @@ import {
   OnDestroy,
   OnInit,
   Output,
-  Renderer2,
   SimpleChanges,
   ViewChild,
 } from '@angular/core';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import {
+  FormBuilder,
+  FormGroup,
+  FormsModule,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
 import {
   MAT_MOMENT_DATE_ADAPTER_OPTIONS,
   MomentDateAdapter,
@@ -76,7 +81,6 @@ const DATE_FORMAT = {
 })
 export class EditEquipmentComponent implements OnInit, OnChanges, OnDestroy {
   @ViewChild('fileInput') fileInput: ElementRef;
-
   @Input() editing: boolean;
   @Input() isNewForm: boolean;
   @Input() rigisterProd: boolean;
@@ -90,6 +94,14 @@ export class EditEquipmentComponent implements OnInit, OnChanges, OnDestroy {
   private ngUnsubscribe = new Subject();
   orderDetail: orderListResponse;
   modifyCteateName = this.userService.getUser().nickname;
+
+  prodForm = this.formBuilder.group({
+    serial_no: ['', Validators.required],
+    order_no: ['', Validators.required],
+    install_date: ['', Validators.required],
+    warranty_start: ['', Validators.required],
+    warranty_end: ['', Validators.required],
+  });
 
   orderProd = {
     index_id: null,
@@ -147,7 +159,7 @@ export class EditEquipmentComponent implements OnInit, OnChanges, OnDestroy {
   constructor(
     private userService: UserService,
     private equipmentManagementService: EquipmentManagementService,
-    private renderer: Renderer2
+    private formBuilder: FormBuilder
   ) {}
 
   ngOnInit(): void {
@@ -382,18 +394,25 @@ export class EditEquipmentComponent implements OnInit, OnChanges, OnDestroy {
     this.orderProd.status =
       return_exchange === '' || return_exchange === 'None' ? 'online' : 'offline';
     // console.log('lenth:', serial_no.length);
-
-    if (serial_no.length == 0) {
-      alert('請輸入產品序號');
-    } else if (order_no == null || order_no === '') {
-      alert('請輸入銷貨單號');
-    } else if (install_date === null || install_date === '') {
-      alert('請輸入安裝日期');
-    } else if (warranty_start === null || warranty_start === '') {
-      alert('請輸入保固開始日期');
-    } else if (warranty_end === null || warranty_end === '') {
-      alert('請輸入保固結束日期');
-    } else {
+    this.prodForm.patchValue({
+      serial_no: serial_no,
+      order_no: order_no,
+      install_date: install_date,
+      warranty_start: warranty_start,
+      warranty_end: warranty_end,
+    });
+    // if (serial_no.length == 0) {
+    //   alert('請輸入產品序號');
+    // } else if (order_no == null || order_no === '') {
+    //   alert('請輸入銷貨單號');
+    // } else if (install_date === null || install_date === '') {
+    //   alert('請輸入安裝日期');
+    // } else if (warranty_start === null || warranty_start === '') {
+    //   alert('請輸入保固開始日期');
+    // } else if (warranty_end === null || warranty_end === '') {
+    //   alert('請輸入保固結束日期');
+    // } else {
+    if (this.prodForm.valid) {
       if (this.isNewForm) {
         this.orderProd.product_type = this.determineProductType(serial_no);
         if (!this.rigisterProd) {
@@ -424,6 +443,8 @@ export class EditEquipmentComponent implements OnInit, OnChanges, OnDestroy {
         //修改產品
         this.updateOrderInfo();
       }
+    } else {
+      alert('請檢查填寫欄位');
     }
   }
 

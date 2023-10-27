@@ -25,6 +25,7 @@ export class MaintenanceRequirementComponent implements OnInit, OnDestroy {
   private ngUnsubscribe = new Subject();
   fixReqInfo: any;
   repairForm: any;
+  fixReqSerialArray: string[] = []; //叫修單之產品序號list
   repairInfos: any;
   fixReqParameters: fixReqListParameters;
 
@@ -74,6 +75,7 @@ export class MaintenanceRequirementComponent implements OnInit, OnDestroy {
 
   setRepairFormInfo() {
     this.repairForm = this.fixReqInfo.repair_form[0];
+    this.fixReqSerialArray = this.repairForm.serial_no?.split(',');
     // console.log('repairForm:',this.repairForm);
   }
 

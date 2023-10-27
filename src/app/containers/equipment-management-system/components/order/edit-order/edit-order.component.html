@@ -1,104 +1,136 @@
 <ng-container *ngIf="editing">
-  <div class="edit_section">
-    <div class="edit_header">
-      <div *ngIf="isNewForm" class="title">銷貨單新增</div>
-      <div *ngIf="!isNewForm" class="title">銷貨單編輯</div>
-      <div (click)="clickCloseBtn()" class="close_button icon_button"></div>
-    </div>
-    <div class="edit_detail">
-      <div class="label_input">
-        <label class="edit_item_label">銷貨單號</label>
-        <input
-          class="input"
-          maxlength="11"
-          oninput="value=value.replace(/[^\d]/g,'')"
-          [class.input_uneditable]="!isNewForm"
-          [(ngModel)]="orderInfo.order_no"
-          placeholder="Order No"
-          [disabled]="!isNewForm"
-        />
+  <form (ngSubmit)="clickSaveBtn()" #orderForm="ngForm">
+    <div class="edit_section">
+      <div class="edit_header">
+        <div *ngIf="isNewForm" class="title">銷貨單新增</div>
+        <div *ngIf="!isNewForm" class="title">銷貨單編輯</div>
+        <div (click)="clickCloseBtn()" class="close_button icon_button"></div>
       </div>
-      <div class="label_input">
-        <label class="edit_item_label">名稱</label>
-        <input
-          required
-          class="input"
-          maxlength="128"
-          [(ngModel)]="orderInfo.user_name"
-          placeholder="User Name"
-        />
-      </div>
-      <div class="label_input">
-        <label class="edit_item_label">電話</label>
-        <input
-          class="input"
-          maxlength="32"
-          oninput="value=value.replace(/[^\d]/g,'')"
-          [(ngModel)]="orderInfo.phone"
-          placeholder="Phone"
-        />
-      </div>
-      <div class="label_input">
-        <label class="edit_item_label">地址</label>
-        <input
-          class="input"
-          maxlength="128"
-          [(ngModel)]="orderInfo.address"
-          placeholder="Address"
-        />
-      </div>
-      <div class="label_input">
-        <label class="edit_item_label">銷售渠道</label>
-        <div class="input_select input">
+      <div class="edit_detail">
+        <div class="label_input">
+          <label class="edit_item_label">銷貨單號</label>
+          <input
+            class="input"
+            maxlength="11"
+            oninput="value=value.replace(/[^\d]/g,'')"
+            [class.input_uneditable]="!isNewForm"
+            [(ngModel)]="orderInfo.order_no"
+            name="order_no"
+            placeholder="Order No"
+            [disabled]="!isNewForm"
+            required
+          />
           <div
-            class="foldable"
-            [class.unfold]="showSalesChannelDropdown"
-            (click)="toggleSalesChannelDropdown()"
+            class="error_message"
+            *ngIf="orderForm.submitted && orderForm.form.controls.order_no.hasError('required')"
           >
-            {{ orderInfo.sales_channel }}
+            必填
           </div>
-          <div *ngIf="showSalesChannelDropdown" class="toggle_dropdown">
-            <ul>
-              <li
-                *ngFor="let salesChannel of salesChannelList"
-                (click)="selectChannel(salesChannel)"
-                class="dropdown_list"
-              >
-                {{ salesChannel }}
-              </li>
-            </ul>
-          </div>
-          <i
-            (click)="editForm('salesChannel')"
-            class="icon-svg_web-icon_p2_026-more icon_button"
-          ></i>
         </div>
-      </div>
-      <div class="memo_label_input">
-        <label class="edit_item_label">備註</label>
-        <textarea
-          (input)="countTextLength($event.target.value)"
-          maxlength="200"
-          class="input"
-          [(ngModel)]="orderInfo.memo"
-          placeholder="memo"
-        ></textarea>
-        <span class="textLength">{{ textLength }}/200</span>
-      </div>
-      <div class="img_label_input">
-        <label class="edit_item_label">附加檔案</label>
 
-        <input
-          #fileInput
-          (change)="previewImg(fileInput)"
-          type="file"
-          id="img_input"
-          name="img_input"
-          accept=".jpg,.jpeg,.png,.gif"
-        />
+        <div class="label_input">
+          <label class="edit_item_label">名稱</label>
+          <input
+            class="input"
+            maxlength="128"
+            [(ngModel)]="orderInfo.user_name"
+            placeholder="User Name"
+            name="user_name"
+            required
+          />
+          <div
+            class="error_message"
+            *ngIf="orderForm.submitted && orderForm.form.controls.user_name.hasError('required')"
+          >
+            必填
+          </div>
+        </div>
+        <div class="label_input">
+          <label class="edit_item_label">電話</label>
+          <input
+            class="input"
+            maxlength="32"
+            oninput="value=value.replace(/[^\d]/g,'')"
+            [(ngModel)]="orderInfo.phone"
+            name="phone"
+            placeholder="Phone"
+            required
+          />
+          <div
+            class="error_message"
+            *ngIf="orderForm.submitted && orderForm.form.controls.phone.hasError('required')"
+          >
+            必填
+          </div>
+        </div>
+        <div class="label_input">
+          <label class="edit_item_label">地址</label>
+          <input
+            class="input"
+            maxlength="128"
+            [(ngModel)]="orderInfo.address"
+            name="address"
+            placeholder="Address"
+            required
+          />
+          <div
+            class="error_message"
+            *ngIf="orderForm.submitted && orderForm.form.controls.address.hasError('required')"
+          >
+            必填
+          </div>
+        </div>
+        <div class="label_input">
+          <label class="edit_item_label">銷售渠道</label>
+          <div class="input_select input">
+            <div
+              class="foldable"
+              [class.unfold]="showSalesChannelDropdown"
+              (click)="toggleSalesChannelDropdown()"
+            >
+              {{ orderInfo.sales_channel }}
+            </div>
+            <div *ngIf="showSalesChannelDropdown" class="toggle_dropdown">
+              <ul class="dropdown_ul">
+                <li
+                  *ngFor="let salesChannel of salesChannelList"
+                  (click)="selectChannel(salesChannel)"
+                  class="dropdown_list"
+                >
+                  {{ salesChannel }}
+                </li>
+              </ul>
+            </div>
+            <i
+              (click)="editForm('salesChannel')"
+              class="icon-svg_web-icon_p2_026-more icon_button"
+            ></i>
+          </div>
+        </div>
+        <div class="memo_label_input">
+          <label class="edit_item_label">備註</label>
+          <textarea
+            (input)="countTextLength($event.target.value)"
+            maxlength="200"
+            class="input"
+            [(ngModel)]="orderInfo.memo"
+            name="memo"
+            placeholder="memo"
+          ></textarea>
+          <span class="textLength">{{ textLength }}/200</span>
+        </div>
+        <div class="img_label_input">
+          <label class="edit_item_label">附加檔案</label>
 
-        <div class="img_list">
-          <ng-container *ngIf="orderInfo.attach_file !== ''">
+          <input
+            #fileInput
+            (change)="previewImg(fileInput)"
+            type="file"
+            id="img_input"
+            name="img_input"
+            accept=".jpg,.jpeg,.png,.gif"
+          />
+          <div class="img_list">
             <ng-container *ngFor="let fileName of fileNames; let index = i">
               <div class="img_wrap">
                 <img
@@ -110,21 +142,21 @@
                 <div (click)="deleteImg(fileName)" class="close_button delete_img_button"></div>
               </div>
             </ng-container>
-          </ng-container>
-          <label *ngIf="!filesMax" class="img_wrap" for="img_input">
-            <div class="add_icon add_img_circle"></div>
-          </label>
-          <label *ngIf="filesMax">
-            <div>圖片數量達上限</div>
-          </label>
+            <label *ngIf="!filesMax" class="img_wrap" for="img_input">
+              <div class="add_icon add_img_circle"></div>
+            </label>
+            <label *ngIf="filesMax">
+              <div>圖片數量達上限</div>
+            </label>
+          </div>
         </div>
       </div>
-    </div>
 
-    <div (click)="clickSaveBtn()" class="save_button">
-      <mat-icon class="save_button_icon">save</mat-icon>儲存
+      <button type="submit" class="save_button">
+        <mat-icon class="save_button_icon">save</mat-icon>儲存
+      </button>
     </div>
-  </div>
+  </form>
 </ng-container>
 
 <!-- 編輯-銷售渠道 -->

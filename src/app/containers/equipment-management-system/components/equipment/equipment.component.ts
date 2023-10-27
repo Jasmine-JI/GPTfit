@@ -381,7 +381,7 @@ export class EquipmentComponent implements OnInit, OnDestroy {
   }
 
   setProdInfo() {
-    this.productOrderRecord = this.productDetail.order;
+    this.productOrderRecord = this.productDetail.order?.reverse();
     this.productRepairs = this.productDetail.repair?.reverse();
     this.equipRecord = this.productDetail.equipment;
     this.equipmentLog = this.productDetail.error_code;

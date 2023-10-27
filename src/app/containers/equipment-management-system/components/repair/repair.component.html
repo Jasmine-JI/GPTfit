@@ -44,25 +44,25 @@
       <div class="detail_info_wrap">
         <div class="detail_info_title">名稱</div>
         <div class="content_wrap">
-          <div class="uneditable_content">{{ repairForm.user_name }}</div>
+          <div class="editable_content">{{ repairForm.user_name }}</div>
         </div>
       </div>
       <div class="detail_info_wrap">
         <div class="detail_info_title">電話</div>
         <div class="content_wrap">
-          <div class="uneditable_content">{{ repairForm.phone }}</div>
+          <div class="editable_content">{{ repairForm.phone }}</div>
         </div>
       </div>
       <div class="detail_info_wrap">
         <div class="detail_info_title">E-mail</div>
         <div class="content_wrap">
-          <div class="uneditable_content">{{ repairForm.e_mail }}</div>
+          <div class="editable_content">{{ repairForm.e_mail }}</div>
         </div>
       </div>
       <div class="detail_info_wrap">
         <div class="detail_info_title">地址</div>
         <div class="content_wrap">
-          <div class="uneditable_content">{{ repairForm.address }}</div>
+          <div class="editable_content">{{ repairForm.address }}</div>
         </div>
       </div>
     </div>
@@ -87,18 +87,18 @@
     <div class="time_name">
       <div class="establish_update_time">
         <div class="title">建立時間</div>
-        <div class="date_time">{{ repairInfo.create_time }}</div>
+        <div class="date_time">{{ repairInfo.create_date }}</div>
       </div>
       <div class="establish_update_time">
         <div class="title">人員:</div>
         <div class="name">{{ repairInfo.create_name }}</div>
       </div>
     </div>
-    <div *ngIf="repairInfo.modify_time && repairInfo.modify_name" class="time_name">
+    <div *ngIf="repairInfo.modify_date && repairInfo.modify_name" class="time_name">
       <div class="time_name">
         <div class="establish_update_time">
           <div class="title">最後修改</div>
-          <div class="date_time">{{ repairInfo.modify_time }}</div>
+          <div class="date_time">{{ repairInfo.modify_date }}</div>
         </div>
         <div class="establish_update_time">
           <div class="title">人員:</div>
@@ -202,6 +202,7 @@
     [(isNewForm)]="isNewForm"
     [id]="id"
     [(targetRepairInfo)]="repairInfo"
+    [serialArray]="serialArray"
     (infoChange)="fetchFixReqList()"
   >
   </app-edit-repair>

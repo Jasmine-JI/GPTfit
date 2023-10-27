@@ -19,7 +19,7 @@ import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import {
   equipmentManagementNoPermission,
-  equipmentManagementSearch,
+  equipmentManagementNews,
 } from '../../equipment-management-routing.module';
 
 type AlertType = 'empty' | 'format' | 'mistake' | 'repeat' | 'improper' | 'overdue' | 'notExist';
@@ -100,19 +100,18 @@ export class LogInComponent implements OnInit, OnDestroy {
     // console.log('已登入，判斷是否有權限');
     const accessRight = this.userService.getUser().systemAccessright;
     if (accessRight <= AccessRight.marketing) {
-      // console.log('權限<=29');
-      location.replace(equipmentManagementSearch);
-      // this.router.navigateByUrl(equipmentManagementSearch);
+      console.log('權限<=29');
+      location.replace(equipmentManagementNews);
+      // this.router.navigateByUrl(equipmentManagementNews);
     } else {
-      // console.log('無權限,權限:', this.userService.getUser().systemAccessright);
-      location.replace(equipmentManagementSearch);
-      // this.router.navigateByUrl(equipmentManagementNoPermission);
+      console.log('無權限,權限:', this.userService.getUser().systemAccessright);
+      location.replace(equipmentManagementNews);
+      // location.replace(equipmentManagementNoPermission);
     }
   }
 
   /**
    * 顯示完整密碼與否
-   * @author kidin-1101203
    */
   showPassword() {
     this.uiFlag.showPassword = !this.uiFlag.showPassword;
@@ -120,7 +119,6 @@ export class LogInComponent implements OnInit, OnDestroy {
 
   /**
    * 送出表單
-   * @author kidin-1101203
    */
   submit() {
     const alertElement = document.querySelector('[data-pass=false]');
@@ -257,7 +255,6 @@ export class LogInComponent implements OnInit, OnDestroy {
   /**
    * 確認帳號是否符合格式
    * @param e {MouseEvent}
-   * @author kidin-1101203
    */
   checkAccountFormat(e: MouseEvent) {
     const value = (e as any).target.value.trim();
@@ -304,7 +301,6 @@ export class LogInComponent implements OnInit, OnDestroy {
   /**
    * 確認電話號碼是否符合格式
    * @param newPhone {number}-新編輯之手機號碼
-   * @author kidin-1101108
    */
   checkPhoneFormat(newPhoneNumber: number) {
     const newPhone = `${newPhoneNumber}`;
@@ -321,7 +317,6 @@ export class LogInComponent implements OnInit, OnDestroy {
   /**
    * 確認電子信箱是否符合格式
    * @param newEmail {string}-新編輯之email
-   * @author kidin-1101108
    */
   checkEmailFormat(newEmail: string) {
     if (newEmail.length === 0) {
@@ -337,7 +332,6 @@ export class LogInComponent implements OnInit, OnDestroy {
   /**
    * 確認密碼是否有值
    * @param e {MouseEvent}
-   * @author kidin-1101111
    */
   checkPassword(e: MouseEvent) {
     this.uiFlag.focusInput = false;
