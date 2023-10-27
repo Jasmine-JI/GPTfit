@@ -1,106 +1,182 @@
 <ng-container *ngIf="editing">
-  <div class="edit_section">
-    <div class="edit_header">
-      <div *ngIf="isNewForm" class="title">叫修單新增</div>
-      <div *ngIf="!isNewForm" class="title">叫修單編輯</div>
-      <div (click)="clickCloseBtn()" class="close_button icon_button"></div>
-    </div>
-    <div class="edit_detail">
-      <div class="label_input">
-        <label class="edit_item_label">銷貨單號</label>
-        <input
-          class="input"
-          name="order_no"
-          maxlength="11"
-          oninput="value=value.replace(/[^\d]/g,'')"
-          [class.input_uneditable]="!NewFixReq"
-          [(ngModel)]="fixReqInfo.order_no"
-          placeholder="Order No"
-          [disabled]="!NewFixReq"
-          required
-        />
+  <form (ngSubmit)="clickSaveBtn()" #fixReqForm="ngForm">
+    <div class="edit_section">
+      <div class="edit_header">
+        <div *ngIf="isNewForm" class="title">叫修單新增</div>
+        <div *ngIf="!isNewForm" class="title">叫修單編輯</div>
+        <div (click)="clickCloseBtn()" class="close_button icon_button"></div>
       </div>
-      <div class="label_input">
-        <label class="edit_item_label">名稱</label>
-        <input
-          class="input"
-          name="user_name"
-          maxlength="128"
-          [(ngModel)]="fixReqInfo.user_name"
-          placeholder="User Name"
-          required
-        />
-      </div>
-      <div class="label_input">
-        <label class="edit_item_label">電話</label>
-        <input
-          class="input"
-          name="phone"
-          maxlength="32"
-          oninput="value=value.replace(/[^\d]/g,'')"
-          [(ngModel)]="fixReqInfo.phone"
-          placeholder="Phone"
-        />
-      </div>
-      <div class="label_input">
-        <label class="edit_item_label">E-mail</label>
-        <input
-          class="input"
-          name="e_mail"
-          type="email"
-          maxlength="32"
-          [(ngModel)]="fixReqInfo.e_mail"
-          placeholder="email"
-          email
-        />
-      </div>
-      <div class="label_input">
-        <label class="edit_item_label">地址</label>
-        <input
-          class="input"
-          maxlength="128"
-          [(ngModel)]="fixReqInfo.address"
-          placeholder="Address"
-        />
-      </div>
-      <div *ngIf="!isNewForm" class="label_input">
-        <label class="edit_item_label">狀態</label>
-        <div class="input_select input">
+      <div class="edit_detail">
+        <div class="label_input">
+          <label class="edit_item_label">銷貨單號</label>
+          <input
+            class="input"
+            name="order_no"
+            maxlength="11"
+            oninput="value=value.replace(/[^\d]/g,'')"
+            [class.input_uneditable]="!NewFixReq"
+            [(ngModel)]="fixReqInfo.order_no"
+            placeholder="Order No"
+            [disabled]="!NewFixReq"
+            required
+          />
           <div
-            class="foldable"
-            [class.unfold]="showRepairStatusDropdown"
-            (click)="toggleDropdown('repairStatus')"
+            class="error_message"
+            *ngIf="fixReqForm.submitted && fixReqForm.form.controls.order_no.hasError('required')"
           >
-            {{ fixReqInfo.status }}
-          </div>
-          <div *ngIf="showRepairStatusDropdown" class="toggle_dropdown">
-            <ul>
-              <li
-                *ngFor="let repairStatus of repairStatusList"
-                (click)="selectStatus(repairStatus)"
-                class="dropdown_list"
-              >
-                {{ repairStatus }}
-              </li>
-            </ul>
+            必填
           </div>
         </div>
+        <div class="label_input">
+          <label class="edit_item_label">名稱</label>
+          <input
+            class="input"
+            name="user_name"
+            maxlength="128"
+            [(ngModel)]="fixReqInfo.user_name"
+            placeholder="User Name"
+            name="user_name"
+            required
+          />
+          <div
+            class="error_message"
+            *ngIf="fixReqForm.submitted && fixReqForm.form.controls.user_name.hasError('required')"
+          >
+            必填
+          </div>
+        </div>
+        <div class="label_input">
+          <label class="edit_item_label">電話</label>
+          <input
+            class="input"
+            name="phone"
+            maxlength="32"
+            oninput="value=value.replace(/[^\d]/g,'')"
+            [(ngModel)]="fixReqInfo.phone"
+            placeholder="Phone"
+            name="phone"
+            required
+          />
+          <div
+            class="error_message"
+            *ngIf="fixReqForm.submitted && fixReqForm.form.controls.phone.hasError('required')"
+          >
+            必填
+          </div>
+        </div>
+        <div class="label_input">
+          <label class="edit_item_label">E-mail</label>
+          <input
+            class="input"
+            name="e_mail"
+            type="email"
+            maxlength="32"
+            [(ngModel)]="fixReqInfo.e_mail"
+            placeholder="email"
+            name="e_mail"
+            email
+          />
+          <div
+            class="error_message"
+            *ngIf="fixReqForm.submitted && fixReqForm.form.controls.e_mail.hasError('email')"
+          >
+            email格式錯誤
+          </div>
+        </div>
+        <div class="label_input">
+          <label class="edit_item_label">地址</label>
+          <input
+            class="input"
+            maxlength="128"
+            [(ngModel)]="fixReqInfo.address"
+            placeholder="Address"
+            name="address"
+            required
+          />
+          <div
+            class="error_message"
+            *ngIf="fixReqForm.submitted && fixReqForm.form.controls.address.hasError('required')"
+          >
+            必填
+          </div>
+        </div>
+        <div *ngIf="!isNewForm" class="label_input">
+          <label class="edit_item_label">狀態</label>
+          <div class="input_select input">
+            <div
+              class="foldable"
+              [class.unfold]="showRepairStatusDropdown"
+              (click)="toggleDropdown('repairStatus')"
+            >
+              {{ fixReqInfo.status === 'done' ? '完成' : '未完成' }}
+            </div>
+            <div *ngIf="showRepairStatusDropdown" class="toggle_dropdown">
+              <ul>
+                <li
+                  *ngFor="let repairStatus of repairStatusList"
+                  (click)="selectStatus(repairStatus)"
+                  class="dropdown_list"
+                >
+                  {{ repairStatus === 'done' ? '完成' : '未完成' }}
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <div class="label_input">
+          <label class="edit_item_label">機台序號</label>
+          <div class="input">
+            <ng-container *ngIf="fixReqSerialArray">
+              <span class="serial_input" *ngFor="let serial_no of fixReqSerialArray; let s = index">
+                <span class="font">{{ serial_no }}</span>
+                <span
+                  (click)="deleteSerial(s)"
+                  class="close_button delete_img_button pointer"
+                ></span>
+              </span>
+            </ng-container>
+            <span class="serial_input">
+              <input
+                (click)="ifProdSerialArray()"
+                (input)="filterSerialNo()"
+                (keydown)="onKeyDown($event)"
+                (compositionend)="filterSerialNo()"
+                maxlength="300"
+                type="text"
+                [(ngModel)]="tagText"
+                name="serial_no"
+                autocomplete="off"
+              />
+              <div *ngIf="isListVisible" class="toggle_dropdown">
+                <ul class="dropdown_ul">
+                  <li
+                    (click)="addSerialNo(serialNo)"
+                    class="dropdown_list"
+                    *ngFor="let serialNo of filteredSerialNo"
+                  >
+                    {{ serialNo }}
+                  </li>
+                </ul>
+              </div>
+            </span>
+          </div>
+        </div>
+        <div class="memo_label_input">
+          <label class="edit_item_label">問題描述</label>
+          <textarea
+            (input)="countTextLength($event.target.value)"
+            maxlength="300"
+            class="input"
+            [(ngModel)]="fixReqInfo.description"
+            placeholder="description"
+            name="description"
+          ></textarea>
+          <span class="textLength">{{ textLength }}/300</span>
+        </div>
       </div>
-      <div class="memo_label_input">
-        <label class="edit_item_label">問題描述</label>
-        <textarea
-          (input)="countTextLength($event.target.value)"
-          maxlength="300"
-          class="input"
-          [(ngModel)]="fixReqInfo.description"
-          placeholder="description"
-        ></textarea>
-        <span class="textLength">{{ textLength }}/300</span>
-      </div>
+      <button type="submit" class="save_button">
+        <mat-icon class="save_button_icon">save</mat-icon>儲存
+      </button>
     </div>
-
-    <button (click)="clickSaveBtn()" class="save_button">
-      <mat-icon class="save_button_icon">save</mat-icon>儲存
-    </button>
-  </div>
+  </form>
 </ng-container>

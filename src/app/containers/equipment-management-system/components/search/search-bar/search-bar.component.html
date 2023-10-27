@@ -1,8 +1,317 @@
 <div class="header_bar section">
   <i
-    [routerLink]="['/equipment-management/search']"
+    [routerLink]="['/equipment-management/news']"
     class="icon-svg_web-icon_p1_034-home icon_button"
   ></i>
+  <div class="search_bar_wrapper">
+    <div class="search_bar">
+      <!-- 類型顯示區塊 -->
+      <div [class.active]="uiFlag.searchTypeBox" class="search_box">
+        <div (click)="openBox('searchTypeBox')" class="search_type pointer">
+          <div class="serch_titlte">類型</div>
+          <div class="entered_option">{{ uiFlag.searchType }}</div>
+        </div>
+        <!-- 類型選單 -->
+        <ng-container *ngIf="uiFlag.searchTypeBox">
+          <div class="search_option edit_section">
+            <div class="edit_header">
+              <div class="title">搜尋類型</div>
+              <div (click)="clickCloseBtn('searchTypeBox')" class="close_button icon_button"></div>
+            </div>
+            <div class="edit_detail">
+              <ng-container *ngFor="let item of searchTypeList">
+                <span
+                  (click)="selectSearchType(item)"
+                  [class.active]="uiFlag.searchType === item"
+                  class="select_option pointer"
+                  >{{ item }}</span
+                >
+              </ng-container>
+            </div>
+            <button (click)="nextStep('searchKeywordBox')" type="button" class="save_button">
+              <mat-icon class="save_button_icon">keyboard_arrow_right</mat-icon>下一步
+            </button>
+          </div>
+        </ng-container>
+      </div>
+      <!-- 關鍵字顯示區塊 -->
+      <div [class.active]="uiFlag.searchKeywordBox" class="search_box">
+        <div (click)="openBox('searchKeywordBox')" class="search_type pointer">
+          <div *ngIf="uiFlag.searchType == '產品'" class="serch_titlte">產品序號</div>
+          <div *ngIf="uiFlag.searchType !== '產品'" class="serch_titlte">關鍵字</div>
+          <ng-container *ngIf="uiFlag.searchType !== '產品'">
+            <div class="entered_option">
+              <div
+                *ngIf="
+                  !fliterParameters.user_name &&
+                  !fliterParameters.phone &&
+                  !fliterParameters.address &&
+                  !fliterParameters.e_mail &&
+                  !fliterParameters.sales_channel &&
+                  !fliterParameters.serial_no
+                "
+                class="more_entered_option"
+              >
+                <div class="entered_option">{{ '客戶資料、序號' }}</div>
+              </div>
+              <div *ngIf="fliterParameters.serial_no" class="more_entered_option">
+                <div class="serch_titlte">序號</div>
+                <div class="entered_option">{{ fliterParameters.serial_no }}</div>
+              </div>
+              <div
+                *ngIf="fliterParameters.user_name && !fliterParameters.serial_no"
+                class="more_entered_option"
+              >
+                <div class="serch_titlte">名稱:</div>
+                <div class="entered_option">{{ fliterParameters.user_name }}</div>
+              </div>
+              <div
+                *ngIf="fliterParameters.phone && !fliterParameters.serial_no"
+                class="more_entered_option"
+              >
+                <div class="serch_titlte">電話</div>
+                <div class="entered_option">{{ fliterParameters.phone }}</div>
+              </div>
+              <div
+                *ngIf="fliterParameters.address && !fliterParameters.serial_no"
+                class="more_entered_option"
+              >
+                <div class="serch_titlte">地址</div>
+                <div class="entered_option">{{ fliterParameters.address }}</div>
+              </div>
+              <div
+                *ngIf="fliterParameters.e_mail && !fliterParameters.serial_no"
+                class="more_entered_option"
+              >
+                <div class="serch_titlte">E-mail</div>
+                <div class="entered_option">{{ fliterParameters.e_mail }}</div>
+              </div>
+            </div>
+          </ng-container>
+          <ng-container *ngIf="uiFlag.searchType == '產品'">
+            <div class="entered_option">
+              <div *ngIf="!fliterParameters.serial_no" class="more_entered_option">
+                <div class="entered_option">{{ '序號' }}</div>
+              </div>
+              <div *ngIf="fliterParameters.serial_no" class="more_entered_option">
+                <div class="entered_option">{{ fliterParameters.serial_no }}</div>
+              </div>
+            </div>
+          </ng-container>
+        </div>
+        <!-- 銷貨單/叫修單 關鍵字輸入 -->
+        <ng-container
+          *ngIf="
+            uiFlag.searchKeywordBox &&
+            (uiFlag.searchType === '銷貨單' || uiFlag.searchType === '叫修單')
+          "
+        >
+          <div class="search_option edit_section">
+            <div class="edit_header">
+              <div class="title">關鍵字</div>
+              <div
+                (click)="clickCloseBtn('searchKeywordBox')"
+                class="close_button icon_button"
+              ></div>
+            </div>
+            <div class="edit_detail">
+              <div class="label_input">
+                <label for="serial_no" class="edit_item_label">序號</label>
+                <input
+                  class="input"
+                  id="serial_no"
+                  maxlength="100"
+                  [(ngModel)]="fliterParameters.serial_no"
+                  name="serial_no"
+                  autocomplete="off"
+                />
+              </div>
+              <div class="input edit_item_label">or</div>
+              <div class="label_input">
+                <label for="user_name" class="edit_item_label">名稱</label>
+                <input
+                  class="input"
+                  id="user_name"
+                  maxlength="128"
+                  [(ngModel)]="fliterParameters.user_name"
+                  name="user_name"
+                  autocomplete="off"
+                />
+              </div>
+              <div class="label_input">
+                <label for="phone" class="edit_item_label">電話</label>
+                <input
+                  class="input"
+                  id="phone"
+                  name="phone"
+                  maxlength="32"
+                  oninput="value=value.replace(/[^\d]/g,'')"
+                  [(ngModel)]="fliterParameters.phone"
+                  name="phone"
+                  autocomplete="off"
+                />
+              </div>
+              <div class="label_input">
+                <label for="address" class="edit_item_label">地址</label>
+                <input
+                  class="input"
+                  id="address"
+                  maxlength="128"
+                  [(ngModel)]="fliterParameters.address"
+                  name="address"
+                  autocomplete="off"
+                />
+              </div>
+              <div *ngIf="uiFlag.searchType === '叫修單'" class="label_input">
+                <label for="e_mail" class="edit_item_label">E-mail</label>
+                <input
+                  class="input"
+                  id="e_mail"
+                  type="email"
+                  maxlength="32"
+                  [(ngModel)]="fliterParameters.e_mail"
+                  name="e_mail"
+                  autocomplete="off"
+                />
+              </div>
+              <!-- <div *ngIf="uiFlag.searchType==='銷貨單'" class="label_input">
+                  <label class="edit_item_label">狀態</label>
+                  <div class="input_select input">
+                    <div
+                      class="foldable"
+                      [class.unfold]="showRepairStatusDropdown"
+                      (click)="toggleDropdown('repairStatus')"
+                    >
+                      {{ fliterParameters.status==='done'?'完成':'未完成' }}
+                    </div>
+                    <div *ngIf="showRepairStatusDropdown" class="toggle_dropdown">
+                      <ul>
+                        <li
+                          *ngFor="let repairStatus of repairStatusList"
+                          (click)="selectStatus(repairStatus)"
+                          class="dropdown_list"
+                        >
+                          {{ repairStatus==='done'?'完成':'未完成' }}
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                </div> -->
+            </div>
+            <button (click)="nextStep('searchDateBox')" type="button" class="save_button">
+              <mat-icon class="save_button_icon">keyboard_arrow_right</mat-icon>下一步
+            </button>
+          </div>
+        </ng-container>
+        <!-- 產品 關鍵字輸入 -->
+        <ng-container *ngIf="uiFlag.searchKeywordBox && uiFlag.searchType === '產品'">
+          <div class="search_option edit_section">
+            <div class="edit_header">
+              <div class="title">使用完整序號查看產品</div>
+              <div
+                (click)="clickCloseBtn('searchKeywordBox')"
+                class="close_button icon_button"
+              ></div>
+            </div>
+            <div class="edit_detail">
+              <div class="label_input">
+                <label for="serial_no" class="edit_item_label">完整序號</label>
+                <input
+                  class="input"
+                  id="serial_no"
+                  maxlength="100"
+                  [(ngModel)]="fliterParameters.serial_no"
+                  name="serial_no"
+                  autocomplete="off"
+                />
+              </div>
+            </div>
+            <button (click)="fliterOrder(uiFlag.searchType)" type="button" class="save_button">
+              <mat-icon class="save_button_icon">search</mat-icon>搜尋
+            </button>
+          </div>
+        </ng-container>
+      </div>
+      <div
+        *ngIf="uiFlag.searchType === '銷貨單' || uiFlag.searchType === '叫修單'"
+        [class.active]="uiFlag.searchDateBox"
+        class="search_box"
+      >
+        <div (click)="openBox('searchDateBox')" class="search_type pointer">
+          <div class="serch_titlte">日期</div>
+          <div
+            *ngIf="
+              uiFlag.dateOption == '全部' &&
+              !fliterParameters.start_date &&
+              !fliterParameters.end_date
+            "
+            class="entered_option"
+          >
+            {{ uiFlag.dateOption }}
+          </div>
+          <div
+            *ngIf="fliterParameters.start_date && fliterParameters.end_date"
+            class="entered_option"
+          >
+            {{ fliterParameters.start_date }}至{{ fliterParameters.end_date }}
+          </div>
+        </div>
+        <!-- 日期輸入選單 -->
+        <ng-container *ngIf="uiFlag.searchDateBox">
+          <div class="search_option edit_section">
+            <div class="edit_header">
+              <div class="title">選擇日期</div>
+              <div (click)="clickCloseBtn('searchDateBox')" class="close_button icon_button"></div>
+            </div>
+            <div class="edit_detail">
+              <ng-container *ngFor="let item of dateList">
+                <span
+                  (click)="dateOption(item)"
+                  [class.active]="uiFlag.dateOption === item"
+                  class="select_option pointer"
+                  >{{ item }}</span
+                >
+              </ng-container>
+              <span
+                mat-raised-button
+                (click)="rangePicker.open()"
+                (click)="dateOption('範圍')"
+                [class.active]="uiFlag.dateOption === '範圍'"
+                class="select_option pointer"
+                >{{ '範圍' }}</span
+              >
+              <mat-date-range-input [rangePicker]="rangePicker">
+                <input
+                  (dateChange)="changeStartTime($event.value)"
+                  [(ngModel)]="fliterParameters.start_date"
+                  matStartDate
+                  placeholder="Start date"
+                />
+                <input
+                  (dateChange)="changeEndTime($event.value)"
+                  [(ngModel)]="fliterParameters.end_date"
+                  matEndDate
+                  placeholder="End date"
+                />
+              </mat-date-range-input>
+
+              <mat-date-range-picker #rangePicker>
+                <!-- <mat-date-range-picker-actions>
+                  <button mat-button matDateRangePickerCancel>Cancel</button>
+                  <button mat-raised-button color="primary" matDateRangePickerApply>Apply
+                  </button>
+                </mat-date-range-picker-actions> -->
+              </mat-date-range-picker>
+            </div>
+            <button (click)="fliterOrder(uiFlag.searchType)" type="button" class="save_button">
+              <mat-icon class="save_button_icon">search</mat-icon>搜尋
+            </button>
+          </div>
+        </ng-container>
+      </div>
+      <div (click)="fliterOrder(uiFlag.searchType)" class="search_button search_icon">搜尋</div>
+    </div>
+  </div>
 
   <div class="avatar">
     <img

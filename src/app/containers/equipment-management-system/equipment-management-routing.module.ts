@@ -7,6 +7,7 @@ import { EquipmentComponent } from './components/equipment/equipment.component';
 import { Page403Component } from '../../shared/components/page403/page403.component';
 import { Page404Component } from '../../shared/components/page404/page404.component';
 import { equipmentAdminGuard } from './guards/equipment-admin.guard';
+import { NewsComponent } from './components/news/news.component';
 import { SearchComponent } from './components/search/search.component';
 import { OrderComponent } from './components/order/order.component';
 
@@ -15,13 +16,14 @@ import { equipmentDetailResolver } from './resolvers/equipment-detail.resolver';
 import { MaintenanceRequirementComponent } from './components/maintenance-requirement/maintenance-requirement.component';
 import { fixReqDetailResolver } from './resolvers/fixReq-detail.resolver';
 import { RepairComponent } from './components/repair/repair.component';
+import { breadcrumbResolver } from './resolvers/breadcrumb.resolver';
 
 const { equipmentManagement, pageNoPermission, pageNotFound } = appPath;
 const equipmentManagementNotFound = `${pageNotFound}`;
 
 export const equipmentManagementNoPermission = `${pageNoPermission}`;
 
-export const equipmentManagementSearch = `/${equipmentManagement.home}/${equipmentManagement.search}`;
+export const equipmentManagementNews = `/${equipmentManagement.home}/${equipmentManagement.news}`;
 
 export const equipmentManagementLogIn = `/${equipmentManagement.home}/${equipmentManagement.logIn}`;
 
@@ -34,21 +36,40 @@ const routes: Routes = [
         path: equipmentManagement.logIn,
         component: LogInComponent,
       },
-
       {
-        path: equipmentManagement.search, //登入成功==挑轉至==>搜尋
+        path: equipmentManagement.news, //登入成功-挑轉至==>最新單據
+        component: NewsComponent,
+        canActivate: [equipmentAdminGuard],
+        resolve: { breadcrumb: breadcrumbResolver },
+        data: {
+          breadcrumb: '首頁',
+        },
+      },
+      {
+        path: equipmentManagement.search, //搜尋結果頁
         component: SearchComponent,
         canActivate: [equipmentAdminGuard],
+        resolve: { breadcrumb: breadcrumbResolver },
+        data: {
+          breadcrumb: '搜尋結果',
+        },
       },
       {
         path: equipmentManagement.order, //銷貨單詳細頁
         component: OrderComponent,
         canActivate: [equipmentAdminGuard],
+        data: {
+          breadcrumb: '銷貨單',
+        },
         children: [
           {
             path: `:${equipmentManagement.order_no}`,
             component: OrderComponent,
+            canActivate: [equipmentAdminGuard],
             resolve: { orderDetail: orderDetailResolver },
+            data: {
+              breadcrumb: '銷貨單',
+            },
           },
           {
             path: '',
@@ -66,6 +87,9 @@ const routes: Routes = [
             path: `:${equipmentManagement.equipment_sn}`,
             component: EquipmentComponent,
             resolve: { product: equipmentDetailResolver },
+            data: {
+              breadcrumb: '產品',
+            },
           },
           {
             path: '',
@@ -78,11 +102,17 @@ const routes: Routes = [
         path: equipmentManagement.maintenanceRequirement, //叫修單
         component: MaintenanceRequirementComponent,
         canActivate: [equipmentAdminGuard],
+        data: {
+          breadcrumb: '叫修單',
+        },
         children: [
           {
             path: `:${equipmentManagement.repair_id}`,
             component: MaintenanceRequirementComponent,
             resolve: { fixReq: fixReqDetailResolver },
+            data: {
+              breadcrumb: '叫修單',
+            },
           },
           {
             path: '',
@@ -92,9 +122,13 @@ const routes: Routes = [
         ],
       },
       {
-        path: equipmentManagement.repair, //維修單
+        path: `${equipmentManagement.repair}/:id`, //維修單
         component: RepairComponent,
         canActivate: [equipmentAdminGuard],
+        resolve: { breadcrumb: breadcrumbResolver },
+        data: {
+          breadcrumb: '維修單',
+        },
         children: [
           {
             path: '',
@@ -103,7 +137,6 @@ const routes: Routes = [
           },
         ],
       },
-
       {
         path: equipmentManagementNoPermission,
         component: Page403Component,

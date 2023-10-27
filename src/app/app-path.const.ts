@@ -64,6 +64,7 @@ export const appPath = {
     home: 'equipment-management',
     logIn: 'log-in',
     search: 'search',
+    news: 'news',
     equipment: 'equipment',
     equipment_sn: 'equipment_sn',
     order: 'order',

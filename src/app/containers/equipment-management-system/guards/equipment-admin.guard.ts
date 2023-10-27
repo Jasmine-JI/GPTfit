@@ -39,7 +39,6 @@ export class equipmentAdminGuard {
 
   /**
    * 驗證失敗後轉導其他路徑
-   * @author kidin-1101209
    */
   checkAccessRightFailed() {
     this.router.navigateByUrl(equipmentManagementNoPermission);

@@ -80,6 +80,7 @@ export class OrderComponent implements OnInit, OnDestroy {
   };
 
   salesChannelList: string[] = [];
+  prodSerialArray: string[];
   // showSalesChannelDropdown = false;
   // showInstallTypeDropdown = { isOpen: false, selectedIndex: null };
   fileNames: string[] = [];
@@ -210,11 +211,18 @@ export class OrderComponent implements OnInit, OnDestroy {
     this.originOrderProds = cloneDeep(this.orderDetail.product);
     this.orderProds = cloneDeep(this.orderDetail.product?.reverse());
     // console.log('orderProds:', this.orderProds);
+    this.prodSerialArray = this.orderProds?.map((product) => product.serial_no);
+    console.log(this.prodSerialArray);
   }
 
   setOrderFixReq() {
     this.orderFixReq = cloneDeep(this.orderDetail.repair?.reverse());
     // console.log('orderFixReq:', this.orderFixReq);
+  }
+
+  getSerialNoArray(serial_no: string) {
+    const serialNoArray = serial_no.split(',');
+    return serialNoArray;
   }
 
   // toggleDropdown(type: string, i: number) {
@@ -348,7 +356,7 @@ export class OrderComponent implements OnInit, OnDestroy {
             alert(res.description);
           } else {
             alert(`成功刪除銷貨單${this.orderInfo.order_no}`);
-            this.router.navigate(['/equipment-management/search']);
+            this.router.navigate(['/equipment-management/news']);
           }
         });
     }

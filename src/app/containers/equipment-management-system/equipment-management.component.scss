@@ -3,3 +3,10 @@
   width: 100%;
   overflow: scroll;
 }
+
+.header_nav {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: #fff;
+}

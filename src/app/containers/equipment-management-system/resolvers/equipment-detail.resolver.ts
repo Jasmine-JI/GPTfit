@@ -1,12 +1,23 @@
-import { ActivatedRouteSnapshot } from '@angular/router';
+import { ActivatedRoute, ActivatedRouteSnapshot } from '@angular/router';
 import { EquipmentManagementService } from '../services/equipment-management.service';
 import { inject } from '@angular/core';
 
-export const equipmentDetailResolver = (route: ActivatedRouteSnapshot) => {
+export const equipmentDetailResolver = (
+  route: ActivatedRouteSnapshot,
+  activatedRoute: ActivatedRoute
+) => {
   const productParameters = { serial_no: '' };
-  // console.log(route.paramMap);
+  console.log(route);
 
   const id = route.paramMap.get('equipment_sn');
   productParameters.serial_no = id;
   inject(EquipmentManagementService).setEquipParameters(productParameters);
+
+  const label = route.data['breadcrumb'];
+  const params = route.params;
+  const url = activatedRoute.url;
+  const breadcrumb = { label, params, url };
+  console.log(breadcrumb);
+
+  inject(EquipmentManagementService).createBreadcrumb(breadcrumb);
 };
