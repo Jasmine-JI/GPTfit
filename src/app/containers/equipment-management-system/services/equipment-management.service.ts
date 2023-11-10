@@ -43,7 +43,7 @@ export class EquipmentManagementService {
       orderParams = orderParams.set('item_count', body.item_count);
     }
 
-    if (body.order_no !== null && body.order_no !== undefined) {
+    if (body.order_no !== '' && body.order_no !== undefined) {
       orderParams = orderParams.set('order_no', body.order_no);
     }
     // console.log(orderParams);
@@ -488,7 +488,7 @@ export class EquipmentManagementService {
     if (body.serial_no !== '' && body.serial_no !== undefined) {
       fliterParameters = fliterParameters.set('serial_no', body.serial_no);
     }
-    console.log(fliterParameters);
+    // console.log(fliterParameters);
 
     return this.http.get<any>('/ems/order/getList/filter', { params: fliterParameters }).pipe(
       catchError((err) => {
@@ -535,7 +535,7 @@ export class EquipmentManagementService {
     if (body.serial_no !== '' && body.serial_no !== undefined) {
       fliterParameters = fliterParameters.set('serial_no', body.serial_no);
     }
-    console.log(fliterParameters);
+    // console.log(fliterParameters);
 
     return this.http.get<any>('/ems/repair_form/getList/filter', { params: fliterParameters }).pipe(
       catchError((err) => {
@@ -553,29 +553,10 @@ export class EquipmentManagementService {
   }
 
   createBreadcrumb(breadcrumb) {
-    // if(breadcrumb.label=='搜尋結果'){
-    //   const label = '首頁';
-    //   const params = null;
-    //   const url = '/equipment-management/news';
-    //   const newbreadcrumb =  { label,params, url };
-    //   this.breadcrumbs=[];
-    //   this.breadcrumbs.push(newbreadcrumb)
-    //   this.updateBreadcrumbs(breadcrumb)
-    // }else{
     this.updateBreadcrumbs(breadcrumb);
-    // }
   }
 
   updateBreadcrumbs(newBreadcrumb: any) {
-    // const index = this.breadcrumbs.findIndex(breadcrumb => breadcrumb.url.includes(newBreadcrumb.url));
-    // if (index !== -1) { //路徑完全相同
-    //   if (newBreadcrumb.url == '/equipment-management/news') {
-    //     this.breadcrumbs = [];
-    //     this.breadcrumbs.push(newBreadcrumb)
-    //   } else {
-    //     this.breadcrumbs.splice(index, this.breadcrumbs.length - index, newBreadcrumb);
-    //   }
-    // } else { //第二層路徑是否重複出現
     const index = this.breadcrumbs.findIndex((breadcrumb) => {
       const previousSecondParam = this.getSecondParam(breadcrumb.url);
       const newSecondParam = this.getSecondParam(newBreadcrumb.url);
@@ -608,7 +589,7 @@ export class EquipmentManagementService {
 
   saveBreadcrumbsToLocalStorage() {
     localStorage.setItem('breadcrumbs', JSON.stringify(this.breadcrumbs));
-    console.log(this.breadcrumbs);
+    // console.log(this.breadcrumbs);
   }
 
   getBreadcrumbs() {

@@ -8,7 +8,7 @@
       </div>
       <div class="edit_detail">
         <div class="label_input">
-          <label class="edit_item_label">產品序號</label>
+          <label class="edit_item_label required">產品序號</label>
           <div class="input_select input">
             <input
               class="input"
@@ -18,7 +18,7 @@
               maxlength="30"
               [class.input_uneditable]="!isNewForm"
               [(ngModel)]="repairInfo.serial_no"
-              placeholder="serial_no"
+              placeholder="serial no"
               name="serial_no"
               [disabled]="!isNewForm"
               autocomplete="off"
@@ -69,7 +69,7 @@
           </div>
         </div>
         <div class="label_input date_icon" mat-raised-button (click)="openRepairDatePicker.open()">
-          <label for="repair_date" class="edit_item_label">維修日期</label>
+          <label for="repair_date" class="edit_item_label required">維修日期</label>
           <input
             id="repair_date"
             class="input pointer"
@@ -80,7 +80,7 @@
             (dateChange)="changeDate('repair_date', $event.value)"
             [(ngModel)]="repairInfo.repair_date"
             [max]="today"
-            placeholder="repair_date"
+            placeholder="YYYY-MM-DD"
             name="repair_date"
             required
           />
@@ -99,7 +99,7 @@
           ></mat-datepicker>
         </div>
         <div class="label_input">
-          <label for="member" class="edit_item_label">維修人員</label>
+          <label for="member" class="edit_item_label required">維修人員</label>
           <input
             id="member"
             class="input"
@@ -118,14 +118,14 @@
           </div>
         </div>
         <div class="label_input">
-          <label for="machine_status" class="edit_item_label">機台狀態</label>
+          <label for="machine_status" class="edit_item_label required">機台狀態</label>
           <input
             id="machine_status"
             class="input"
             name="machine_status"
             maxlength="100"
             [(ngModel)]="repairInfo.machine_status"
-            placeholder="machine_status"
+            placeholder="machine status"
             name="machine_status"
             required
           />
@@ -139,14 +139,14 @@
           </div>
         </div>
         <div class="label_input">
-          <label class="edit_item_label">異常原因</label>
+          <label class="edit_item_label required">異常原因</label>
           <input
             id="root_causes"
             class="input"
             name="root_causes"
             maxlength="200"
             [(ngModel)]="repairInfo.root_causes"
-            placeholder="root_causes"
+            placeholder="root causes"
             name="root_causes"
             required
           />
@@ -159,7 +159,7 @@
             必填
           </div>
           <!-- <textarea (input)="countTextLength('causesTextLength',$event.target.value)" maxlength=200 class="input"
-            [(ngModel)]="repairInfo.root_causes" placeholder="root_causes"></textarea> -->
+            [(ngModel)]="repairInfo.root_causes" placeholder="root causes"></textarea> -->
 
           <!-- <span class="textLength">{{causesTextLength}}/200</span> -->
         </div>
@@ -172,21 +172,25 @@
             <ng-container *ngFor="let item of repairInfo.parts_replace_item">
               <li class="part_item">
                 <span class="part_name">{{ getPartName(item.part_no) }}</span>
+                <span class="part_name">{{ getPartSpec(item.part_no) }}</span>
                 <span class="part_no">X{{ item.quantity }}</span>
               </li>
             </ng-container>
           </ul>
         </div>
         <div class="label_input">
-          <label for="total_meter" class="edit_item_label">總使用里程</label>
+          <label for="total_meter" class="edit_item_label required">總使用里程(km)</label>
           <input
             id="total_meter"
             class="input"
             name="total_meter"
-            maxlength="11"
-            oninput="value=value.replace(/[^\d]/g,'')"
+            type="number"
+            min="0"
+            max="2147483647"
+            (input)="value = onInput($event, 'total_meter')"
+            (compositonstart)="onInput($event, 'total_meter')"
             [(ngModel)]="repairInfo.total_meter"
-            placeholder="total_meter"
+            placeholder="distance"
             required
           />
           <div
@@ -199,15 +203,18 @@
           </div>
         </div>
         <div class="label_input">
-          <label for="total_use_time" class="edit_item_label">總使用時間</label>
+          <label for="total_use_time" class="edit_item_label required">總使用時間(hr)</label>
           <input
             id="total_use_time"
             class="input"
             name="total_use_time"
-            maxlength="11"
-            oninput="value=value.replace(/[^\d]/g,'')"
+            type="number"
+            min="0"
+            max="2147483647"
+            (input)="value = onInput($event, 'total_use_time')"
+            (compositonstart)="onInput($event, 'total_use_time')"
             [(ngModel)]="repairInfo.total_use_time"
-            placeholder="total_use_time"
+            placeholder="time"
             required
           />
           <div
@@ -225,22 +232,52 @@
             >詳細說明
             <textarea
               (input)="countTextLength('detailTextLength', $event.target.value)"
-              maxlength="300"
+              maxlength="500"
               class="input"
               [(ngModel)]="repairInfo.detail"
-              placeholder="detail"
               name="detail"
             ></textarea>
           </label>
-          <span class="textLength">{{ detailTextLength }}/300</span>
+          <span class="textLength">{{ detailTextLength }}/500</span>
         </div>
         <!-- <div class="memo_label_input">
         <label class="edit_item_label">備忘錄
           <textarea (input)="countTextLength('memoTextLength',$event.target.value)" maxlength=300 class="input"
-            [(ngModel)]="repairInfo.memo" placeholder="memo"></textarea>
+            [(ngModel)]="repairInfo.memo" ></textarea>
         </label>
         <span class="textLength">{{memoTextLength}}/300</span>
       </div> -->
+        <div class="img_label_input">
+          <label class="edit_item_label">附加檔案</label>
+
+          <input
+            #fileInput
+            (change)="previewImg(fileInput)"
+            type="file"
+            id="img_input"
+            name="img_input"
+            accept=".jpg,.jpeg,.png,.gif"
+          />
+          <div class="img_list">
+            <ng-container *ngFor="let fileName of fileNames; let index = i">
+              <div class="img_wrap">
+                <img
+                  (click)="openImage(imgPath + fileName)"
+                  [src]="imgPath + fileName"
+                  alt="附加檔案"
+                  id="image_preview"
+                />
+                <div (click)="deleteImg(fileName)" class="close_button delete_img_button"></div>
+              </div>
+            </ng-container>
+            <label *ngIf="!filesMax" class="img_wrap" for="img_input">
+              <div class="add_icon add_img_circle"></div>
+            </label>
+            <label *ngIf="filesMax">
+              <div>圖片數量達上限</div>
+            </label>
+          </div>
+        </div>
       </div>
       <button type="submit" class="save_button">
         <mat-icon class="save_button_icon">save</mat-icon>儲存
@@ -283,7 +320,6 @@
             <span class="part_content">{{ item.part_no }}</span>
             <span class="part_content">{{ item.part_name }}</span>
             <span class="part_content">{{ item.specifications }}</span>
-            <!-- <span class="part_content">{{ item.description }}</span> -->
             <span
               *ngIf="!editPartList && getQuantity(item.part_no)"
               class="part_content quantity"
@@ -320,7 +356,6 @@
             <span class="part_content">{{ item.part_no }}</span>
             <span class="part_content">{{ item.part_name }}</span>
             <span class="part_content">{{ item.specifications }}</span>
-            <!-- <span class="part_content">{{item.description}}</span> -->
             <span
               *ngIf="!editPartList && getQuantity(item.part_no)"
               class="part_content quantity"

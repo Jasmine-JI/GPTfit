@@ -32,7 +32,7 @@
         </div>
       </div>
       <div class="detail_info_wrap">
-        <div class="detail_info_title">所屬單號</div>
+        <div class="detail_info_title">所屬銷貨單</div>
         <div
           [routerLink]="['/equipment-management/order', repairForm.order_no]"
           class="content_wrap link"
@@ -40,9 +40,14 @@
           <div class="uneditable_content">{{ repairForm.order_no }}</div>
         </div>
       </div>
-
       <div class="detail_info_wrap">
-        <div class="detail_info_title">名稱</div>
+        <div class="detail_info_title">叫修日期</div>
+        <div class="content_wrap">
+          <div class="editable_content">{{ repairForm.request_date }}</div>
+        </div>
+      </div>
+      <div class="detail_info_wrap">
+        <div class="detail_info_title">姓名</div>
         <div class="content_wrap">
           <div class="editable_content">{{ repairForm.user_name }}</div>
         </div>
@@ -54,16 +59,16 @@
         </div>
       </div>
       <div class="detail_info_wrap">
+        <div class="detail_info_title">地址</div>
+        <div class="content_wrap">
+          <div class="editable_content">{{ repairForm.address }}</div>
+        </div>
+      </div>
+      <div class="detail_info_wrap">
         <div class="detail_info_title">E-mail</div>
         <div class="content_wrap">
           <div *ngIf="repairForm.e_mail" class="editable_content">{{ repairForm.e_mail }}</div>
           <div *ngIf="!repairForm.e_mail" class="editable_content">無</div>
-        </div>
-      </div>
-      <div class="detail_info_wrap">
-        <div class="detail_info_title">地址</div>
-        <div class="content_wrap">
-          <div class="editable_content">{{ repairForm.address }}</div>
         </div>
       </div>
       <div class="detail_info_wrap">
@@ -99,11 +104,34 @@
         </ng-container>
       </div>
     </div>
-    <div class="section_detail equip_list">
+    <div class="section_detail">
+      <div class="detail_info_wrap">
+        <div class="detail_info_title">附件</div>
+        <div *ngIf="repairForm.attach_file" class="img_list">
+          <ng-container *ngFor="let file of fileNames">
+            <div class="img_wrap">
+              <img
+                (click)="openImage(imgPath + file)"
+                [src]="imgPath + file"
+                alt="附加檔案"
+                id="image_preview"
+              />
+            </div>
+          </ng-container>
+        </div>
+        <div *ngIf="!repairForm.attach_file" class="memo_wrap">
+          <div class="memo_content">無</div>
+        </div>
+      </div>
+    </div>
+    <div class="section_detail">
       <div class="detail_info_wrap">
         <div class="detail_info_title">問題描述</div>
         <div class="memo_wrap">
-          <div class="memo_content">{{ repairForm.description }}</div>
+          <div *ngIf="repairForm.description" class="memo_content">
+            {{ repairForm.description }}
+          </div>
+          <div *ngIf="!repairForm.description" class="memo_content">無</div>
         </div>
       </div>
     </div>
@@ -169,18 +197,17 @@
             </div>
           </div>
           <div class="detail_info_wrap">
-            <div class="detail_info_title">維修日期</div>
-            <div class="content_wrap">
-              <div class="editable_content">{{ repair.repair_date }}</div>
-            </div>
-          </div>
-          <!-- 下拉式編輯 -->
-          <div class="detail_info_wrap">
             <div class="detail_info_title">類型</div>
             <div class="content_wrap">
               <div class="editable_content">
                 {{ repair.repair_type }}
               </div>
+            </div>
+          </div>
+          <div class="detail_info_wrap">
+            <div class="detail_info_title">維修日期</div>
+            <div class="content_wrap">
+              <div class="editable_content">{{ repair.repair_date }}</div>
             </div>
           </div>
         </div>

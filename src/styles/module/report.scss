@@ -15,10 +15,10 @@
  * 概要資訊各欄位顏色
  */
 @mixin info-color() {
-  @for $i from 1 through 10 {
+  @for $i from 1 through 12 {
     &:nth-of-type(#{$i}) {
       &:before {
-        background-color: hsla(math.div(360 * $i, 10), 100%, 40%, 0.3);
+        background-color: hsla(math.div(360 * $i, 12), 100%, 40%, 0.3);
       }
     }
   }

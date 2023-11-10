@@ -77,6 +77,7 @@ export class ProfessionalAnalysisOption extends AnalysisOption {
       AnalysisSportsColumn.calories,
       AnalysisSportsColumn.averageHeartRate,
       AnalysisSportsColumn.hrChart,
+      AnalysisSportsColumn.alaPoint,
     ];
 
     switch (sportType) {
@@ -140,6 +141,7 @@ export class ProfessionalAnalysisOption extends AnalysisOption {
       AnalysisSportsColumn.calories,
       AnalysisSportsColumn.averageHeartRate,
       AnalysisSportsColumn.hrChart,
+      AnalysisSportsColumn.alaPoint,
     ];
 
     switch (sportType) {

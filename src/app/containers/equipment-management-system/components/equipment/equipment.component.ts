@@ -17,6 +17,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { RouterLink } from '@angular/router';
 import { Chart, ChartOptions, CoreInteractionOptions } from 'chart.js/auto';
+import annotationPlugin, { LineAnnotationOptions } from 'chartjs-plugin-annotation';
 import dayjs from 'dayjs';
 import { Subject, takeUntil } from 'rxjs';
 import { Domain, WebIp } from '../../../../core/enums/common';
@@ -25,6 +26,8 @@ import { productListParameters } from '../../models/order-api.model';
 import { EquipmentManagementService } from '../../services/equipment-management.service';
 import { EditMaintenanceRequirementComponent } from '../maintenance-requirement/edit-maintenance-requirement/edit-maintenance-requirement.component';
 import { EditEquipmentComponent } from './edit-equipment/edit-equipment.component';
+
+Chart.register(annotationPlugin);
 
 const DATE_FORMAT = {
   parse: {
@@ -76,6 +79,7 @@ export class EquipmentComponent implements OnInit, OnDestroy {
   productOrderRecord: any; // 產品訂單紀錄
   targetProdInfo: any; // 銷貨單連結後之產品基本資料(online)
   prodOfflineInfo: any; // 銷貨單連結後之產品基本資料(offline)
+  prodOnlyRepairInfo: any; //未加入銷貨單之已叫修產品
   productRepairs: any; // 產品維修保養紀錄
 
   /**
@@ -242,10 +246,6 @@ export class EquipmentComponent implements OnInit, OnDestroy {
     return dayjs(manufactureTimestamp).format('YYYY-MM');
   }
 
-  calculateRound(value) {
-    return Math.round(value * 10) / 10;
-  }
-
   openImage(imageUrl: string) {
     window.open(imageUrl, '_blank');
   }
@@ -287,47 +287,6 @@ export class EquipmentComponent implements OnInit, OnDestroy {
     }
   }
 
-  // selectType(type: string, selected: string, i: number) {
-  //   this.closeAllDropdown();
-  //   switch (type) {
-  //     case 'return_exchange':
-  //       this.productOrderRecord[i].return_exchange = selected;
-
-  //       // this.updateOrderRecord(i); // ++寫入資料庫
-
-  //       console.log(
-  //         'this.orderProds[i]',
-  //         this.productOrderRecord[i],
-  //         this.productOrderRecord[i].return_exchange
-  //       );
-  //       break;
-
-  //     case 'installType':
-  //       this.productOrderRecord[i].install_type = selected;
-
-  //       // this.updateOrderRecord(i); // ++寫入資料庫
-
-  //       console.log(
-  //         'this.orderProds[i]',
-  //         this.productOrderRecord[i],
-  //         this.productOrderRecord[i].install_type
-  //       );
-  //       break;
-
-  //     case 'repairType':
-  //       this.productRepairs[i].repair_type = selected;
-
-  //       // this.updateOrderRecord(i); // ++寫入資料庫
-
-  //       console.log(
-  //         'this.orderProds[i]',
-  //         this.productRepairs[i],
-  //         this.productRepairs[i].repair_type
-  //       );
-  //       break;
-  //   }
-  // }
-
   editForm(type: string) {
     this.closeAllDropdown();
     switch (type) {
@@ -365,17 +324,6 @@ export class EquipmentComponent implements OnInit, OnDestroy {
         this.productDetail = _productDetail;
         if (this.productDetail) {
           this.setProdInfo();
-          // this.productOrderRecord = this.productDetail.order;
-          // this.productRepairs = this.productDetail.repair;
-          // this.equipRecord = this.productDetail.equipment;
-          // if (this.productOrderRecord && this.equipRecord) {
-          //   this.setTargetProdInfo();
-          //   this.chartInit();
-          // }
-          // this.setOrderProd();
-          // if (this.serialNo) {
-          //   this.getProdLastModify();
-          // }
         }
       });
   }
@@ -391,6 +339,8 @@ export class EquipmentComponent implements OnInit, OnDestroy {
     // console.log('total_use_time_second:', this.equipRecord.total_use_time_second);
     if (this.productOrderRecord) {
       this.setTargetProdInfo();
+    } else if (!this.productOrderRecord && this.productRepairs) {
+      this.setProdOnlyRepairInfo();
     }
     if (this.equipRecord) {
       setTimeout(() => {
@@ -457,6 +407,36 @@ export class EquipmentComponent implements OnInit, OnDestroy {
     // console.log('prodOfflineInfo:', this.prodOfflineInfo);
   }
 
+  setProdOnlyRepairInfo() {
+    const { serial_no } = this.productRepairs[0];
+    const product_type = this.determineProductType(serial_no);
+    this.prodOnlyRepairInfo = {
+      serial_no,
+      product_type,
+    };
+  }
+
+  /**
+   * 依輸入序號判斷裝置類型
+   */
+  determineProductType(serial_no: string): string {
+    if (serial_no.length >= 4) {
+      const prodTypeChar = serial_no[3];
+      switch (prodTypeChar) {
+        case 'T':
+          return '跑步機';
+        case 'P':
+          return '飛輪';
+        case 'R':
+          return '划船機';
+        default:
+          return '其他';
+      }
+    } else {
+      return '其他';
+    }
+  }
+
   /**
    * 取得目前銷貨單order_no
    */
@@ -483,7 +463,9 @@ export class EquipmentComponent implements OnInit, OnDestroy {
         this.equipRecord?.total_use_time_second.map(
           (value) => Math.round((value / 3600) * 10) / 10
         ) ?? [];
-      total_use_meter = this.equipRecord?.total_use_meter ?? [];
+      total_use_meter =
+        this.equipRecord?.total_use_meter.map((value) => Math.round((value / 1000) * 10) / 10) ??
+        [];
       total_number_of_enable = this.equipRecord?.total_number_of_enable ?? [];
       update_time = this.equipRecord.update_time ?? [];
       // console.log(update_time);
@@ -492,7 +474,7 @@ export class EquipmentComponent implements OnInit, OnDestroy {
       labels: update_time,
       datasets: [
         {
-          label: '里程',
+          label: '里程(km)',
           pointStyle: 'circle',
           data: total_use_meter,
           borderColor: '#FF712E',
@@ -501,7 +483,7 @@ export class EquipmentComponent implements OnInit, OnDestroy {
           yAxisID: 'ymeter',
         },
         {
-          label: '時數',
+          label: '時數(hr)',
           pointStyle: 'circle',
           data: total_use_time_second,
           borderColor: '#6ACB7A',
@@ -528,6 +510,13 @@ export class EquipmentComponent implements OnInit, OnDestroy {
       includeInvisible: false,
     };
 
+    // const annotation :LineAnnotationOptions = {
+    //   borderColor: '#44EBC3',
+    //   borderWidth: 3,
+    //   scaleID: 'x',
+    //   value: '',
+    // };
+
     const options: ChartOptions = {
       responsive: true,
       maintainAspectRatio: false,
@@ -544,6 +533,11 @@ export class EquipmentComponent implements OnInit, OnDestroy {
         tooltip: {
           usePointStyle: true,
         },
+        // annotation: {
+        //   annotations: {
+        //     annotation
+        //   }
+        // }
       },
 
       scales: {
@@ -551,13 +545,15 @@ export class EquipmentComponent implements OnInit, OnDestroy {
           type: 'linear',
           display: true,
           position: 'left',
-          beginAtZero: true, // y轴从0开始
+          beginAtZero: true,
+
           grid: {
             drawOnChartArea: false,
           },
           ticks: {
-            //   // callback: (value: number) => `${value}%`, // 刻度百分比符號
+            callback: (value: number) => `${value}`,
             count: 5,
+            // minRotation:20,
             color: '#FF712E',
           },
         },
@@ -565,13 +561,14 @@ export class EquipmentComponent implements OnInit, OnDestroy {
           type: 'linear',
           display: true,
           position: 'left',
-          beginAtZero: true, // y轴从0开始
+          beginAtZero: true,
           grid: {
             drawOnChartArea: false,
           },
           ticks: {
             callback: (value: number) => `${value}`,
             count: 5,
+            // minRotation:20,
             color: '#6ACB7A',
           },
         },
@@ -579,13 +576,14 @@ export class EquipmentComponent implements OnInit, OnDestroy {
           type: 'linear',
           display: true,
           position: 'left',
-          beginAtZero: true, // y轴从0开始
+          beginAtZero: true,
           grid: {
             drawOnChartArea: false,
           },
           ticks: {
             callback: (value: number) => `${value}`,
             count: 5,
+            // minRotation:20,
             color: '#6AA2CB',
           },
         },
@@ -595,7 +593,7 @@ export class EquipmentComponent implements OnInit, OnDestroy {
           },
           ticks: {
             // display: false,
-            maxTicksLimit: 5, // 指定要顯示的最大標籤數量
+            maxTicksLimit: 6, // 指定要顯示的最大標籤數量
           },
         },
         // x: {

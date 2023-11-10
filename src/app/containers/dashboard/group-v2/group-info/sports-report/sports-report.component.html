@@ -556,6 +556,7 @@
     [sportType]="reportCondition.sportType"
   ></app-sports-data-table>
 
+  <!-- 團體分析 -->
   <section class="report-section" *ngIf="groupAnalysis">
     <div class="flexRow cardTitle">
       <div class="flexRow">
@@ -616,7 +617,6 @@
               isGroupAnalysis: true,
               columnType: 'targetAchievedPeople',
               title: 'universal_lifeTracking_achievementRate' | translate,
-              dataUnit: 'person',
               className: 'analysis__achieved__people',
               showHeader: groupAnalysisOption.getItemSelectStatus(
                 AnalysisSportsColumn.targetAchievedRate
@@ -899,6 +899,20 @@
             "
           ></div>
         </ng-container>
+        <div
+          *ngTemplateOutlet="
+            analysisHeader;
+            context: {
+              isGroupAnalysis: true,
+              columnType: 'alaPoint',
+              title: 'ALA POINT',
+              dataUnit: 'point/per',
+              isPersonAvgData: true,
+              className: 'analysis__ala__point',
+              showHeader: groupAnalysisOption.getItemSelectStatus(AnalysisSportsColumn.alaPoint)
+            }
+          "
+        ></div>
         <div
           *ngTemplateOutlet="
             analysisHeader;
@@ -1193,6 +1207,17 @@
                   "
                 ></span>
               </ng-container>
+              <span
+                *ngTemplateOutlet="
+                  analysisData;
+                  context: {
+                    data: getPerAvgData(_group.base, 'alaPoint').value,
+                    diff: checkGroupProgressive(_group.groupId, 'alaPoint'),
+                    className: 'analysis__ala__point',
+                    showData: groupAnalysisOption.getItemSelectStatus(AnalysisSportsColumn.alaPoint)
+                  }
+                "
+              ></span>
               <div
                 class="analysis__hr__chart"
                 *ngIf="groupAnalysisOption.getItemSelectStatus(AnalysisSportsColumn.hrChart)"
@@ -1459,6 +1484,16 @@
                   "
                 ></span>
               </ng-container>
+              <span
+                *ngTemplateOutlet="
+                  analysisData;
+                  context: {
+                    data: getPerAvgData(_group.compare, 'alaPoint').value,
+                    className: 'analysis__ala__point',
+                    showData: groupAnalysisOption.getItemSelectStatus(AnalysisSportsColumn.alaPoint)
+                  }
+                "
+              ></span>
               <div
                 class="analysis__hr__chart"
                 *ngIf="groupAnalysisOption.getItemSelectStatus(AnalysisSportsColumn.hrChart)"
@@ -1490,6 +1525,7 @@
     </div>
   </section>
 
+  <!-- 個人分析 -->
   <section class="report-section" *ngIf="personAnalysis">
     <div class="flexRow cardTitle">
       <div class="flexRow">
@@ -1932,6 +1968,19 @@
             "
           ></div>
         </ng-container>
+        <div
+          *ngTemplateOutlet="
+            analysisHeader;
+            context: {
+              isGroupAnalysis: false,
+              columnType: 'alaPoint',
+              title: 'ALA POINT',
+              dataUnit: 'point',
+              className: 'analysis__ala__point',
+              showHeader: personalAnalysisOption.getItemSelectStatus(AnalysisSportsColumn.alaPoint)
+            }
+          "
+        ></div>
         <div
           *ngTemplateOutlet="
             analysisHeader;
@@ -2398,6 +2447,20 @@
                   ></ng-container>
                 </span>
               </ng-container>
+              <span
+                *ngTemplateOutlet="
+                  analysisData;
+                  context: {
+                    data: getPersonalData(_person.base, 'alaPoint'),
+                    diff: checkPersonProgressive(_person.memberId, 'alaPoint'),
+                    className: 'analysis__ala__point',
+                    showData: personalAnalysisOption.getItemSelectStatus(
+                      AnalysisSportsColumn.alaPoint
+                    ),
+                    openPrivacy: _person.base.openPrivacy
+                  }
+                "
+              ></span>
               <div
                 class="analysis__hr__chart"
                 *ngIf="personalAnalysisOption.getItemSelectStatus(AnalysisSportsColumn.hrChart)"
@@ -2817,6 +2880,19 @@
                   ></ng-container>
                 </span>
               </ng-container>
+              <span
+                *ngTemplateOutlet="
+                  analysisData;
+                  context: {
+                    data: getPersonalData(_person.compare, 'alaPoint'),
+                    className: 'analysis__ala__point',
+                    showData: personalAnalysisOption.getItemSelectStatus(
+                      AnalysisSportsColumn.alaPoint
+                    ),
+                    openPrivacy: _person.compare?.openPrivacy
+                  }
+                "
+              ></span>
               <div
                 class="analysis__hr__chart"
                 *ngIf="personalAnalysisOption.getItemSelectStatus(AnalysisSportsColumn.hrChart)"
@@ -3113,6 +3189,16 @@
           "
         ></div>
       </ng-container>
+      <div
+        *ngTemplateOutlet="
+          oneInfoData;
+          context: {
+            data: getPerAvgData(infoData, 'alaPoint'),
+            type: 'alaPoint',
+            isBaseData
+          }
+        "
+      ></div>
     </div>
   </div>
 </ng-template>
@@ -3219,6 +3305,10 @@
       <ng-container *ngSwitchCase="'perEnergy'">
         {{ 'universal_activityData_perCapita' | translate }}
         {{ 'universal_activityData_totalEnergyGen' | translate }}
+      </ng-container>
+      <ng-container *ngSwitchCase="'alaPoint'">
+        {{ 'universal_activityData_perCapita' | translate }}
+        {{ 'ALA POINT' | translate }}
       </ng-container>
     </span>
   </div>

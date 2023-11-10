@@ -32,13 +32,13 @@
           </div>
         </div>
         <div class="label_input">
-          <label class="edit_item_label">產品序號</label>
+          <label class="edit_item_label required">產品序號</label>
           <input
             class="input"
             maxlength="14"
             [class.input_uneditable]="!isNewForm || rigisterProd"
             [(ngModel)]="orderProd.serial_no"
-            placeholder="serial_no"
+            placeholder="serial no"
             name="serial_no"
             [disabled]="!isNewForm || rigisterProd"
             required
@@ -50,20 +50,19 @@
             必填
           </div>
         </div>
-        <div class="label_input">
+        <div *ngIf="rigisterProd" class="label_input">
           <label class="edit_item_label">所屬銷貨單</label>
           <input
             class="input"
             maxlength="11"
             [class.input_uneditable]="(isNewForm || !isNewForm) && !rigisterProd"
             [(ngModel)]="orderProd.order_no"
-            placeholder="order_no"
             name="order_no"
             [disabled]="(isNewForm || !isNewForm) && !rigisterProd"
           />
         </div>
         <div class="label_input date_icon" mat-raised-button (click)="openInstallDatePicker.open()">
-          <label class="edit_item_label">安裝日期</label>
+          <label class="edit_item_label required">安裝日期</label>
           <input
             class="input pointer"
             readonly
@@ -72,7 +71,7 @@
             (dateChange)="changeDate('install_date', $event.value)"
             [(ngModel)]="orderProd.install_date"
             [max]="orderProd.warranty_start || orderProd.warranty_end"
-            placeholder="install_date"
+            placeholder="YYYY-MM-DD"
             name="install_date"
             required
           />
@@ -93,7 +92,7 @@
           mat-raised-button
           (click)="openWarrantyStartDatePicker.open()"
         >
-          <label class="edit_item_label">保固開始日</label>
+          <label class="edit_item_label required">保固開始日</label>
           <input
             class="input pointer"
             readonly
@@ -103,7 +102,7 @@
             [(ngModel)]="orderProd.warranty_start"
             [min]="orderProd.install_date"
             [max]="orderProd.warranty_end"
-            placeholder="warranty_start"
+            placeholder="YYYY-MM-DD"
             name="warranty_start"
             required
           />
@@ -124,7 +123,7 @@
           mat-raised-button
           (click)="openWarrantyEndDatePicker.open()"
         >
-          <label class="edit_item_label">保固結束日</label>
+          <label class="edit_item_label required">保固結束日</label>
           <input
             class="input pointer"
             readonly
@@ -133,7 +132,7 @@
             (dateChange)="changeDate('warranty_end', $event.value)"
             [(ngModel)]="orderProd.warranty_end"
             [min]="orderProd.warranty_start || orderProd.install_date"
-            placeholder="warranty_end"
+            placeholder="YYYY-MM-DD"
             name="warranty_end"
             required
           />
@@ -150,6 +149,30 @@
           </div>
         </div>
         <div class="label_input">
+          <label class="edit_item_label">安裝狀態</label>
+          <div class="input_select input">
+            <div
+              class="foldable"
+              [class.unfold]="showInstallTypeDropdown"
+              (click)="toggleDropdown('install_type')"
+            >
+              {{ orderProd.install_type }}
+            </div>
+            <div *ngIf="showInstallTypeDropdown" class="toggle_dropdown">
+              <ul>
+                <li
+                  dropdown
+                  *ngFor="let installType of installTypeList"
+                  (click)="selectType('install_type', installType)"
+                  class="dropdown_list"
+                >
+                  {{ installType }}
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <div *ngIf="!isNewForm" class="label_input">
           <label class="edit_item_label">退換貨狀態</label>
           <div class="input_select input">
             <div
@@ -177,30 +200,43 @@
             </div>
           </div>
         </div>
-        <div class="label_input">
-          <label class="edit_item_label">安裝狀態</label>
-          <div class="input_select input">
-            <div
-              class="foldable"
-              [class.unfold]="showInstallTypeDropdown"
-              (click)="toggleDropdown('install_type')"
-            >
-              {{ orderProd.install_type }}
-            </div>
-            <div *ngIf="showInstallTypeDropdown" class="toggle_dropdown">
-              <ul>
-                <li
-                  dropdown
-                  *ngFor="let installType of installTypeList"
-                  (click)="selectType('install_type', installType)"
-                  class="dropdown_list"
-                >
-                  {{ installType }}
-                </li>
-              </ul>
-            </div>
+        <div
+          *ngIf="orderProd.return_exchange && orderProd.return_exchange !== 'None'"
+          class="label_input date_icon"
+          mat-raised-button
+          (click)="openReturnExchangeDatePicker.open()"
+        >
+          <label class="edit_item_label required">退換貨日</label>
+          <input
+            class="input pointer"
+            readonly
+            matInput
+            [matDatepicker]="openReturnExchangeDatePicker"
+            (dateChange)="changeDate('return_date', $event.value)"
+            [(ngModel)]="orderProd.return_date"
+            [min]="orderProd.warranty_start || orderProd.install_date"
+            placeholder="YYYY-MM-DD"
+            name="return_date"
+            required
+          />
+          <mat-datepicker
+            [touchUi]="isMobile"
+            #openReturnExchangeDatePicker
+            disabled="false"
+          ></mat-datepicker>
+          <div
+            class="error_message"
+            *ngIf="
+              orderProd.return_exchange &&
+              orderProd.return_exchange !== 'None' &&
+              prodForm.submitted &&
+              prodForm.form.controls.return_date.hasError('required')
+            "
+          >
+            必填
           </div>
         </div>
+
         <div class="memo_label_input">
           <label class="edit_item_label">備註</label>
           <textarea
@@ -208,7 +244,6 @@
             maxlength="300"
             class="input"
             [(ngModel)]="orderProd.memo"
-            placeholder="memo"
             name="memo"
           ></textarea>
           <span class="textLength">{{ textLength }}/300</span>

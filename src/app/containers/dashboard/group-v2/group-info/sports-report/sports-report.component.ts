@@ -742,6 +742,8 @@ export class SportsReportComponent implements OnInit, OnDestroy {
   handleGroupInfoData(allGroupList: AllGroupMember) {
     const rootGroupInfo = this.getBelongGroupObj();
     this.groupSportsInfo = new GroupSportsReportInfo(rootGroupInfo, allGroupList);
+    console.log(this.groupSportsInfo);
+
     this.groupAnalysis = new SportsAnalysisSort(
       Object.values(this.groupSportsInfo.groupSportInfo),
       'targetAchievedPeople',
@@ -845,6 +847,9 @@ export class SportsReportComponent implements OnInit, OnDestroy {
       switch (key) {
         case 'calories':
           result.update(value, 'cal');
+          break;
+        case 'alaPoint':
+          result.update(Math.floor(activityPeople ? data / activityPeople : 0), 'point');
           break;
         case 'avgHeartRateBpm':
           result.update(value, 'bpm');

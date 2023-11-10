@@ -202,6 +202,95 @@ export class EditRepairComponent implements OnInit, OnChanges, OnDestroy {
     }
   }
 
+  openImage(imageUrl: string) {
+    window.open(imageUrl, '_blank');
+  }
+
+  deleteImg(fileName: string) {
+    const index = this.fileNames.indexOf(fileName);
+    if (index !== -1) {
+      this.fileNames.splice(index, 1);
+      this.repairInfo.attach_file = this.fileNames.join(',');
+      this.filesMax = this.repairInfo.attach_file.length > this.filesMaxLength ? true : false;
+    }
+  }
+
+  previewImg(fileInput: HTMLInputElement) {
+    const file = fileInput.files[0];
+    if (file) {
+      const formData = new FormData();
+      formData.append('file', file);
+      this.uploadImage(formData);
+      fileInput.value = '';
+    }
+  }
+
+  uploadImage(formData: any) {
+    const dataType = 'repair';
+    this.equipmentManagementService.uploadImageApi(formData, dataType).subscribe((res) => {
+      if (res.error) {
+        //上傳失敗(非圖片檔)
+        alert(res.description);
+      } else {
+        //上傳成功
+        if (this.repairInfo.attach_file) {
+          //原字串有 attach_file
+          if (
+            this.repairInfo.attach_file === 'None' ||
+            this.repairInfo.attach_file === null ||
+            this.repairInfo.attach_file.length < 10
+          ) {
+            this.repairInfo.attach_file = '';
+            this.repairInfo.attach_file = res.imgUrl;
+          } else {
+            this.repairInfo.attach_file += ',' + res.imgUrl;
+          }
+        } else {
+          //原字串沒有 attach_file
+          this.repairInfo.attach_file = '';
+          this.repairInfo.attach_file = res.imgUrl;
+        }
+        this.setFileArray();
+        // console.log(this.fileNames);
+      }
+    });
+  }
+
+  setFileArray() {
+    if (this.repairInfo && this.repairInfo.attach_file) {
+      if (
+        this.repairInfo.attach_file === 'None' ||
+        this.repairInfo.attach_file === null ||
+        this.repairInfo.attach_file === ''
+      ) {
+        this.fileNames = [];
+        this.repairInfo.attach_file = '';
+      } else {
+        this.filesMax = this.repairInfo.attach_file.length > this.filesMaxLength ? true : false;
+        this.fileNames = this.repairInfo.attach_file.split(',');
+      }
+    } else {
+      this.fileNames = [];
+    }
+  }
+
+  onInput(event: any, type?: any): void {
+    if (event.target.value > 2147483647) {
+      event.target.value = 2147483647;
+    }
+    switch (type) {
+      case 'total_meter':
+        this.repairInfo.total_meter = event.target.value;
+        break;
+      case 'total_use_time':
+        this.repairInfo.total_use_time = event.target.value;
+        break;
+      default:
+        break;
+    }
+    return event.target.value;
+  }
+
   /**
    * 判斷視窗為新增或修改
    */
@@ -219,12 +308,14 @@ export class EditRepairComponent implements OnInit, OnChanges, OnDestroy {
           // console.log('parts_replacement=0');
           this.targetRepairInfo.parts_replace_item = [];
           this.repairInfo = cloneDeep(this.targetRepairInfo);
+          this.setFileArray();
           this.originRepairInfo = cloneDeep(this.targetRepairInfo);
         } else {
           // console.log('parts_replacement=1');
           this.getSavedPartsList();
           this.originRepairInfo = cloneDeep(this.targetRepairInfo);
           this.repairInfo = cloneDeep(this.targetRepairInfo);
+          this.setFileArray();
         }
       }
     }
@@ -233,6 +324,11 @@ export class EditRepairComponent implements OnInit, OnChanges, OnDestroy {
   getPartName(part_no: string): string {
     const part = this.partList.find((item) => item.part_no === part_no);
     return part ? part.part_name : part_no;
+  }
+
+  getPartSpec(part_no: string): string {
+    const part = this.partList.find((item) => item.part_no === part_no);
+    return part ? part.specifications : part_no;
   }
 
   getQuantity(part_no: string) {
@@ -250,14 +346,14 @@ export class EditRepairComponent implements OnInit, OnChanges, OnDestroy {
     }
     this.filteredSerialNo = Array.from(new Set(this.filteredSerialNo)); // 使用 Set 来去除重复的元素
     this.isListVisible = this.filteredSerialNo.length !== 0 ? true : false;
-    console.log('filteredSerialNo', this.filteredSerialNo);
+    // console.log('filteredSerialNo', this.filteredSerialNo);
   }
 
   addSerialNo(serialNo?: string) {
     this.repairInfo.serial_no = serialNo;
     this.isListVisible = false;
-    console.log('fixReqSerialArray', this.fixReqSerialArray);
-    console.log(this.repairInfo.serial_no);
+    // console.log('fixReqSerialArray', this.fixReqSerialArray);
+    // console.log(this.repairInfo.serial_no);
   }
 
   filterPartsList() {
@@ -564,21 +660,6 @@ export class EditRepairComponent implements OnInit, OnChanges, OnDestroy {
       total_meter: total_meter,
       total_use_time: total_use_time,
     });
-    // if (serial_no.length === 0) {
-    //   alert('請輸入產品序號');
-    // } else if (repair_date === '') {
-    //   alert('請輸入維修日期');
-    // } else if (member === '') {
-    //   alert('請輸入維修人員');
-    // } else if (machine_status === '') {
-    //   alert('請輸入機台狀態');
-    // } else if (root_causes === '') {
-    //   alert('請輸入異常原因');
-    // } else if (total_meter === null) {
-    //   alert('請輸入總使用里程');
-    // } else if (total_use_time === null) {
-    //   alert('請輸入總使用時間');
-    // } else {
     if (this.repairForm.valid) {
       if (this.isNewForm) {
         this.addRepairInfo();
@@ -599,6 +680,7 @@ export class EditRepairComponent implements OnInit, OnChanges, OnDestroy {
     } else {
       this.closeEdit();
       this.repairInfo = cloneDeep(this.originRepairInfo);
+      this.fileNames = this.repairInfo.attach_file.split(',');
     }
   }
 
@@ -740,6 +822,7 @@ export class EditRepairComponent implements OnInit, OnChanges, OnDestroy {
    */
   closeEdit() {
     this.closeAllDropdown();
+    this.setFileArray();
     this.editing = false;
     this.editParts = false;
     this.editingChange.emit(this.editing);

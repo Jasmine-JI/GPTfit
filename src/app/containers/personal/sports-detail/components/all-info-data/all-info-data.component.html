@@ -355,6 +355,21 @@
         ></div>
       </ng-container>
     </ng-container>
+    <h5 class="info__type__title">
+      {{ '運動點數' | translate }}
+    </h5>
+    <div
+      *ngTemplateOutlet="
+        oneInfo;
+        context: {
+          title: 'ALA POINT',
+          value: activityInfo.ala_zone_point,
+          unit: 'point',
+          diff: diffData?.ala_zone_point ?? 0,
+          isPositiveDiff: diffData?.ala_zone_point >= 0
+        }
+      "
+    ></div>
   </div>
 </section>
 

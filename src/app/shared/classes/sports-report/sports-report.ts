@@ -18,7 +18,7 @@ import { PreferSportType } from '../prefer-sport-type';
 import { WeightTrainStatistics } from '../weight-train-statistics';
 import dayjs from 'dayjs';
 import quarterOfYear from 'dayjs/plugin/quarterOfYear';
-import { TargetConditionMap } from '../../../core/models/api/api-common';
+import { TargetConditionMap, WeightTrainingInfo } from '../../../core/models/api/api-common';
 import { SportsTargetAchieveRate } from './target-achieve-rate';
 
 dayjs.extend(quarterOfYear);
@@ -46,6 +46,7 @@ export class SportsReport {
       parameter;
     // 將統計數據另存至物件中
     let dataObj = { openPrivacy } as any;
+    let alaPoint = 0;
     const avgDataIntermediary = {};
     const maxDataIntermediary = {};
     if (openPrivacy) {
@@ -54,44 +55,52 @@ export class SportsReport {
       const preferSports = new PreferSportType();
       const preferWeightTrainGroup = new WeightTrainStatistics();
       data.forEach((_data) => {
-        const { activities: _activities } = _data;
-        _activities.forEach((_activity) => {
-          const _sportType = +_activity.type as SportType;
-          if (sportType === SportType.all || _sportType === sportType) {
-            // 計算偏好運動類別
-            const _totalActivities = _activity['totalActivities'];
-            preferSports.countType(_sportType, _totalActivities);
+        console.log(_data);
+        console.log(_data['ala_zone_point']);
+        if (_data.ala_zone_point && !isNaN(_data.ala_zone_point)) {
+          alaPoint += _data.ala_zone_point;
+        }
 
-            // 計算偏好重訓肌群與各肌群訓練數據
-            if (sportType === SportType.weightTrain) {
-              const { weightTrainingInfo: _weightTrainingInfo } = _activity;
-              _weightTrainingInfo.forEach((_info) => {
-                preferWeightTrainGroup.countMuscleGroup(_info.muscle, _totalActivities);
-                preferWeightTrainGroup.countMuscleGroupData(_info);
+        const { activities: _activities } = _data;
+        _activities.forEach(
+          (_activity: { [x: string]: any; type?: any; weightTrainingInfo?: any }) => {
+            const _sportType = +_activity.type as SportType;
+            if (sportType === SportType.all || _sportType === sportType) {
+              // 計算偏好運動類別
+              const _totalActivities = _activity['totalActivities'];
+              preferSports.countType(_sportType, _totalActivities);
+
+              // 計算偏好重訓肌群與各肌群訓練數據
+              if (sportType === SportType.weightTrain) {
+                const { weightTrainingInfo: _weightTrainingInfo } = _activity;
+                _weightTrainingInfo.forEach((_info: WeightTrainingInfo) => {
+                  preferWeightTrainGroup.countMuscleGroup(_info.muscle, _totalActivities);
+                  preferWeightTrainGroup.countMuscleGroupData(_info);
+                });
+              }
+
+              // 根據運動類別將所需數據進行加總
+              dataKey.forEach((_key) => {
+                const isMaxData = _key.toLowerCase().includes('max');
+                const _value = +(_activity[_key] ?? 0);
+                if (isMaxData) {
+                  // 若為最大相關數據，則只取該時間範圍最大值
+                  if ((maxDataIntermediary[_key] ?? 0) < _value) maxDataIntermediary[_key] = _value;
+                } else if (isAvgData(_key)) {
+                  // 平均數據需再乘該期間筆數，之後再除有效總筆數
+                  const dataIntermediary = avgDataIntermediary[_key];
+                  const currentWeightedValue = _value * _totalActivities;
+                  let [effectTotal, effectActivities] = dataIntermediary ?? [0, 0];
+                  effectTotal += currentWeightedValue;
+                  effectActivities += _value ? _totalActivities : 0;
+                  avgDataIntermediary[_key] = [effectTotal, effectActivities];
+                } else {
+                  dataObj[_key] = (dataObj[_key] ?? 0) + _value;
+                }
               });
             }
-
-            // 根據運動類別將所需數據進行加總
-            dataKey.forEach((_key) => {
-              const isMaxData = _key.toLowerCase().includes('max');
-              const _value = +(_activity[_key] ?? 0);
-              if (isMaxData) {
-                // 若為最大相關數據，則只取該時間範圍最大值
-                if ((maxDataIntermediary[_key] ?? 0) < _value) maxDataIntermediary[_key] = _value;
-              } else if (isAvgData(_key)) {
-                // 平均數據需再乘該期間筆數，之後再除有效總筆數
-                const dataIntermediary = avgDataIntermediary[_key];
-                const currentWeightedValue = _value * _totalActivities;
-                let [effectTotal, effectActivities] = dataIntermediary ?? [0, 0];
-                effectTotal += currentWeightedValue;
-                effectActivities += _value ? _totalActivities : 0;
-                avgDataIntermediary[_key] = [effectTotal, effectActivities];
-              } else {
-                dataObj[_key] = (dataObj[_key] ?? 0) + _value;
-              }
-            });
           }
-        });
+        );
       });
 
       // 最後處理其他數據
@@ -104,6 +113,7 @@ export class SportsReport {
           preferSports: preferSports.preferSport,
           targetAchieveRate: avgAcheieve,
           targetAchieved: avgAcheieve >= 100,
+          alaPoint: alaPoint,
         };
 
         dataObj = {

@@ -10,7 +10,7 @@ export const breadcrumbResolver = (
   const params = route.params;
   const url = activatedRoute.url;
   const breadcrumb = { label, params, url };
-  console.log(breadcrumb);
+  // console.log(breadcrumb);
 
   inject(EquipmentManagementService).createBreadcrumb(breadcrumb);
 };

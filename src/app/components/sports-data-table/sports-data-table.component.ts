@@ -86,7 +86,10 @@ export class SportsDataTableComponent implements OnInit, OnChanges, OnDestroy {
 
   ngOnChanges(e: SimpleChanges) {
     const { tableData } = e;
+    console.log(e.tableData);
+
     if (tableData) this.createHeaderList(tableData.currentValue);
+    console.log('HERE!!!', this.tableData);
   }
 
   /**
@@ -193,6 +196,8 @@ export class SportsDataTableComponent implements OnInit, OnChanges, OnDestroy {
    */
   checkProgressive(index: string, key: string) {
     const [base, compare] = this.tableData[index];
+    console.log('checkProgressive', this.tableData[index]);
+
     if (this.isCompareMode && compare) {
       const baseData = base[key] ?? 0;
       const compareData = compare[key];

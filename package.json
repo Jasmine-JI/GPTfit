@@ -63,6 +63,7 @@
     "body-parser": "1.18.2",
     "bootstrap": "^4.4.1",
     "chart.js": "^4.4.0",
+    "chartjs-plugin-annotation": "^3.0.1",
     "chartjs-plugin-crosshair": "^2.0.0",
     "chartjs-plugin-zoom": "^2.0.1",
     "concurrently": "^7.0.0",

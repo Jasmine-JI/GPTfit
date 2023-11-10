@@ -129,7 +129,8 @@ $card_width: 550px;
     bottom: 100%;
     right: 0%;
     border-radius: 10px;
-    background: $backgroundColor;
+    background: white;
+    box-shadow: 1px 1px 3px #00000029;
   }
 }
 
@@ -139,7 +140,10 @@ $card_width: 550px;
   color: $tile-color2;
 
   &:hover {
-    color: $text-color1;
+    background: linear-gradient(270deg, #df3a3a 0%, #c549b8 100%);
+    background-clip: text;
+    color: transparent;
+    font-weight: 900;
   }
 }
 
@@ -153,7 +157,8 @@ $card_width: 550px;
     height: max-content;
     padding: 10px;
     border-radius: 10px;
-    background: $backgroundColor;
+    background: white;
+    box-shadow: 1px 1px 3px #00000029;
   }
 }
 

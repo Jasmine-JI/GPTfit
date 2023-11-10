@@ -1,8 +1,8 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+import { LogInComponent } from './components/logIn/log-in.component';
 import { EquipmentManagementComponent } from './equipment-management.component';
 import { appPath } from '../../app-path.const';
-import { LogInComponent } from './components/logIn/log-in.component';
 import { EquipmentComponent } from './components/equipment/equipment.component';
 import { Page403Component } from '../../shared/components/page403/page403.component';
 import { Page404Component } from '../../shared/components/page404/page404.component';

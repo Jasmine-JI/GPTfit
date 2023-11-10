@@ -42,7 +42,7 @@
       </div>
 
       <div class="detail_info_wrap">
-        <div class="detail_info_title">名稱</div>
+        <div class="detail_info_title">姓名</div>
         <div class="content_wrap">
           <div class="editable_content">{{ repairForm.user_name }}</div>
         </div>
@@ -54,15 +54,16 @@
         </div>
       </div>
       <div class="detail_info_wrap">
-        <div class="detail_info_title">E-mail</div>
-        <div class="content_wrap">
-          <div class="editable_content">{{ repairForm.e_mail }}</div>
-        </div>
-      </div>
-      <div class="detail_info_wrap">
         <div class="detail_info_title">地址</div>
         <div class="content_wrap">
           <div class="editable_content">{{ repairForm.address }}</div>
+        </div>
+      </div>
+      <div class="detail_info_wrap">
+        <div class="detail_info_title">E-mail</div>
+        <div class="content_wrap">
+          <div *ngIf="repairForm.e_mail" class="editable_content">{{ repairForm.e_mail }}</div>
+          <div *ngIf="!repairForm.e_mail" class="editable_content">無</div>
         </div>
       </div>
     </div>
@@ -70,7 +71,10 @@
       <div class="detail_info_wrap">
         <div class="detail_info_title">問題描述</div>
         <div class="memo_wrap">
-          <div class="memo_content">{{ repairForm.description }}</div>
+          <div *ngIf="repairForm.description" class="memo_content">
+            {{ repairForm.description }}
+          </div>
+          <div *ngIf="!repairForm.description" class="memo_content">無</div>
         </div>
       </div>
     </div>
@@ -155,36 +159,67 @@
     </div>
     <div class="section_detail">
       <div class="detail_info_wrap">
-        <div class="detail_info_title">總使用里程</div>
+        <div class="detail_info_title">總使用里程(km)</div>
         <div class="content_wrap">
           <div class="editable_content">{{ repairInfo.total_meter }}</div>
         </div>
       </div>
       <div class="detail_info_wrap">
-        <div class="detail_info_title">總使用時間</div>
+        <div class="detail_info_title">總使用時間(hr)</div>
         <div class="content_wrap">
           <div class="editable_content">{{ repairInfo.total_use_time }}</div>
         </div>
       </div>
       <div class="detail_info_wrap">
         <div class="detail_info_title">更換料件</div>
-        <ng-container *ngIf="repairInfo.parts_replace_item && partList">
-          <ng-container *ngFor="let item of repairInfo.parts_replace_item">
-            <div class="content_wrap replace_part">
-              <div class="editable_content">
-                <span class="part_name">{{ getPartName(item.part_no) }}</span>
-                <span class="part_no">x{{ item.quantity }}</span>
+        <ng-container *ngIf="repairInfo.parts_replace_item.length > 0 && partList">
+          <div class="replace_part_list">
+            <ng-container *ngFor="let item of repairInfo.parts_replace_item">
+              <div class="content_wrap">
+                <div class="editable_content">
+                  <span class="part_name">{{ getPartName(item.part_no) }}</span>
+                  <span class="part_name">{{ getPartSpec(item.part_no) }}</span>
+                  <span class="part_no">x{{ item.quantity }}</span>
+                </div>
               </div>
+            </ng-container>
+          </div>
+        </ng-container>
+        <ng-container *ngIf="repairInfo.parts_replace_item.length == 0">
+          <div class="replace_part_list">
+            <div class="content_wrap">
+              <div class="editable_content">無</div>
+            </div>
+          </div>
+        </ng-container>
+      </div>
+    </div>
+    <div class="section_detail">
+      <div class="detail_info_wrap">
+        <div class="detail_info_title">附件</div>
+        <div *ngIf="repairInfo.attach_file" class="img_list">
+          <ng-container *ngFor="let file of fileNames">
+            <div class="img_wrap">
+              <img
+                (click)="openImage(imgPath + file)"
+                [src]="imgPath + file"
+                alt="附加檔案"
+                id="image_preview"
+              />
             </div>
           </ng-container>
-        </ng-container>
+        </div>
+        <div *ngIf="!repairInfo.attach_file" class="memo_wrap">
+          <div class="memo_content">無</div>
+        </div>
       </div>
     </div>
     <div class="section_detail">
       <div class="detail_info_wrap">
         <div class="detail_info_title">詳細說明</div>
         <div class="memo_wrap">
-          <div class="memo_content">{{ repairInfo.description }}</div>
+          <div *ngIf="repairInfo.detail" class="memo_content">{{ repairInfo.detail }}</div>
+          <div *ngIf="!repairInfo.detail" class="memo_content">無</div>
         </div>
       </div>
     </div>

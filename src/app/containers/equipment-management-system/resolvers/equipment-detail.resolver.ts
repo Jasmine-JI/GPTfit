@@ -7,7 +7,7 @@ export const equipmentDetailResolver = (
   activatedRoute: ActivatedRoute
 ) => {
   const productParameters = { serial_no: '' };
-  console.log(route);
+  // console.log(route);
 
   const id = route.paramMap.get('equipment_sn');
   productParameters.serial_no = id;
@@ -17,7 +17,7 @@ export const equipmentDetailResolver = (
   const params = route.params;
   const url = activatedRoute.url;
   const breadcrumb = { label, params, url };
-  console.log(breadcrumb);
+  // console.log(breadcrumb);
 
   inject(EquipmentManagementService).createBreadcrumb(breadcrumb);
 };

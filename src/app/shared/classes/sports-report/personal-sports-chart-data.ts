@@ -38,6 +38,7 @@ export class PersonalSportsChartData {
   private _paiTrend: CompareTrendData;
   private _totalActivitiesTrend: CompareTrendData;
   private _caloriesTrend: CompareTrendData;
+  private _alaPointTrend: CompareTrendData;
   private _totalFeedbackEnergy: CompareTrendData;
   private _totalDistanceMetersTrend: CompareTrendData;
   private _targertAchieveTrend: TargetAchieveTrendData;
@@ -75,6 +76,7 @@ export class PersonalSportsChartData {
       baseLifeTracking,
       compareLifeTracking,
     } = dataObj;
+
     const { sportType, dateUnit, baseTime, compareTime } = condition;
     const isCompareMode = compareActivitiesData !== undefined;
     this._hrZoneTrend = new HrZoneTrendChartData(isCompareMode);
@@ -82,6 +84,9 @@ export class PersonalSportsChartData {
     this._benefitTimeTrend = new CompareTrendData(isCompareMode, trendChartColor.benefitTime);
     this._paiTrend = new CompareTrendData(isCompareMode, trendChartColor.pai);
     this._caloriesTrend = new CompareTrendData(isCompareMode, trendChartColor.calories);
+    // this._alaPointTrend = new CompareTrendData(isCompareMode, trendChartColor.calories);
+    // console.log(' this._alaPointTrend', this._alaPointTrend);
+
     this._totalActivitiesTrend = new CompareTrendData(
       isCompareMode,
       trendChartColor.totalActivities
@@ -289,10 +294,15 @@ export class PersonalSportsChartData {
   filterPersonalData(data: Array<any>, dateUnit: ReportDateUnit, sportType: SportType) {
     const dataKey = dateUnit.getReportKey('sportsReport');
     const [baseData, compareData] = data;
+
     const baseFilterResult = this.filterData(baseData, sportType, dataKey, false);
+    console.log('baseFilterResult', baseFilterResult);
+
     const compareFilterResult = compareData
       ? this.filterData(compareData, sportType, dataKey, true)
       : undefined;
+    console.log('baseFilterResult', baseFilterResult, 'compareFilterResult', compareFilterResult);
+
     return [baseFilterResult, compareFilterResult];
   }
 
@@ -311,7 +321,9 @@ export class PersonalSportsChartData {
       const { resultCode: _resultCode } = _data;
       if (checkDataOpen(_resultCode)) {
         _data[key].forEach((_dataRow) => {
-          const { activities, startTime, endTime } = _dataRow;
+          const { activities, ala_zone_point, startTime, endTime } = _dataRow;
+          console.log('_dataRow', _dataRow);
+
           activities.forEach((_activity) => {
             const { type } = _activity;
             const isAllType = sportType === SportType.all;
@@ -319,6 +331,7 @@ export class PersonalSportsChartData {
               // 扁平化方便之後依相同日期範圍合併數據
               result.unshift({
                 activities: _activity,
+                alaPoint: ala_zone_point,
                 startTime: this.alignTimeZone(startTime, 'start'),
                 endTime: this.alignTimeZone(endTime, 'end'),
               });
@@ -334,6 +347,7 @@ export class PersonalSportsChartData {
       if (result.length > 0) filterResult.push(result);
     });
 
+    console.log('filterResult', filterResult);
     return filterResult;
   };
 
@@ -349,7 +363,11 @@ export class PersonalSportsChartData {
     benefitTimeStartZone: BenefitTimeStartZone
   ) {
     const [baseData, compareData] = allData;
+    console.log('33333', allData);
+
     const achievementData = (data: Array<any>) => {
+      console.log('222222', data);
+
       return data.map((_data) => {
         const {
           activities: {
@@ -367,6 +385,7 @@ export class PersonalSportsChartData {
           startTime,
           endTime,
         } = _data;
+        console.log('111111', _data);
 
         const hrZone = [zone0, zone1, zone2, zone3, zone4, zone5];
         // 計算效益時間並寫回activities
@@ -462,6 +481,9 @@ export class PersonalSportsChartData {
 
     const baseDataResult = achievementData(baseData);
     const compareDataResult = compareData ? achievementData(compareData) : undefined;
+
+    console.log('baseDataResult', baseDataResult, 'comp areDataResult', compareDataResult);
+
     return [baseDataResult, compareDataResult];
   }
 
@@ -488,8 +510,17 @@ export class PersonalSportsChartData {
     const result: Array<any> = [];
     const temporaryCount = new TemporaryCount();
     const flatData = data[0] || [];
+    console.log('gogog', flatData);
+
     flatData.forEach((_data, _index) => {
-      const { startTime: _startTime, endTime: _endTime, activities: _activities } = _data;
+      const {
+        startTime: _startTime,
+        endTime: _endTime,
+        activities: _activities,
+        alaPoint: _alaPoint,
+      } = _data;
+      console.log('dggsdg', _alaPoint);
+
       const { start, end } = this.getSameRangeDate(_startTime, _endTime, dateUnit);
       const { startTime } = temporaryCount.dateRange;
       const isFirstData = _index === 0;
@@ -497,15 +528,18 @@ export class PersonalSportsChartData {
       if (isFirstData) {
         temporaryCount.saveDate(start, end);
         temporaryCount.countData(_activities);
+        temporaryCount.saveAlaPoint(_alaPoint);
         if (isLastData) result.push(temporaryCount.result);
       } else if (start === startTime) {
         temporaryCount.countData(_activities);
+        temporaryCount.saveAlaPoint(_alaPoint);
         if (isLastData) result.push(temporaryCount.result);
       } else {
         result.push(temporaryCount.result);
         temporaryCount.init();
         temporaryCount.saveDate(start, end);
         temporaryCount.countData(_activities);
+        temporaryCount.saveAlaPoint(_alaPoint);
         if (isLastData) result.push(temporaryCount.result);
       }
     });
@@ -531,6 +565,8 @@ export class PersonalSportsChartData {
   ) {
     const [baseDateList, compareDateList] = allDateList;
     const [baseActivitiesData, compareActivitiesData] = allData;
+    console.log('allData', allData);
+
     const baseDataResult = [];
     const compareDataResult = [];
     const lifeTrackingKey = condition.dateUnit.getReportKey('lifeTracking');
@@ -636,7 +672,14 @@ export class PersonalSportsChartData {
    */
   handleChart(data: Array<any>, sportType: SportType) {
     data.forEach((_data) => {
-      const { activities: _activities, startTime: _startTime, endTime: _endTime } = _data;
+      const {
+        activities: _activities,
+        alaPoint: _alaPoint,
+        startTime: _startTime,
+        endTime: _endTime,
+      } = _data;
+      console.log('8476548946', _data);
+
       const {
         totalHrZone0Second: _z0,
         totalHrZone1Second: _z1,
@@ -713,6 +756,7 @@ export class PersonalSportsChartData {
         avgHeartRateBpm: _avgHeartRateBpm,
         bodyWeight: _bodyWeight,
         fatRate: _fatRate,
+        alaPoint: _alaPoint,
       });
 
       switch (sportType) {
@@ -800,6 +844,7 @@ export class PersonalSportsChartData {
       }
 
       this._sportsTableData.push([tableData]);
+      console.log('QQQQQQ', this._sportsTableData);
     });
   }
 
@@ -810,12 +855,17 @@ export class PersonalSportsChartData {
    */
   handleChartWithCompare(allData: Array<any>, sportType: SportType) {
     const [baseData, compareData] = allData;
+    console.log('9999', allData);
+
     baseData.forEach((_baseData, _index) => {
       const {
         activities: _baseActivities,
+        alaPoint: _alaPoint,
         startTime: _baseStartTime,
         endTime: _baseEndTime,
       } = _baseData;
+      console.log('9999', _baseData);
+
       const {
         totalHrZone0Second: _baseZ0,
         totalHrZone1Second: _baseZ1,
@@ -858,10 +908,12 @@ export class PersonalSportsChartData {
         miniGforceZ: _baseMiniGforceZ,
         weightTrainingInfo: _baseWeightTrainingInfo,
         totalFeedbackEnergy: _baseTotalFeedbackEnergy,
+        alaPoint: _baseAlaPoint,
       } = _baseActivities;
 
       const {
         activities: _compareActivities,
+        alaPoint: _comAlaPoint,
         startTime: _compareStartTime,
         endTime: _compareEndTime,
       } = compareData[_index];
@@ -907,6 +959,7 @@ export class PersonalSportsChartData {
         miniGforceZ: _compareMiniGforceZ,
         weightTrainingInfo: _compareWeightTrainingInfo,
         totalFeedbackEnergy: _compareTotalFeedbackEnergy,
+        alaPoint: _compareAlaPoint,
       } = _compareActivities;
       const baseTableData: any = {};
       const compareTableData: any = {};
@@ -943,6 +996,7 @@ export class PersonalSportsChartData {
         _compareCalories,
         _compareDateRange
       );
+
       this._totalActivitiesTrend.addMixData(
         _baseTotalActivities,
         _baseDateRange,
@@ -995,6 +1049,7 @@ export class PersonalSportsChartData {
         avgHeartRateBpm: _baseAvgHeartRateBpm,
         bodyWeight: _baseBodyWeight,
         fatRate: _baseFatRate,
+        alaPoint: _baseAlaPoint,
       });
 
       Object.assign(compareTableData, {
@@ -1010,6 +1065,7 @@ export class PersonalSportsChartData {
         avgHeartRateBpm: _compareAvgHeartRateBpm,
         bodyWeight: _compareBodyWeight,
         fatRate: _compareFatRate,
+        alaPoint: _compareAlaPoint,
       });
 
       switch (sportType) {
@@ -1058,6 +1114,7 @@ export class PersonalSportsChartData {
             avgMaxCadence: _baseAvgRunMaxCadence,
             avgCadence: _baseRunAvgCadence,
             totalFeedbackEnergy: _baseTotalFeedbackEnergy,
+            alaPoint: _alaPoint,
           });
 
           Object.assign(compareTableData, {
@@ -1067,6 +1124,7 @@ export class PersonalSportsChartData {
             avgMaxCadence: _compareAvgRunMaxCadence,
             avgCadence: _compareRunAvgCadence,
             totalFeedbackEnergy: _compareTotalFeedbackEnergy,
+            alaPoint: _comAlaPoint,
           });
           break;
         }
