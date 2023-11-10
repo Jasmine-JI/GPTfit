@@ -1,10 +1,10 @@
 <div
-  *ngIf="productOrderRecord && productDetail && (targetProdInfo || prodOfflineInfo)"
+  *ngIf="productDetail && (targetProdInfo || prodOfflineInfo || prodOnlyRepairInfo)"
   class="section_wrapper"
 >
   <!-- 銷貨單-基本資料 -->
-  <ng-container *ngIf="targetProdInfo; else ProdOffline">
-    <section class="content-box section" *ngIf="targetProdInfo">
+  <ng-container *ngIf="targetProdInfo">
+    <section class="content-box section">
       <div class="section_title">基本資料</div>
       <div class="time_wrap">
         <div class="time_name">
@@ -36,7 +36,7 @@
           </div>
         </div>
         <div class="detail_info_wrap">
-          <div class="detail_info_title">所屬單號</div>
+          <div class="detail_info_title">所屬銷貨單</div>
           <div
             [routerLink]="['/equipment-management/order', targetProdInfo.order_no]"
             class="content_wrap link"
@@ -93,7 +93,7 @@
 
         <div class="detail_info_wrap">
           <div class="detail_info_title">附件</div>
-          <div class="img_list">
+          <div *ngIf="targetProdInfo.attach_file" class="img_list">
             <ng-container *ngFor="let fileName of fileNames">
               <div class="img_wrap">
                 <img
@@ -105,21 +105,25 @@
               </div>
             </ng-container>
           </div>
+          <div *ngIf="!targetProdInfo.attach_file" class="memo_wrap">
+            <div class="memo_content">無</div>
+          </div>
         </div>
       </div>
       <div class="section_detail">
         <div class="detail_info_wrap">
           <div class="detail_info_title">備註</div>
           <div class="memo_wrap">
-            <div class="memo_content">{{ targetProdInfo.memo }}</div>
+            <div *ngIf="targetProdInfo.memo" class="memo_content">{{ targetProdInfo.memo }}</div>
+            <div *ngIf="!targetProdInfo.memo" class="memo_content">無</div>
           </div>
         </div>
       </div>
       <div (click)="editForm('targetProdInfo')" class="edit_button device_system_button">編輯</div>
     </section>
   </ng-container>
-  <ng-template #ProdOffline>
-    <section class="content-box section" *ngIf="prodOfflineInfo">
+  <ng-container *ngIf="prodOfflineInfo">
+    <section class="content-box section">
       <div class="section_title">基本資料</div>
       <div class="time_wrap">
         <div class="time_name">
@@ -169,7 +173,26 @@
         </div>
       </div>
     </section>
-  </ng-template>
+  </ng-container>
+  <ng-container *ngIf="prodOnlyRepairInfo">
+    <section class="content-box section">
+      <div class="section_title">基本資料</div>
+      <div class="section_detail">
+        <div class="detail_info_wrap">
+          <div class="detail_info_title">序號</div>
+          <div class="content_wrap">
+            <div class="editable_content">{{ prodOnlyRepairInfo.serial_no }}</div>
+          </div>
+        </div>
+        <div class="detail_info_wrap">
+          <div class="detail_info_title">類型</div>
+          <div class="content_wrap">
+            <div class="editable_content">{{ prodOnlyRepairInfo.product_type }}</div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </ng-container>
 
   <!-- 設備產品-出退貨紀錄 -->
   <section class="content-box section">
@@ -190,7 +213,7 @@
           </div>
         </div>
       </div>
-      <div class="time_name">
+      <div class="time_name" *ngIf="productOrderRecord.length > 1">
         <div class="establish_update_time">
           <div class="title">最後修改</div>
           <div class="date_time">
@@ -227,7 +250,7 @@
             </div>
           </div>
           <div class="detail_info_wrap">
-            <div class="detail_info_title">名稱</div>
+            <div class="detail_info_title">姓名</div>
             <div class="content_wrap">
               <div class="editable_content">{{ orderRecord.user_name }}</div>
             </div>
@@ -244,8 +267,6 @@
               <div class="editable_content">{{ orderRecord.address }}</div>
             </div>
           </div>
-
-          <!-- 下拉式編輯 -->
           <div class="detail_info_wrap">
             <div class="detail_info_title">安裝狀態</div>
             <div class="content_wrap">
@@ -257,19 +278,17 @@
               >
                 {{ orderRecord.install_type }}
               </div>
-              <!-- <div *ngIf="showInstallTypeDropdown.isOpen ===true && showInstallTypeDropdown.selectedIndex === i"
-                class="toggle_dropdown">
-                <ul>
-                  <li dropdown *ngFor="let installType of installTypeList"
-                    (click)="selectType('installType',installType,i)" class="dropdown_list">
-                    {{ installType }}
-                  </li>
-                </ul>
-              </div> -->
             </div>
           </div>
-
-          <!-- 下拉式編輯 -->
+          <div
+            *ngIf="orderRecord.return_exchange && orderRecord.return_exchange !== 'None'"
+            class="detail_info_wrap"
+          >
+            <div class="detail_info_title">安裝日期</div>
+            <div class="content_wrap">
+              <div class="editable_content">{{ orderRecord.install_date }}</div>
+            </div>
+          </div>
           <div class="detail_info_wrap">
             <div class="detail_info_title">退換貨狀態</div>
             <div class="content_wrap">
@@ -285,16 +304,15 @@
                     '無'
                 }}
               </div>
-              <!-- <div *ngIf="showReturnExchangeDropdown.isOpen && showReturnExchangeDropdown.selectedIndex === i"
-                class="toggle_dropdown">
-                <ul>
-                  <li dropdown *ngFor="let returnExchange of returnExchangeList"
-                    (click)="selectType('return_exchange',returnExchange,i)" class="dropdown_list">
-                    {{ returnExchange }}
-                  </li>
-                  <li (click)="selectType('return_exchange','None',i)" class="dropdown_list">無</li>
-                </ul>
-              </div> -->
+            </div>
+          </div>
+          <div
+            *ngIf="orderRecord.return_exchange && orderRecord.return_exchange !== 'None'"
+            class="detail_info_wrap"
+          >
+            <div class="detail_info_title">退換貨日</div>
+            <div class="content_wrap">
+              <div class="editable_content">{{ orderRecord.return_date }}</div>
             </div>
           </div>
         </div>
@@ -308,32 +326,34 @@
   <!-- 維修保養紀錄- -->
   <section class="content-box section">
     <div class="section_title">維修保養紀錄</div>
-
     <div class="time_wrap" *ngIf="productRepairs">
       <div class="time_name">
         <div class="establish_update_time">
           <div class="title">建立時間</div>
-          <div class="date_time">{{ productRepairs[0]?.create_time }}</div>
+          <div class="date_time">{{ productRepairs[productRepairs.length - 1]?.create_date }}</div>
         </div>
         <div class="establish_update_time">
           <div class="title">人員:</div>
-          <div class="name">{{ productRepairs[0]?.create_name }}</div>
+          <div class="name">{{ productRepairs[productRepairs.length - 1]?.create_name }}</div>
         </div>
       </div>
-      <!-- <div class="time_name">
-        <div class="time_name" *ngIf="ProdLastModify.modify_time">
+      <div class="time_name" *ngIf="productRepairs.length > 1">
+        <div class="time_name">
           <div class="establish_update_time">
             <div class="title">最後修改</div>
-            <div class="date_time">{{ productOrderRecord.modify_time }}</div>
+            <div class="date_time">
+              {{ productRepairs[0]?.modify_date || productRepairs[0]?.create_date }}
+            </div>
           </div>
           <div class="establish_update_time">
             <div class="title">人員:</div>
-            <div class="name">{{ productOrderRecord.modify_name }}</div>
+            <div class="name">
+              {{ productRepairs[0]?.modify_name || productRepairs[0]?.create_name }}
+            </div>
           </div>
         </div>
-      </div> -->
+      </div>
     </div>
-
     <ng-container *ngIf="productRepairs; else noDataSection">
       <ng-container *ngFor="let repair of productRepairs; let i = index">
         <div class="section_detail equip_list">
@@ -357,7 +377,7 @@
             </div>
           </div>
           <div class="detail_info_wrap">
-            <div class="detail_info_title">名稱</div>
+            <div class="detail_info_title">姓名</div>
             <div class="content_wrap">
               <div class="editable_content">{{ repair.user_name }}</div>
             </div>
@@ -374,25 +394,18 @@
               <div class="editable_content">{{ repair.address }}</div>
             </div>
           </div>
-
-          <!-- 下拉式編輯 -->
           <div class="detail_info_wrap">
             <div class="detail_info_title">類型</div>
             <div class="content_wrap">
               <div class="editable_content">
                 {{ repair.repair_type }}
               </div>
-              <!-- <div *ngIf="
-                  showRepairTypeDropdown.isOpen === true &&
-                  showRepairTypeDropdown.selectedIndex === i
-                " class="toggle_dropdown">
-                <ul>
-                  <li dropdown *ngFor="let repairType of repairTypeList"
-                    (click)="selectType('repairType', repairType, i)" class="dropdown_list">
-                    {{ repairType }}
-                  </li>
-                </ul>
-              </div> -->
+            </div>
+          </div>
+          <div class="detail_info_wrap">
+            <div class="detail_info_title">維修日期</div>
+            <div class="content_wrap">
+              <div class="editable_content">{{ repair.repair_date }}</div>
             </div>
           </div>
         </div>
@@ -403,7 +416,7 @@
     </ng-template>
   </section>
 
-  <section *ngIf="targetProdInfo || prodOfflineInfo" class="section">
+  <section *ngIf="targetProdInfo || prodOfflineInfo || prodOnlyRepairInfo" class="section">
     <div class="device_img_descrip">
       <div class="img">
         <img
@@ -426,25 +439,33 @@
           <div class="device_info">
             <div class="title">類型:</div>
             <div class="info">
-              {{ targetProdInfo ? targetProdInfo.product_type : prodOfflineInfo.product_type }}
+              {{
+                targetProdInfo?.product_type ||
+                  prodOfflineInfo?.product_type ||
+                  prodOnlyRepairInfo?.product_type
+              }}
             </div>
           </div>
           <div class="device_info">
             <div class="title">序號:</div>
             <div class="info">
-              {{ targetProdInfo ? targetProdInfo.serial_no : prodOfflineInfo.serial_no }}
+              {{
+                targetProdInfo?.serial_no ||
+                  prodOfflineInfo?.serial_no ||
+                  prodOnlyRepairInfo?.serial_no
+              }}
             </div>
           </div>
           <div class="device_info">
             <div class="title">註冊日期:</div>
-            <div class="info">{{ targetProdInfo ? targetProdInfo.register_time : '' }}</div>
+            <div class="info">{{ targetProdInfo?.register_time || '' }}</div>
           </div>
           <div class="device_info">
             <div class="title">出廠日期:</div>
             <div class="info">
               {{
                 getManufactureTimestamp(
-                  targetProdInfo ? targetProdInfo.serial_no : prodOfflineInfo.serial_no
+                  (targetProdInfo || prodOfflineInfo || prodOnlyRepairInfo)?.serial_no
                 )
               }}
             </div>
@@ -452,20 +473,20 @@
         </div>
         <div class="detailcol">
           <div class="device_info">
-            <div class="title">總里程數:</div>
+            <div class="title">總里程數(km):</div>
             <div class="info">
-              {{ equipRecord?.total_use_meter[equipRecord?.total_use_meter.length - 1] || 0 }}
+              {{
+                equipRecord?.total_use_meter[equipRecord?.total_use_meter.length - 1] / 1000
+                  | number: '1.0-1' || 0
+              }}
             </div>
           </div>
           <div class="device_info">
-            <div class="title">時數:</div>
+            <div class="title">時數(hr):</div>
             <div class="info">
               {{
-                calculateRound(
-                  equipRecord?.total_use_time_second[
-                    equipRecord?.total_use_time_second.length - 1
-                  ] / 3600
-                ) || 0
+                equipRecord?.total_use_time_second[equipRecord.total_use_time_second.length - 1] /
+                  3600 | number: '1.0-1' || 0
               }}
             </div>
           </div>
@@ -588,11 +609,4 @@
     (infoChange)="fetchOrderList()"
   >
   </app-edit-equipment>
-
-  <!-- 編輯-銷貨單_叫修 -->
-  <!-- <section class="section">
-    <app-edit-maintenance-requirement [(editing)]="editFixReq" [(isNewForm)]="isNewForm"
-      (infoChange)="fetchOrderList()">
-    </app-edit-maintenance-requirement>
-  </section> -->
 </div>

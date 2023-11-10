@@ -858,10 +858,13 @@ export class SportsReportComponent implements OnInit, OnDestroy {
 
     const baseParameter = getParameter('base', baseSportSummary);
     this.sportInfoData.base = new SportsReport(baseParameter);
+
     this.sportInfoData.compare = this.uiFlag.isCompareMode
       ? new SportsReport(getParameter('compare', compareSportSummary))
       : null;
     if (this.uiFlag.isCompareMode) this.sportInfoData.diff = this.getSportInfoDiff();
+
+    console.log('sportInfoData', this.sportInfoData);
   }
 
   /**

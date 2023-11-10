@@ -314,6 +314,18 @@
         *ngTemplateOutlet="
           analysisHeader;
           context: {
+            columnType: 'alaPoint',
+            title: 'ALA POINT' | translate,
+            dataUnit: 'point',
+            className: 'analysis__ala__point',
+            showHeader: chartAnalysisOption.getItemSelectStatus(AnalysisSportsColumn.alaPoint)
+          }
+        "
+      ></div>
+      <div
+        *ngTemplateOutlet="
+          analysisHeader;
+          context: {
             title: 'universal_activityData_hrZone' | translate,
             className: 'analysis__hr__chart',
             showHeader: chartAnalysisOption.getItemSelectStatus(AnalysisSportsColumn.hrChart)
@@ -582,6 +594,17 @@
                 }
               "
             ></div>
+            <span
+              *ngTemplateOutlet="
+                analysisData;
+                context: {
+                  data: _data[0].alaPoint ?? 0,
+                  diff: checkProgressive(index, 'alaPoint'),
+                  className: 'analysis__ala__point',
+                  showData: chartAnalysisOption.getItemSelectStatus(AnalysisSportsColumn.alaPoint)
+                }
+              "
+            ></span>
             <div
               class="analysis__hr__chart"
               *ngIf="chartAnalysisOption.getItemSelectStatus(AnalysisSportsColumn.hrChart)"
@@ -827,6 +850,16 @@
                 }
               "
             ></div>
+            <span
+              *ngTemplateOutlet="
+                analysisData;
+                context: {
+                  data: _data[1].alaPoint ?? 0,
+                  className: 'analysis__ala__point',
+                  showData: chartAnalysisOption.getItemSelectStatus(AnalysisSportsColumn.alaPoint)
+                }
+              "
+            ></span>
             <div
               class="analysis__hr__chart"
               *ngIf="chartAnalysisOption.getItemSelectStatus(AnalysisSportsColumn.hrChart)"

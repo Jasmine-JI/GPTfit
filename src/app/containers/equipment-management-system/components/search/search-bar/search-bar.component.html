@@ -2,8 +2,9 @@
   <i
     [routerLink]="['/equipment-management/news']"
     class="icon-svg_web-icon_p1_034-home icon_button"
+    (click)="closeAllBox()"
   ></i>
-  <div class="search_bar_wrapper">
+  <div class="search_bar_wrapper" #searchBarWrapper>
     <div class="search_bar">
       <!-- 類型顯示區塊 -->
       <div [class.active]="uiFlag.searchTypeBox" class="search_box">
@@ -13,7 +14,7 @@
         </div>
         <!-- 類型選單 -->
         <ng-container *ngIf="uiFlag.searchTypeBox">
-          <div class="search_option edit_section">
+          <div class="search_option edit_section" #searchOption>
             <div class="edit_header">
               <div class="title">搜尋類型</div>
               <div (click)="clickCloseBtn('searchTypeBox')" class="close_button icon_button"></div>
@@ -62,7 +63,7 @@
                 *ngIf="fliterParameters.user_name && !fliterParameters.serial_no"
                 class="more_entered_option"
               >
-                <div class="serch_titlte">名稱:</div>
+                <div class="serch_titlte">姓名:</div>
                 <div class="entered_option">{{ fliterParameters.user_name }}</div>
               </div>
               <div
@@ -106,7 +107,7 @@
             (uiFlag.searchType === '銷貨單' || uiFlag.searchType === '叫修單')
           "
         >
-          <div class="search_option edit_section">
+          <div class="search_option edit_section" #searchOption>
             <div class="edit_header">
               <div class="title">關鍵字</div>
               <div
@@ -128,7 +129,7 @@
               </div>
               <div class="input edit_item_label">or</div>
               <div class="label_input">
-                <label for="user_name" class="edit_item_label">名稱</label>
+                <label for="user_name" class="edit_item_label">姓名</label>
                 <input
                   class="input"
                   id="user_name"
@@ -145,7 +146,9 @@
                   id="phone"
                   name="phone"
                   maxlength="32"
-                  oninput="value=value.replace(/[^\d]/g,'')"
+                  type="tel"
+                  (input)="onInput($event)"
+                  (compositonstart)="onInput($event)"
                   [(ngModel)]="fliterParameters.phone"
                   name="phone"
                   autocomplete="off"
@@ -205,7 +208,7 @@
         </ng-container>
         <!-- 產品 關鍵字輸入 -->
         <ng-container *ngIf="uiFlag.searchKeywordBox && uiFlag.searchType === '產品'">
-          <div class="search_option edit_section">
+          <div class="search_option edit_section" #searchOption>
             <div class="edit_header">
               <div class="title">使用完整序號查看產品</div>
               <div
@@ -257,7 +260,7 @@
           </div>
         </div>
         <!-- 日期輸入選單 -->
-        <ng-container *ngIf="uiFlag.searchDateBox">
+        <ng-container *ngIf="uiFlag.searchDateBox" #searchOption>
           <div class="search_option edit_section">
             <div class="edit_header">
               <div class="title">選擇日期</div>
@@ -278,8 +281,8 @@
                 (click)="dateOption('範圍')"
                 [class.active]="uiFlag.dateOption === '範圍'"
                 class="select_option pointer"
-                >{{ '範圍' }}</span
-              >
+                >{{ '範圍' }}
+              </span>
               <mat-date-range-input [rangePicker]="rangePicker">
                 <input
                   (dateChange)="changeStartTime($event.value)"
@@ -294,14 +297,15 @@
                   placeholder="End date"
                 />
               </mat-date-range-input>
-
-              <mat-date-range-picker #rangePicker>
-                <!-- <mat-date-range-picker-actions>
-                  <button mat-button matDateRangePickerCancel>Cancel</button>
-                  <button mat-raised-button color="primary" matDateRangePickerApply>Apply
-                  </button>
-                </mat-date-range-picker-actions> -->
-              </mat-date-range-picker>
+              <ng-container #range>
+                <mat-date-range-picker #rangePicker>
+                  <!-- <mat-date-range-picker-actions>
+                    <button mat-button matDateRangePickerCancel>Cancel</button>
+                    <button mat-raised-button color="primary" matDateRangePickerApply>Apply
+                    </button>
+                  </mat-date-range-picker-actions> -->
+                </mat-date-range-picker>
+              </ng-container>
             </div>
             <button (click)="fliterOrder(uiFlag.searchType)" type="button" class="save_button">
               <mat-icon class="save_button_icon">search</mat-icon>搜尋
@@ -313,7 +317,7 @@
     </div>
   </div>
 
-  <div class="avatar">
+  <div class="avatar" (click)="closeAllBox()">
     <img
       class="img"
       [src]="avatarUrl"

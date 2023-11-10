@@ -21,6 +21,7 @@ export class PersonalChartAnalysisOption extends AnalysisOption {
       AnalysisSportsColumn.bodyWeight,
       AnalysisSportsColumn.fatRate,
       AnalysisSportsColumn.hrChart,
+      AnalysisSportsColumn.alaPoint,
     ];
 
     switch (sportType) {

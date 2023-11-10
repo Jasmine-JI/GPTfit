@@ -88,6 +88,10 @@
   @include analysis-column(120px);
 }
 
+.analysis__ala__point {
+  @include analysis-column(120px);
+}
+
 .analysis__hr__chart {
   @include analysis-column(180px);
 }

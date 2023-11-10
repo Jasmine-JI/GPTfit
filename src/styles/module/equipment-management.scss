@@ -5,7 +5,7 @@ $tile-color2: #5f5f5f;
 $tile-color1: #646464;
 $text-color1: #1b1b1b;
 $box-shadow-color: rgba(0, 0, 0, 0.16);
-$backgroundColor: rgb(230, 230, 230);
+$backgroundColor: rgb(245, 245, 245);
 
 ul,
 li,
@@ -20,6 +20,18 @@ textarea {
   outline: none;
   border: none;
 }
+
+// input[type=number] {
+//   appearance: textfield;
+//   &::-webkit-outer-spin-button{
+//     -webkit-appearance: none;
+//     margin: 0;
+//   }
+//   &::-webkit-inner-spin-button{
+//     -webkit-appearance: none;
+//     margin: 0;
+//   }
+// }
 
 .section_wrapper {
   position: relative;
@@ -69,9 +81,9 @@ textarea {
   }
 }
 
-.equip_list {
-  padding-bottom: 10px;
-  border-bottom: 1.5px solid $border-bottom1;
+.equip_list ~ .equip_list {
+  padding-top: 10px;
+  border-top: 1.5px solid $border-bottom1;
 }
 
 .detail_info_wrap {
@@ -177,6 +189,7 @@ textarea {
   padding: 5px;
   border-radius: 0 0 10px 10px;
   z-index: 1;
+  border: 1px solid #e9e9e9;
 }
 
 .memo_wrap {
@@ -352,7 +365,7 @@ textarea {
   z-index: 2;
   max-height: 90vh;
   overflow: auto;
-  max-width: 620px;
+  max-width: 680px;
   width: 90vw;
 
   position: fixed;
@@ -432,8 +445,7 @@ textarea {
   display: flex;
 }
 
-.label_input,
-.memo_label_input {
+.label_input {
   margin-bottom: 30px;
 }
 
@@ -448,7 +460,7 @@ textarea {
   .input {
     width: 100%;
     border: 1px solid $box-shadow-color;
-    min-height: 80px;
+    min-height: 120px;
   }
 }
 
@@ -539,7 +551,7 @@ textarea {
 }
 
 .input_uneditable {
-  cursor: not-allowed;
+  cursor: not-allowed !important;
 }
 
 .link,
@@ -555,6 +567,9 @@ textarea {
 .serial_input {
   position: relative;
   width: 50%;
+  display: flex;
+  align-items: center;
+  gap: 5px;
 }
 
 .serial_input:has(> input) {
@@ -573,10 +588,22 @@ textarea {
   }
 }
 
-.replace_part {
-  float: left;
+.replace_part_list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7.5px;
+}
 
-  & + .replace_part {
-    margin-inline-start: 10px;
+.part_name {
+  flex: 1 0 45%;
+  overflow-wrap: anywhere;
+}
+.part_no {
+}
+
+.required {
+  &::after {
+    content: '*';
+    color: $main-color;
   }
 }

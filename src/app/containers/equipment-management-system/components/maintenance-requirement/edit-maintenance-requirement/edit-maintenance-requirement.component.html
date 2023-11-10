@@ -8,16 +8,16 @@
       </div>
       <div class="edit_detail">
         <div class="label_input">
-          <label class="edit_item_label">銷貨單號</label>
+          <label class="edit_item_label required">銷貨單號</label>
           <input
             class="input"
-            name="order_no"
-            maxlength="11"
-            oninput="value=value.replace(/[^\d]/g,'')"
-            [class.input_uneditable]="!NewFixReq"
+            placeholder="order no"
+            maxlength="15"
+            type="text"
             [(ngModel)]="fixReqInfo.order_no"
-            placeholder="Order No"
-            [disabled]="!NewFixReq"
+            name="order_no"
+            [class.input_uneditable]="isNewForm && !NewFixReq"
+            [disabled]="isNewForm && !NewFixReq"
             required
           />
           <div
@@ -27,14 +27,39 @@
             必填
           </div>
         </div>
+        <div class="label_input date_icon" mat-raised-button (click)="openRequestDatePicker.open()">
+          <label class="edit_item_label required">叫修日期</label>
+          <input
+            class="input pointer"
+            readonly
+            matInput
+            [matDatepicker]="openRequestDatePicker"
+            (dateChange)="changeDate('request_date', $event.value)"
+            [(ngModel)]="fixReqInfo.request_date"
+            placeholder="YYYY-MM-DD"
+            name="request_date"
+            [class.input_uneditable]="editing && !isNewForm"
+            [disabled]="editing && !isNewForm"
+            required
+          />
+          <mat-datepicker [touchUi]="isMobile" #openRequestDatePicker></mat-datepicker>
+          <div
+            class="error_message"
+            *ngIf="
+              fixReqForm.submitted && fixReqForm.form.controls.request_date.hasError('required')
+            "
+          >
+            必填
+          </div>
+        </div>
         <div class="label_input">
-          <label class="edit_item_label">名稱</label>
+          <label class="edit_item_label required">姓名</label>
           <input
             class="input"
             name="user_name"
             maxlength="128"
             [(ngModel)]="fixReqInfo.user_name"
-            placeholder="User Name"
+            placeholder="user name"
             name="user_name"
             required
           />
@@ -46,20 +71,39 @@
           </div>
         </div>
         <div class="label_input">
-          <label class="edit_item_label">電話</label>
+          <label class="edit_item_label required">電話</label>
           <input
             class="input"
             name="phone"
             maxlength="32"
-            oninput="value=value.replace(/[^\d]/g,'')"
+            type="tel"
+            (input)="onInput($event)"
+            (compositonstart)="onInput($event)"
             [(ngModel)]="fixReqInfo.phone"
-            placeholder="Phone"
+            placeholder="phone"
             name="phone"
             required
           />
           <div
             class="error_message"
             *ngIf="fixReqForm.submitted && fixReqForm.form.controls.phone.hasError('required')"
+          >
+            必填
+          </div>
+        </div>
+        <div class="label_input">
+          <label class="edit_item_label required">地址</label>
+          <input
+            class="input"
+            maxlength="128"
+            [(ngModel)]="fixReqInfo.address"
+            placeholder="address"
+            name="address"
+            required
+          />
+          <div
+            class="error_message"
+            *ngIf="fixReqForm.submitted && fixReqForm.form.controls.address.hasError('required')"
           >
             必填
           </div>
@@ -72,7 +116,7 @@
             type="email"
             maxlength="32"
             [(ngModel)]="fixReqInfo.e_mail"
-            placeholder="email"
+            placeholder="E-mail"
             name="e_mail"
             email
           />
@@ -81,23 +125,6 @@
             *ngIf="fixReqForm.submitted && fixReqForm.form.controls.e_mail.hasError('email')"
           >
             email格式錯誤
-          </div>
-        </div>
-        <div class="label_input">
-          <label class="edit_item_label">地址</label>
-          <input
-            class="input"
-            maxlength="128"
-            [(ngModel)]="fixReqInfo.address"
-            placeholder="Address"
-            name="address"
-            required
-          />
-          <div
-            class="error_message"
-            *ngIf="fixReqForm.submitted && fixReqForm.form.controls.address.hasError('required')"
-          >
-            必填
           </div>
         </div>
         <div *ngIf="!isNewForm" class="label_input">
@@ -142,6 +169,7 @@
                 (keydown)="onKeyDown($event)"
                 (compositionend)="filterSerialNo()"
                 maxlength="300"
+                placeholder="serial no"
                 type="text"
                 [(ngModel)]="tagText"
                 name="serial_no"
@@ -168,10 +196,40 @@
             maxlength="300"
             class="input"
             [(ngModel)]="fixReqInfo.description"
-            placeholder="description"
             name="description"
           ></textarea>
           <span class="textLength">{{ textLength }}/300</span>
+        </div>
+        <div class="img_label_input">
+          <label class="edit_item_label">附加檔案</label>
+
+          <input
+            #fileInput
+            (change)="previewImg(fileInput)"
+            type="file"
+            id="img_input"
+            name="img_input"
+            accept=".jpg,.jpeg,.png,.gif"
+          />
+          <div class="img_list">
+            <ng-container *ngFor="let fileName of fileNames; let index = i">
+              <div class="img_wrap">
+                <img
+                  (click)="openImage(imgPath + fileName)"
+                  [src]="imgPath + fileName"
+                  alt="附加檔案"
+                  id="image_preview"
+                />
+                <div (click)="deleteImg(fileName)" class="close_button delete_img_button"></div>
+              </div>
+            </ng-container>
+            <label *ngIf="!filesMax" class="img_wrap" for="img_input">
+              <div class="add_icon add_img_circle"></div>
+            </label>
+            <label *ngIf="filesMax">
+              <div>圖片數量達上限</div>
+            </label>
+          </div>
         </div>
       </div>
       <button type="submit" class="save_button">

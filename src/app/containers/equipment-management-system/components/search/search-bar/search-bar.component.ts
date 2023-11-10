@@ -1,5 +1,5 @@
 import { NgFor, NgIf } from '@angular/common';
-import { Component, Input, OnDestroy } from '@angular/core';
+import { Component, ElementRef, HostListener, Input, OnDestroy, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
@@ -37,6 +37,9 @@ export class SearchBarComponent implements OnDestroy {
     private equipmentManagementService: EquipmentManagementService,
     private router: Router
   ) {}
+  @ViewChild('searchBarWrapper') searchBar: ElementRef;
+  @ViewChild('searchOption') searchOption: ElementRef;
+  @ViewChild('range') calendar: ElementRef;
 
   @Input() avatarUrl: string;
 
@@ -63,12 +66,36 @@ export class SearchBarComponent implements OnDestroy {
   searchTypeList = ['銷貨單', '叫修單', '產品'];
   dateList = ['全部', '30日', '6個月'];
 
+  @HostListener('document:click', ['$event'])
+  handleDocumentClick(event: Event): void {
+    if (this.searchBar && this.searchOption) {
+      if (
+        !this.searchBar?.nativeElement.contains(event.target) &&
+        !this.searchOption?.nativeElement.contains(event.target) &&
+        !this.uiFlag.selectDateBox
+      ) {
+        this.uiFlag.searchDateBox = !this.uiFlag.searchDateBox;
+        this.closeAllBox();
+      }
+    }
+  }
+
+  @HostListener('click', ['$event'])
+  onClick(event: Event): void {
+    event.stopPropagation();
+  }
+
   /**
    * 登出
    */
   logout() {
     this.auth.logout();
     this.router.navigateByUrl(equipmentManagementLogIn);
+  }
+
+  onInput(event: any): void {
+    event.target.value = event.target.value.replace(/[^0-9]/g, '');
+    this.fliterParameters.phone = event.target.value;
   }
 
   openBox(type: string) {
@@ -153,10 +180,9 @@ export class SearchBarComponent implements OnDestroy {
    * @param */
   dateOption(dateOption: string) {
     this.uiFlag.dateOption = dateOption;
-    // this.uiFlag.searchDateBox = false;
+    this.uiFlag.selectDateBox = false;
     switch (dateOption) {
       case '全部':
-        //全部的日期=不選日期
         this.fliterParameters.start_date = '';
         this.fliterParameters.end_date = '';
         break;
@@ -215,7 +241,7 @@ export class SearchBarComponent implements OnDestroy {
     this.fliterParameters.end_date = end_date
       ? dayjs(end_date).format('YYYY-MM-DD')
       : this.fliterParameters.start_date;
-    console.log(end_date);
+    // console.log(end_date);
   }
 
   closeAllBox() {
@@ -226,19 +252,17 @@ export class SearchBarComponent implements OnDestroy {
   }
 
   fliterOrder(type?: string) {
-    console.log('clickSearch');
     this.closeAllBox();
     switch (type) {
       case '銷貨單':
-        console.log('銷貨單搜尋');
+        // console.log('銷貨單搜尋');
         this.equipmentManagementService
           .fliterOrderApi(this.fliterParameters)
           .pipe(takeUntil(this.ngUnsubscribe))
           .subscribe((_res) => {
-            console.log(_res);
+            // console.log(_res);
             this.equipmentManagementService.setFliteredOrder(_res);
             if (this.router.url !== '/equipment-management/search?searchType=order') {
-              console.log('navigateByUrl');
               this.router.navigateByUrl('/equipment-management/search?searchType=order');
             }
           });
@@ -246,32 +270,30 @@ export class SearchBarComponent implements OnDestroy {
         break;
 
       case '叫修單':
-        console.log('叫修單搜尋');
+        // console.log('叫修單搜尋');
         this.equipmentManagementService
           .fliterRepairFormApi(this.fliterParameters)
           .pipe(takeUntil(this.ngUnsubscribe))
           .subscribe((_res) => {
-            console.log(_res);
+            // console.log(_res);
             this.equipmentManagementService.setFliteredRepairForm(_res);
             if (this.router.url !== '/equipment-management/search?searchType=repair_form') {
-              console.log('navigateByUrl');
               this.router.navigateByUrl('/equipment-management/search?searchType=repair_form');
             }
           });
         break;
       case '產品':
-        console.log('產品搜尋');
+        // console.log('產品搜尋');
         this.equipmentManagementService
           .getProdDetailApi(this.fliterParameters)
           .pipe(takeUntil(this.ngUnsubscribe))
           .subscribe((_res) => {
-            console.log(_res);
+            // console.log(_res);
             if (_res.order) {
               if (
                 this.router.url !==
                 `/equipment-management/equipment/${this.fliterParameters.serial_no}`
               ) {
-                console.log('navigateByUrl');
                 this.router.navigateByUrl(
                   `/equipment-management/equipment/${this.fliterParameters.serial_no}`
                 );

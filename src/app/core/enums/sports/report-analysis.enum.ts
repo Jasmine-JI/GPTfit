@@ -30,4 +30,6 @@ export enum AnalysisSportsColumn {
   bodyWeight,
   fatRate,
   hrChart,
+  alaPoint,
+  zonePoint,
 }

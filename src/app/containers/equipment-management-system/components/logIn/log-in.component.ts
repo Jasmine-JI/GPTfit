@@ -30,7 +30,7 @@ type AuthInput = 'accountInput' | 'passwordInput' | 'nicknameInput' | 'smsInput'
   templateUrl: './log-in.component.html',
   styleUrls: ['./log-in.component.scss'],
   standalone: true,
-  imports: [RouterLink, FormsModule, NgIf, NgFor, MatIconModule, FormsModule, TranslateModule],
+  imports: [RouterLink, FormsModule, NgIf, NgFor, MatIconModule, TranslateModule],
 })
 export class LogInComponent implements OnInit, OnDestroy {
   private ngUnsubscribe = new Subject();

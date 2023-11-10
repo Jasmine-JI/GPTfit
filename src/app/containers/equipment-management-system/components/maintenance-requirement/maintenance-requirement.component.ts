@@ -2,6 +2,7 @@ import { CommonModule, NgFor, NgIf } from '@angular/common';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { Subject, takeUntil } from 'rxjs';
+import { Domain, WebIp } from '../../../../core/enums/common';
 import { fixReqListParameters } from '../../models/order-api.model';
 import { EquipmentManagementService } from '../../services/equipment-management.service';
 import { EditRepairComponent } from '../repair/edit-repair/edit-repair.component';
@@ -32,11 +33,19 @@ export class MaintenanceRequirementComponent implements OnInit, OnDestroy {
   editFixReq: boolean;
   isNewForm: boolean;
   editRepair: boolean;
+  fileNames: string[] = [];
 
+  readonly imgPath = `https://${
+    location.hostname.includes(WebIp.develop) ? Domain.uat : location.hostname
+  }/img/`;
   constructor(private equipmentManagementService: EquipmentManagementService) {}
 
   ngOnInit(): void {
     this.getFixReqParameters();
+  }
+
+  openImage(imageUrl: string) {
+    window.open(imageUrl, '_blank');
   }
 
   /**
@@ -77,6 +86,16 @@ export class MaintenanceRequirementComponent implements OnInit, OnDestroy {
     this.repairForm = this.fixReqInfo.repair_form[0];
     this.fixReqSerialArray = this.repairForm.serial_no?.split(',');
     // console.log('repairForm:',this.repairForm);
+    if (this.repairForm.attach_file) {
+      if (this.repairForm.attach_file === 'None') {
+        this.fileNames = [];
+        this.repairForm.attach_file = '';
+      } else {
+        this.fileNames = this.repairForm.attach_file.split(',');
+      }
+    } else {
+      this.fileNames = [];
+    }
   }
 
   setRepairInfo() {

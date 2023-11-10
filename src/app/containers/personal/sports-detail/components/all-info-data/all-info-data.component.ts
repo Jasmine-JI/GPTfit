@@ -167,6 +167,7 @@ export class AllInfoDataComponent implements OnChanges {
       'rowingMaxWatt',
       'rowingAvgCadence',
       'rowingMaxCadence',
+      'ala_zone_point',
     ]);
     const result: { [key: string]: number } = {};
     for (const _key in activityInfo) {

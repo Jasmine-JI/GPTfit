@@ -32,7 +32,7 @@
         </div>
       </div>
       <div class="detail_info_wrap">
-        <div class="detail_info_title">名稱</div>
+        <div class="detail_info_title">姓名</div>
         <div class="content_wrap">
           <div class="editable_content">{{ orderInfo.user_name }}</div>
         </div>
@@ -49,27 +49,18 @@
           <div class="editable_content">{{ orderInfo.address }}</div>
         </div>
       </div>
-      <!-- 下拉式編輯 -->
       <div class="detail_info_wrap">
         <div class="detail_info_title">銷售渠道</div>
         <div class="content_wrap">
           <div class="editable_content">
             {{ orderInfo.sales_channel }}
           </div>
-          <!-- <div *ngIf="showSalesChannelDropdown" class="toggle_dropdown">
-            <ul>
-              <li dropdown *ngFor="let salesChannel of salesChannelList" (click)="selectChannel(salesChannel)"
-                class="dropdown_list">
-                {{ salesChannel }}
-              </li>
-            </ul>
-          </div> -->
         </div>
       </div>
 
       <div class="detail_info_wrap">
         <div class="detail_info_title">附件</div>
-        <div class="img_list">
+        <div *ngIf="orderInfo.attach_file" class="img_list">
           <ng-container *ngFor="let orderInfo of fileNames">
             <div class="img_wrap">
               <img
@@ -81,13 +72,17 @@
             </div>
           </ng-container>
         </div>
+        <div *ngIf="!orderInfo.attach_file" class="memo_wrap">
+          <div class="memo_content">無</div>
+        </div>
       </div>
     </div>
     <div class="section_detail">
       <div class="detail_info_wrap">
         <div class="detail_info_title">備註</div>
         <div class="memo_wrap">
-          <div class="memo_content">{{ orderInfo.memo }}</div>
+          <div *ngIf="orderInfo.memo" class="memo_content">{{ orderInfo.memo }}</div>
+          <div *ngIf="!orderInfo.memo" class="memo_content">無</div>
         </div>
       </div>
     </div>
@@ -102,21 +97,29 @@
         <div class="time_name">
           <div class="establish_update_time">
             <div class="title">建立時間</div>
-            <div class="date_time">{{ orderProds[0]?.create_time }}</div>
+            <div class="date_time">{{ orderProds[orderProds.length - 1]?.create_time }}</div>
           </div>
           <div class="establish_update_time">
             <div class="title">人員:</div>
-            <div class="name">{{ orderProds[0]?.create_name }}</div>
+            <div class="name">{{ orderProds[orderProds.length - 1]?.create_name }}</div>
           </div>
         </div>
-        <!-- <div class="time_name" *ngIf="ProdLastModify.modify_time">
+        <!-- <div class="time_name" *ngIf="orderProds.length > 1">
           <div class="establish_update_time">
             <div class="title">最後修改</div>
-            <div class="date_time">{{ ProdLastModify.modify_time }}</div>
+            <div class="date_time">
+              {{
+                orderProds[0]?.modify_time ? orderProds[0]?.modify_time : orderProds[0]?.create_time
+              }}
+            </div>
           </div>
           <div class="establish_update_time">
             <div class="title">人員:</div>
-            <div class="name">{{ ProdLastModify.modify_name }}</div>
+            <div class="name">
+              {{
+                orderProds[0]?.modify_name ? orderProds[0]?.modify_name : orderProds[0]?.create_name
+              }}
+            </div>
           </div>
         </div> -->
       </div>
@@ -136,19 +139,6 @@
               </div>
             </div>
             <div class="detail_info_wrap">
-              <div class="detail_info_title">保固開始日</div>
-              <div class="content_wrap">
-                <div class="editable_content">{{ orderProds[i].warranty_start }}</div>
-              </div>
-            </div>
-            <div class="detail_info_wrap">
-              <div class="detail_info_title">保固結束日</div>
-              <div class="content_wrap">
-                <div class="editable_content">{{ orderProds[i].warranty_end }}</div>
-              </div>
-            </div>
-            <!-- 下拉式編輯 -->
-            <div class="detail_info_wrap">
               <div class="detail_info_title">安裝狀態</div>
               <div class="content_wrap">
                 <div class="editable_content">
@@ -156,14 +146,56 @@
                 </div>
               </div>
             </div>
-            <!-- <div class="detail_info_wrap more_button">
-              <div
-                [routerLink]="['/equipment-management/equipment', orderProds[i].serial_no]"
-                class="device_system_button more_icon"
-              >
-                更多
+            <div class="detail_info_wrap">
+              <div class="detail_info_title">安裝日期</div>
+              <div class="content_wrap">
+                <div class="editable_content">{{ orderProds[i].install_date }}</div>
               </div>
-            </div> -->
+            </div>
+            <div class="detail_info_wrap">
+              <div class="detail_info_title">退換貨狀態</div>
+              <div class="content_wrap">
+                <div
+                  *ngIf="orderProds[i].return_exchange && orderProds[i].return_exchange !== 'None'"
+                  class="editable_content"
+                >
+                  {{ orderProds[i].return_exchange }}
+                </div>
+                <div
+                  *ngIf="!orderProds[i].return_exchange || orderProds[i].return_exchange == 'None'"
+                  class="editable_content"
+                >
+                  {{ '無' }}
+                </div>
+              </div>
+            </div>
+            <div
+              *ngIf="!orderProds[i].return_exchange || orderProds[i].return_exchange == 'None'"
+              class="detail_info_wrap"
+            >
+              <div class="detail_info_title">保固開始日</div>
+              <div class="content_wrap">
+                <div class="editable_content">{{ orderProds[i].warranty_start }}</div>
+              </div>
+            </div>
+            <div
+              *ngIf="!orderProds[i].return_exchange || orderProds[i].return_exchange == 'None'"
+              class="detail_info_wrap"
+            >
+              <div class="detail_info_title">保固結束日</div>
+              <div class="content_wrap">
+                <div class="editable_content">{{ orderProds[i].warranty_end }}</div>
+              </div>
+            </div>
+            <div
+              *ngIf="orderProds[i].return_exchange && orderProds[i].return_exchange !== 'None'"
+              class="detail_info_wrap"
+            >
+              <div class="detail_info_title">退換貨日</div>
+              <div class="content_wrap">
+                <div class="editable_content">{{ orderProds[i].return_date }}</div>
+              </div>
+            </div>
           </div>
         </ng-container>
       </div>
@@ -190,7 +222,7 @@
             <div class="name">{{ orderFixReq[orderFixReq.length - 1]?.create_name }}</div>
           </div>
         </div>
-        <div class="time_name" *ngIf="orderFixReq.length > 1">
+        <!-- <div class="time_name" *ngIf="orderFixReq.length > 1">
           <div class="establish_update_time">
             <div class="title">最後修改</div>
             <div class="date_time">
@@ -211,13 +243,13 @@
               }}
             </div>
           </div>
-        </div>
+        </div> -->
       </div>
     </div>
     <ng-container *ngIf="orderFixReq; else noOrderFixReq">
       <div class="section_content">
         <ng-container *ngFor="let FixReq of orderFixReq | keyvalue; let r = index">
-          <div class="section_detail">
+          <div class="section_detail equip_list">
             <div class="detail_info_wrap">
               <div class="detail_info_title">叫修單號</div>
               <div
@@ -231,7 +263,13 @@
               </div>
             </div>
             <div class="detail_info_wrap">
-              <div class="detail_info_title">名稱</div>
+              <div class="detail_info_title">叫修日期</div>
+              <div class="content_wrap">
+                <div class="editable_content">{{ orderFixReq[r].request_date }}</div>
+              </div>
+            </div>
+            <div class="detail_info_wrap">
+              <div class="detail_info_title">姓名</div>
               <div class="content_wrap">
                 <div class="editable_content">{{ orderFixReq[r].user_name }}</div>
               </div>
@@ -286,11 +324,14 @@
               </ng-container>
             </div>
           </div>
-          <div class="section_detail equip_list">
+          <div class="section_detail">
             <div class="detail_info_wrap">
               <div class="detail_info_title">問題描述</div>
               <div class="memo_wrap">
-                <div class="memo_content">{{ orderFixReq[r].description }}</div>
+                <div *ngIf="orderFixReq[r].description" class="memo_content">
+                  {{ orderFixReq[r].description }}
+                </div>
+                <div *ngIf="!orderFixReq[r].description" class="memo_content">無</div>
               </div>
             </div>
           </div>
@@ -301,7 +342,7 @@
       <div class="section_detail">無資料</div>
     </ng-template>
 
-    <div (click)="editForm('fixReq')" class="edit_button device_system_button">新增</div>
+    <div (click)="editForm('fixReq')" class="add_button device_system_button">新增</div>
   </section>
 
   <div *ngIf="!orderProds && !orderFixReq" class="section">

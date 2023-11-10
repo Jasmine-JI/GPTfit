@@ -1,8 +1,10 @@
+import { KeyCode } from './../../../../../core/enums/common/key-code.enum';
 import { CommonModule, NgFor, NgIf } from '@angular/common';
 import {
   Component,
   ElementRef,
   EventEmitter,
+  HostListener,
   Input,
   OnChanges,
   OnDestroy,
@@ -48,9 +50,9 @@ export class EditOrderComponent implements OnInit, OnChanges, OnDestroy {
   });
 
   orderInfo = {
-    order_no: null,
+    order_no: '',
     user_name: '',
-    phone: null,
+    phone: '',
     address: '',
     sales_channel: 'MOMO',
     attach_file: '',
@@ -58,9 +60,9 @@ export class EditOrderComponent implements OnInit, OnChanges, OnDestroy {
   };
 
   originOrderInfo = {
-    order_no: null,
+    order_no: '',
     user_name: '',
-    phone: null,
+    phone: '',
     address: '',
     sales_channel: 'MOMO',
     attach_file: '',
@@ -103,6 +105,11 @@ export class EditOrderComponent implements OnInit, OnChanges, OnDestroy {
     this.textLength = text.length;
   }
 
+  onInput(event: any): void {
+    event.target.value = event.target.value.replace(/[^0-9]/g, '');
+    this.orderInfo.phone = event.target.value;
+  }
+
   /**
    * 判斷視窗為新增或修改
    */
@@ -139,10 +146,8 @@ export class EditOrderComponent implements OnInit, OnChanges, OnDestroy {
       const formData = new FormData();
       formData.append('file', file);
       // console.log(formData);
-
       // const url = URL.createObjectURL(file);
       // this.imageUrls.push(url);
-
       this.uploadImage(formData);
       fileInput.value = '';
     }
@@ -188,16 +193,12 @@ export class EditOrderComponent implements OnInit, OnChanges, OnDestroy {
       ) {
         this.fileNames = [];
         this.orderInfo.attach_file = '';
-        console.log(this.fileNames);
       } else {
         this.filesMax = this.orderInfo.attach_file.length > this.filesMaxLength ? true : false;
         this.fileNames = this.orderInfo.attach_file.split(',');
-        console.log(this.fileNames);
       }
     } else {
-      console.log(this.fileNames);
       this.fileNames = [];
-      console.log(this.fileNames);
     }
   }
 

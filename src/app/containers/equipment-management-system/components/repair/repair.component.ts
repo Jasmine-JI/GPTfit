@@ -1,14 +1,8 @@
-import { CommonModule, NgIf, NgFor } from '@angular/common';
-import { Component, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
-import {
-  ActivatedRoute,
-  Route,
-  Router,
-  RouterState,
-  RouterStateSnapshot,
-  RouterLink,
-} from '@angular/router';
+import { CommonModule, NgFor, NgIf } from '@angular/common';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { Subject, takeUntil } from 'rxjs';
+import { Domain, WebIp } from '../../../../core/enums/common';
 import { fixReqListParameters } from '../../models/order-api.model';
 import { EquipmentManagementService } from '../../services/equipment-management.service';
 import { EditRepairComponent } from './edit-repair/edit-repair.component';
@@ -31,8 +25,12 @@ export class RepairComponent implements OnInit, OnDestroy {
   editFixReq: boolean;
   isNewForm: boolean;
   editRepair: boolean;
-
+  fileNames: string[] = [];
   partList: any;
+
+  readonly imgPath = `https://${
+    location.hostname.includes(WebIp.develop) ? Domain.uat : location.hostname
+  }/img/`;
 
   constructor(
     private route: ActivatedRoute,
@@ -41,6 +39,10 @@ export class RepairComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.getFixReqParameters();
+  }
+
+  openImage(imageUrl: string) {
+    window.open(imageUrl, '_blank');
   }
 
   /**
@@ -82,6 +84,17 @@ export class RepairComponent implements OnInit, OnDestroy {
   setRepairInfo() {
     // console.log('id:', this.id);
     this.repairInfo = this.fixReqInfo?.repair_info?.find((info) => info.id === this.id);
+
+    if (this.repairInfo.attach_file) {
+      if (this.repairInfo.attach_file === 'None') {
+        this.fileNames = [];
+        this.repairInfo.attach_file = '';
+      } else {
+        this.fileNames = this.repairInfo.attach_file.split(',');
+      }
+    } else {
+      this.fileNames = [];
+    }
 
     if (this.repairInfo.parts_replacement == 0) {
       //沒有換零件
@@ -127,6 +140,11 @@ export class RepairComponent implements OnInit, OnDestroy {
   getPartName(part_no: string): string {
     const part = this.partList.find((item) => item.part_no === part_no);
     return part ? part.part_name : part_no;
+  }
+
+  getPartSpec(part_no: string): string {
+    const part = this.partList.find((item) => item.part_no === part_no);
+    return part ? part.specifications : part_no;
   }
 
   editForm(type: string) {

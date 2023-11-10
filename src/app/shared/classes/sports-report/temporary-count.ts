@@ -7,6 +7,8 @@ import { isAvgData } from '../../../core/utils/sports';
 export class TemporaryCount {
   private _countObj = {};
 
+  private _alaPoint = 0;
+
   private _totalActivities = 0;
 
   private _startTime = 0;
@@ -38,6 +40,7 @@ export class TemporaryCount {
    */
   init() {
     this._countObj = {};
+    this._alaPoint = 0;
     this._totalActivities = 0;
     this._startTime = 0;
     this._endTime = 0;
@@ -115,11 +118,22 @@ export class TemporaryCount {
     this._endTime = end;
   }
 
+  saveAlaPoint(alaPoint: number) {
+    this._alaPoint = alaPoint;
+  }
+
   /**
    * 取得目前數據所屬日期範圍
    */
   get dateRange() {
     return { startTime: this._startTime, endTime: this._endTime };
+  }
+
+  /**
+   * 取得alaPoint
+   */
+  get alaPoint() {
+    return { alaPoint: this._alaPoint };
   }
 
   /**
@@ -135,6 +149,7 @@ export class TemporaryCount {
   get result() {
     return {
       activities: this.handleDataAverage(this._countObj),
+      alaPoint: this._alaPoint,
       startTime: this._startTime,
       endTime: this._endTime,
     };

@@ -29,6 +29,7 @@
     </div>
   </section>
 
+  <!-- 運動目標 -->
   <section class="report-section">
     <div class="flexRow cardTitle">
       <h6 class="cardSubtitle">
@@ -46,6 +47,7 @@
     ></div>
   </section>
 
+  <!-- 概要資訊 -->
   <section class="report-section">
     <div class="flexRow cardTitle">
       <div class="flexRow">
@@ -96,6 +98,7 @@
     </div>
   </section>
 
+  <!-- 活動分析 -->
   <section class="report-section" *ngIf="reportCondition.sportType === SportType.all">
     <div class="flexRow cardTitle">
       <h6 class="cardSubtitle">
@@ -185,6 +188,7 @@
     </div>
   </section>
 
+  <!-- 累積種訓成效 -->
   <section class="report-section" *ngIf="reportCondition.sportType === SportType.weightTrain">
     <div class="flexRow cardTitle">
       <h6 class="cardSubtitle">
@@ -210,6 +214,7 @@
     </figure>
   </section>
 
+  <!-- 心律區間 -->
   <section class="report-section" *ngIf="reportCondition.sportType !== SportType.weightTrain">
     <div class="flexRow cardTitle">
       <h6 class="cardSubtitle">
@@ -267,6 +272,7 @@
     </div>
   </section>
 
+  <!-- 肌群訓練次數佔比 -->
   <section class="report-section" *ngIf="reportCondition.sportType === SportType.weightTrain">
     <div class="flexRow cardTitle">
       <h6 class="cardSubtitle">
@@ -333,6 +339,7 @@
     </div>
   </section>
 
+  <!-- 訓練趨勢 -->
   <section
     class="report-section"
     *ngIf="reportCondition.sportType === SportType.weightTrain && !uiFlag.isCompareMode"
@@ -377,6 +384,7 @@
     </div>
   </section>
 
+  <!-- 趨勢圖 -->
   <section class="report-section">
     <div class="flexRow cardTitle">
       <h6 class="cardSubtitle">
@@ -2016,6 +2024,7 @@
     </div>
   </section>
 
+  <!-- 圖表數據分析 -->
   <app-sports-data-table
     [tableTitleKey]="'universal_activityData_chartAnalysis'"
     [isCompareMode]="uiFlag.isCompareMode"
@@ -2028,6 +2037,7 @@
     [description]="tipContent.dataTable"
   ></app-sports-data-table>
 
+  <!-- 動作列表 -->
   <section
     class="report-section"
     *ngIf="
@@ -2401,6 +2411,7 @@
       {{ 'universal_training_difference' | translate }}
     </span>
     <div class="flexRow report-infoRow">
+      <!-- 達成率 -->
       <div
         *ngTemplateOutlet="
           oneInfoData;
@@ -2411,6 +2422,7 @@
           }
         "
       ></div>
+      <!-- 活動數量 -->
       <div
         *ngTemplateOutlet="
           oneInfoData;
@@ -2421,6 +2433,7 @@
           }
         "
       ></div>
+      <!-- 總計時 -->
       <div
         *ngTemplateOutlet="
           oneInfoData;
@@ -2431,6 +2444,7 @@
           }
         "
       ></div>
+      <!--SportType.all 效益時間、PAI  -->
       <ng-container *ngIf="reportCondition.sportType === SportType.all">
         <div
           *ngTemplateOutlet="
@@ -2453,6 +2467,7 @@
           "
         ></div>
       </ng-container>
+      <!--SportType.weightTrain 活動時間 -->
       <ng-container *ngIf="reportCondition.sportType === SportType.weightTrain">
         <div
           *ngTemplateOutlet="
@@ -2465,6 +2480,7 @@
           "
         ></div>
       </ng-container>
+      <!-- 卡路里 -->
       <div
         *ngTemplateOutlet="
           oneInfoData;
@@ -2475,6 +2491,7 @@
           }
         "
       ></div>
+      <!-- 平均心率 -->
       <div
         *ngTemplateOutlet="
           oneInfoData;
@@ -2685,6 +2702,7 @@
           "
         ></div>
       </ng-container>
+      <!-- SportType.all, SportType.run 總發電量 -->
       <ng-container *ngIf="[SportType.all, SportType.run].includes(reportCondition.sportType)">
         <div
           *ngTemplateOutlet="
@@ -2697,6 +2715,17 @@
           "
         ></div>
       </ng-container>
+      <!-- 活動點數 -->
+      <div
+        *ngTemplateOutlet="
+          oneInfoData;
+          context: {
+            data: getInfoData(infoData, 'alaPoint'),
+            type: 'alaPoint',
+            infoType
+          }
+        "
+      ></div>
     </div>
   </div>
 </ng-template>
@@ -2807,10 +2836,14 @@
       <ng-container *ngSwitchCase="'totalFeedbackEnergy'">
         {{ 'universal_activityData_totalEnergyGen' | translate }}
       </ng-container>
+      <ng-container *ngSwitchCase="'alaPoint'">
+        {{ 'ALA POINT' | translate }}
+      </ng-container>
     </span>
   </div>
 </ng-template>
 
+<!-- 環狀圖 template -->
 <ng-template
   #ringChartSection
   let-timeRange="timeRange"
@@ -2839,6 +2872,7 @@
   </div>
 </ng-template>
 
+<!-- 趨勢圖 template -->
 <ng-template
   #chartInfoTemplate
   let-key="key"
@@ -2958,10 +2992,11 @@
   </span>
 </ng-template>
 
+<!-- 趨勢圖 比較 template -->
 <ng-template #chartInfoDiff let-originValue="originValue" let-value="value" let-unit="unit">
   <div class="flexRow report-diffInfo">
     <span class="report-diffTitle">
-      {{ '差異' | translate }}
+      {{ 'universal_training_difference' | translate }}
     </span>
     <span
       [class.report-plusValue]="originValue > 0"
@@ -3129,6 +3164,7 @@
   </div>
 </ng-template>
 
+<!-- 運動目標 template -->
 <ng-template
   #sportTargetInfo
   let-diffRange="diffRange"

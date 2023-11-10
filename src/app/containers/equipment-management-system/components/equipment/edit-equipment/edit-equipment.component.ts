@@ -101,11 +101,12 @@ export class EditEquipmentComponent implements OnInit, OnChanges, OnDestroy {
     install_date: ['', Validators.required],
     warranty_start: ['', Validators.required],
     warranty_end: ['', Validators.required],
+    return_date: [],
   });
 
   orderProd = {
     index_id: null,
-    order_no: null,
+    order_no: '',
     product_type: '',
     serial_no: '',
     install_date: '',
@@ -114,6 +115,7 @@ export class EditEquipmentComponent implements OnInit, OnChanges, OnDestroy {
     return_exchange: '',
     warranty_start: '',
     warranty_end: '',
+    return_date: '', //退換貨日
     attach_file: '',
     memo: '',
     create_name: this.modifyCteateName,
@@ -121,7 +123,7 @@ export class EditEquipmentComponent implements OnInit, OnChanges, OnDestroy {
 
   originOrderProd = {
     index_id: null,
-    order_no: null,
+    order_no: '',
     product_type: '',
     serial_no: '',
     install_date: '',
@@ -130,6 +132,7 @@ export class EditEquipmentComponent implements OnInit, OnChanges, OnDestroy {
     return_exchange: '',
     warranty_start: '',
     warranty_end: '',
+    return_date: '', //退換貨日
     attach_file: '',
     memo: '',
     create_name: this.modifyCteateName,
@@ -151,6 +154,7 @@ export class EditEquipmentComponent implements OnInit, OnChanges, OnDestroy {
   showProductTypeDropdown = false;
   showReturnExchangeDropdown = false;
   showInstallTypeDropdown = false;
+  ifNewProd = false;
 
   readonly imgPath = `https://${
     location.hostname.includes(WebIp.develop) ? Domain.uat : location.hostname
@@ -192,6 +196,9 @@ export class EditEquipmentComponent implements OnInit, OnChanges, OnDestroy {
         break;
       case 'warranty_end':
         this.orderProd.warranty_end = dayjs(date).format('YYYY-MM-DD');
+        break;
+      case 'return_date':
+        this.orderProd.return_date = dayjs(date).format('YYYY-MM-DD');
         break;
 
       default:
@@ -389,34 +396,49 @@ export class EditEquipmentComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   checkoutContent() {
-    const { serial_no, order_no, install_date, return_exchange, warranty_start, warranty_end } =
-      this.orderProd;
+    const {
+      serial_no,
+      order_no,
+      install_date,
+      return_exchange,
+      warranty_start,
+      warranty_end,
+      return_date,
+    } = this.orderProd;
     this.orderProd.status =
       return_exchange === '' || return_exchange === 'None' ? 'online' : 'offline';
+    this.orderProd.return_date =
+      return_exchange === '' || return_exchange === 'None' ? null : return_date;
     // console.log('lenth:', serial_no.length);
-    this.prodForm.patchValue({
-      serial_no: serial_no,
-      order_no: order_no,
-      install_date: install_date,
-      warranty_start: warranty_start,
-      warranty_end: warranty_end,
-    });
-    // if (serial_no.length == 0) {
-    //   alert('請輸入產品序號');
-    // } else if (order_no == null || order_no === '') {
-    //   alert('請輸入銷貨單號');
-    // } else if (install_date === null || install_date === '') {
-    //   alert('請輸入安裝日期');
-    // } else if (warranty_start === null || warranty_start === '') {
-    //   alert('請輸入保固開始日期');
-    // } else if (warranty_end === null || warranty_end === '') {
-    //   alert('請輸入保固結束日期');
-    // } else {
+    this.prodForm.get('return_date').clearValidators(); // 先清空退換貨日的驗證器
+    if (return_exchange && return_exchange !== 'None') {
+      // 顯示退換貨日時
+      this.prodForm.get('return_date').setValidators([Validators.required]); //再添加必填驗證器
+      this.prodForm.patchValue({
+        serial_no: serial_no,
+        order_no: order_no,
+        install_date: install_date,
+        warranty_start: warranty_start,
+        warranty_end: warranty_end,
+        return_date: this.orderProd.return_date,
+      });
+      this.prodForm.updateValueAndValidity();
+    } else {
+      this.prodForm.patchValue({
+        serial_no: serial_no,
+        order_no: order_no,
+        install_date: install_date,
+        warranty_start: warranty_start,
+        warranty_end: warranty_end,
+      });
+    }
     if (this.prodForm.valid) {
       if (this.isNewForm) {
+        // 新增產品或註冊產品
         this.orderProd.product_type = this.determineProductType(serial_no);
+        this.addOrderInfo();
         if (!this.rigisterProd) {
-          // 為新產品且不為註冊產品
+          // 新增產品 不為註冊產品
           const params = { serial_no: serial_no };
           this.equipmentManagementService
             .getProdDetailApi(params)
@@ -426,13 +448,7 @@ export class EditEquipmentComponent implements OnInit, OnChanges, OnDestroy {
               if (res.error) {
                 alert(res.description);
               } else {
-                const new_install_type = res.order ? '換裝' : '新裝';
-                // console.log('new_install_type;', new_install_type);
-                if (this.orderProd.install_type !== new_install_type) {
-                  alert(`此產品為${new_install_type}設備`);
-                } else {
-                  this.addOrderInfo();
-                }
+                this.ifNewProd = res.order ? false : true; //判斷新品或整新品(無欄位)
               }
             });
         } else {
@@ -548,6 +564,7 @@ export class EditEquipmentComponent implements OnInit, OnChanges, OnDestroy {
       install_type,
       status,
       return_exchange,
+      return_date,
       warranty_start,
       warranty_end,
       attach_file,
@@ -564,6 +581,7 @@ export class EditEquipmentComponent implements OnInit, OnChanges, OnDestroy {
       install_type,
       status,
       return_exchange,
+      return_date,
       warranty_start,
       warranty_end,
       attach_file,

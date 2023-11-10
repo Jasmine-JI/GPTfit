@@ -143,6 +143,8 @@ export class SportsDetailHandler {
     }
 
     this._file = data;
+    console.log('successss', this._file);
+
     this.initializeChartData(data);
     this.handleFile(data);
   }

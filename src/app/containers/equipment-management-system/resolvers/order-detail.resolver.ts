@@ -6,8 +6,8 @@ export const orderDetailResolver = (
   route: ActivatedRouteSnapshot,
   activatedRoute: ActivatedRoute
 ) => {
-  const orderParameters = { order_no: 0 };
-  const id = +route.paramMap.get('order_no');
+  const orderParameters = { order_no: '' };
+  const id = route.paramMap.get('order_no');
   orderParameters.order_no = id;
   inject(EquipmentManagementService).setOrderParameters(orderParameters);
 
@@ -15,7 +15,7 @@ export const orderDetailResolver = (
   const params = route.params;
   const url = activatedRoute.url;
   const breadcrumb = { label, params, url };
-  console.log(breadcrumb);
+  // console.log(breadcrumb);
 
   inject(EquipmentManagementService).createBreadcrumb(breadcrumb);
 };

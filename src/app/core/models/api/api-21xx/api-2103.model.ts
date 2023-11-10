@@ -73,6 +73,7 @@ export interface SportsFileInfo {
 }
 
 export interface ActivityInfo {
+  ala_zone_point: number | null; //ALA POINT
   atmSensorStatus: string | null; // 氣壓計是否啟用
   avgClimbInclineRatio?: number | null; // 平均坡度
   avgElevGainSpeed?: number | null; // 平均爬升速度

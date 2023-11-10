@@ -26,7 +26,7 @@ export class EquipmentManagementBreadcrumbComponent implements OnInit, OnDestroy
       .getBreadcrumbs()
       .pipe(takeUntil(this.ngUnsubscribe))
       .subscribe((_breadcrumbs) => {
-        console.log(_breadcrumbs);
+        // console.log(_breadcrumbs);
         this.breadcrumbs = _breadcrumbs;
       });
   }
@@ -37,7 +37,7 @@ export class EquipmentManagementBreadcrumbComponent implements OnInit, OnDestroy
   }
 
   routerTo(url?: string) {
-    console.log(url);
+    // console.log(url);
     this.router.navigateByUrl(url);
   }
 }

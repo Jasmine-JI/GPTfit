@@ -3,7 +3,7 @@
  */
 export interface orderListResponse {
   order: Array<{
-    order_no: number;
+    order_no: string;
     user_name: string;
     phone: string;
     address: string;
@@ -16,7 +16,7 @@ export interface orderListResponse {
     attach_file: string | null;
   }> | null;
   product: Array<{
-    order_no: number;
+    order_no: string;
     product_type: string;
     serial_no: string;
     install_date: string; //date
@@ -45,7 +45,7 @@ export interface orderListResponse {
     description?: string | null;
     create_name: string;
     create_time: string; //date-time;
-    order_no?: number | null;
+    order_no?: string | null;
     status?: string;
   }> | null;
   error: boolean;
@@ -56,7 +56,7 @@ export interface orderListResponse {
  * get api order/getList-查詢銷貨單 Parameters
  */
 export interface orderListParameters {
-  order_no?: number;
+  order_no?: string;
   item_count?: number;
 }
 
@@ -88,7 +88,7 @@ export interface productListParameters {
  * order/updateOrderInfo 更新銷貨單基本資料
  */
 export interface updateOrderInfoBody {
-  order_no: number;
+  order_no: string;
   user_name: string;
   phone: string;
   address: string;

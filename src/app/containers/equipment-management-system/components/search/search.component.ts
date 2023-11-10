@@ -1,8 +1,7 @@
 import { NgFor, NgIf } from '@angular/common';
-import { Component, OnDestroy, OnInit, AfterViewInit } from '@angular/core';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { Subject, takeUntil } from 'rxjs';
-import { UserService } from '../../../../core/services';
 import { EquipmentManagementService } from '../../services/equipment-management.service';
 
 @Component({
@@ -16,8 +15,6 @@ export class SearchComponent implements OnInit, OnDestroy {
   private ngUnsubscribe = new Subject();
   constructor(
     private equipmentManagementService: EquipmentManagementService,
-    private userService: UserService,
-    private router: Router,
     private route: ActivatedRoute
   ) {}
 
@@ -47,7 +44,7 @@ export class SearchComponent implements OnInit, OnDestroy {
           .getFliteredOrder()
           .pipe(takeUntil(this.ngUnsubscribe))
           .subscribe((res) => {
-            console.log('銷貨單搜尋結果', res);
+            // console.log('銷貨單搜尋結果', res);
             this.uiFlag.orderList = res?.order;
           });
         break;
@@ -57,7 +54,7 @@ export class SearchComponent implements OnInit, OnDestroy {
           .getFliteredRepairForm()
           .pipe(takeUntil(this.ngUnsubscribe))
           .subscribe((res) => {
-            console.log('叫修單搜尋結果', res);
+            // console.log('叫修單搜尋結果', res);
             this.uiFlag.fixReqList = res?.repair_form;
           });
         break;

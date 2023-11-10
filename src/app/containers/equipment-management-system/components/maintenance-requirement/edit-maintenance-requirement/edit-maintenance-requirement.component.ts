@@ -1,3 +1,4 @@
+import { LayoutModule } from '@angular/cdk/layout';
 import { CommonModule, NgIf } from '@angular/common';
 import {
   Component,
@@ -9,20 +10,66 @@ import {
   Output,
   SimpleChanges,
 } from '@angular/core';
-import { FormBuilder, FormsModule, Validators } from '@angular/forms';
+import { FormBuilder, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import {
+  MAT_MOMENT_DATE_ADAPTER_OPTIONS,
+  MomentDateAdapter,
+} from '@angular/material-moment-adapter';
+import {
+  DateAdapter,
+  MAT_DATE_FORMATS,
+  MAT_DATE_LOCALE,
+  MatNativeDateModule,
+} from '@angular/material/core';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
-import _, { cloneDeep, debounce } from 'lodash';
+import { MatInputModule } from '@angular/material/input';
+import dayjs from 'dayjs';
+import _, { cloneDeep } from 'lodash';
 import { Subject, takeUntil } from 'rxjs';
+import { Domain, WebIp } from '../../../../../core/enums/common';
 import { UserService } from '../../../../../core/services';
-import { EquipmentManagementService } from '../../../services/equipment-management.service';
 import { orderListParameters } from '../../../models/order-api.model';
+import { EquipmentManagementService } from '../../../services/equipment-management.service';
+
+const DATE_FORMAT = {
+  parse: {
+    dateInput: 'YYYY-MM-DD',
+  },
+  display: {
+    dateInput: 'YYYY-MM-DD',
+    monthYearLabel: 'YYYY MMM',
+    dateA11yLabel: 'LL',
+    monthYearA11yLabel: 'YYYY MMMM',
+  },
+};
 
 @Component({
   selector: 'app-edit-maintenance-requirement',
-  standalone: true,
-  imports: [CommonModule, NgIf, FormsModule, MatIconModule],
   templateUrl: './edit-maintenance-requirement.component.html',
   styleUrls: ['./edit-maintenance-requirement.component.scss'],
+  standalone: true,
+  imports: [
+    CommonModule,
+    NgIf,
+    FormsModule,
+    MatIconModule,
+    MatFormFieldModule,
+    MatDatepickerModule,
+    MatNativeDateModule,
+    MatInputModule,
+    ReactiveFormsModule,
+    LayoutModule,
+  ],
+  providers: [
+    {
+      provide: DateAdapter,
+      useClass: MomentDateAdapter,
+      deps: [MAT_DATE_LOCALE, MAT_MOMENT_DATE_ADAPTER_OPTIONS],
+    },
+    { provide: MAT_DATE_FORMATS, useValue: DATE_FORMAT },
+  ],
 })
 export class EditMaintenanceRequirementComponent implements OnInit, OnChanges, OnDestroy {
   @Input() editing: boolean;
@@ -41,6 +88,7 @@ export class EditMaintenanceRequirementComponent implements OnInit, OnChanges, O
 
   fixReqForm = this.formBuilder.group({
     order_no: ['', Validators.required],
+    request_date: [null, Validators.required],
     user_name: ['', Validators.required],
     phone: ['', Validators.required],
     address: ['', Validators.required],
@@ -48,32 +96,47 @@ export class EditMaintenanceRequirementComponent implements OnInit, OnChanges, O
   });
 
   fixReqSerialArray: string[] = []; // 叫修單之產品序號list
+  lastOrder = '';
 
   fixReqInfo: any = {
-    repair_id: null,
+    repair_id: '',
     user_name: '',
     e_mail: '',
-    phone: null,
+    phone: '',
     address: '',
     serial_no: '',
     description: '', //問題描述
     status: '', //處理狀態
-    order_no: null,
+    order_no: '',
+    request_date: null, //叫修日期
+    attach_file: '', //附件 /可空值
   };
 
   originFixReqInfo: any = {
-    repair_id: null,
+    repair_id: '',
     user_name: '',
     e_mail: '',
-    phone: null,
+    phone: '',
     address: '',
     serial_no: '',
     description: '', //問題描述
     status: '', //處理狀態
-    order_no: null,
+    order_no: '',
+    request_date: null, //叫修日期
+    attach_file: '', //附件 /可空值
   };
 
+  tagText = '';
+  isListVisible = false;
+  filteredSerialNo: any;
   textLength: number;
+  filesMaxLength = 260;
+  filesMax = false;
+  fileNames: string[] = [];
+  readonly imgPath = `https://${
+    location.hostname.includes(WebIp.develop) ? Domain.uat : location.hostname
+  }/img/`;
+
   constructor(
     private userService: UserService,
     private equipmentManagementService: EquipmentManagementService,
@@ -84,7 +147,7 @@ export class EditMaintenanceRequirementComponent implements OnInit, OnChanges, O
   showRepairStatusDropdown = false;
 
   ngOnInit(): void {
-    console.log('prodSerialArray:', this.prodSerialArray);
+    // console.log('prodSerialArray:', this.prodSerialArray);
     // this.getOrderListDetail();
   }
 
@@ -98,11 +161,87 @@ export class EditMaintenanceRequirementComponent implements OnInit, OnChanges, O
     }
   }
 
-  tagText = '';
-  isListVisible = false;
-  defaultWidth = 200;
-  filteredSerialNo: any;
+  openImage(imageUrl: string) {
+    window.open(imageUrl, '_blank');
+  }
 
+  deleteImg(fileName: string) {
+    const index = this.fileNames.indexOf(fileName);
+    if (index !== -1) {
+      this.fileNames.splice(index, 1);
+      this.fixReqInfo.attach_file = this.fileNames.join(',');
+      this.filesMax = this.fixReqInfo.attach_file.length > this.filesMaxLength ? true : false;
+    }
+  }
+
+  previewImg(fileInput: HTMLInputElement) {
+    const file = fileInput.files[0];
+    if (file) {
+      const formData = new FormData();
+      formData.append('file', file);
+      this.uploadImage(formData);
+      fileInput.value = '';
+    }
+  }
+
+  uploadImage(formData: any) {
+    const dataType = 'form';
+    this.equipmentManagementService.uploadImageApi(formData, dataType).subscribe((res) => {
+      if (res.error) {
+        //上傳失敗(非圖片檔)
+        alert(res.description);
+      } else {
+        //上傳成功
+        if (this.fixReqInfo.attach_file) {
+          //原字串有 attach_file
+          if (
+            this.fixReqInfo.attach_file === 'None' ||
+            this.fixReqInfo.attach_file === null ||
+            this.fixReqInfo.attach_file.length < 10
+          ) {
+            this.fixReqInfo.attach_file = '';
+            this.fixReqInfo.attach_file = res.imgUrl;
+          } else {
+            this.fixReqInfo.attach_file += ',' + res.imgUrl;
+          }
+        } else {
+          //原字串沒有 attach_file
+          this.fixReqInfo.attach_file = '';
+          this.fixReqInfo.attach_file = res.imgUrl;
+        }
+        this.setFileArray();
+        // console.log(this.fileNames);
+      }
+    });
+  }
+
+  setFileArray() {
+    if (this.fixReqInfo && this.fixReqInfo.attach_file) {
+      if (
+        this.fixReqInfo.attach_file === 'None' ||
+        this.fixReqInfo.attach_file === null ||
+        this.fixReqInfo.attach_file === ''
+      ) {
+        this.fileNames = [];
+        this.fixReqInfo.attach_file = '';
+      } else {
+        this.filesMax = this.fixReqInfo.attach_file.length > this.filesMaxLength ? true : false;
+        this.fileNames = this.fixReqInfo.attach_file.split(',');
+      }
+    } else {
+      this.fileNames = [];
+    }
+  }
+
+  onInput(event: any): void {
+    event.target.value = event.target.value.replace(/[^0-9]/g, '');
+    this.fixReqInfo.phone = event.target.value;
+  }
+
+  /**
+   * 輸入產品序號欄位鍵盤操作
+   * @param event
+   */
   onKeyDown(event: KeyboardEvent) {
     if (event.key === 'Tab' || event.key === 'Enter' || event.key === ',') {
       event.preventDefault();
@@ -112,6 +251,22 @@ export class EditMaintenanceRequirementComponent implements OnInit, OnChanges, O
     }
   }
 
+  /**
+   * 叫修日期
+   */
+  changeDate(type: string, date: Date) {
+    switch (type) {
+      case 'request_date':
+        this.fixReqInfo.request_date = dayjs(date).format('YYYY-MM-DD');
+        break;
+      default:
+        break;
+    }
+  }
+
+  /**
+   * 篩選產品序號列表
+   */
   filterSerialNo() {
     if (this.tagText === '') {
       this.filteredSerialNo = this.prodSerialArray?.filter((tag) => tag !== '');
@@ -122,10 +277,10 @@ export class EditMaintenanceRequirementComponent implements OnInit, OnChanges, O
     }
     this.filteredSerialNo = this.filteredSerialNo?.filter(
       (tag) => !this.fixReqSerialArray.includes(tag)
-    ); //过滤掉已经在 serialNoArray 中的元素
-    this.filteredSerialNo = Array.from(new Set(this.filteredSerialNo)); // 使用 Set 来去除重复的元素
+    ); //過濾掉已經在 serialNoArray 中的元素
+    this.filteredSerialNo = Array.from(new Set(this.filteredSerialNo)); // 使用 Set 來去除重複的元素
     this.isListVisible = this.filteredSerialNo.length !== 0 ? true : false;
-    console.log('filteredSerialNo', this.filteredSerialNo);
+    // console.log('filteredSerialNo', this.filteredSerialNo);
   }
 
   addTag(serialNo?: string) {
@@ -144,8 +299,8 @@ export class EditMaintenanceRequirementComponent implements OnInit, OnChanges, O
       this.fixReqInfo.serial_no = this.fixReqSerialArray.join(',');
       this.tagText = '';
       this.isListVisible = false;
-      console.log('fixReqSerialArray', this.fixReqSerialArray);
-      console.log(this.fixReqInfo);
+      // console.log('fixReqSerialArray', this.fixReqSerialArray);
+      // console.log(this.fixReqInfo);
     }
   }
 
@@ -158,43 +313,53 @@ export class EditMaintenanceRequirementComponent implements OnInit, OnChanges, O
 
   deleteSerial(serialIndex: number) {
     if (serialIndex !== -1) {
-      console.log(serialIndex);
-
+      // console.log(serialIndex);
       this.fixReqSerialArray.splice(serialIndex, 1);
       this.fixReqInfo.serial_no = this.fixReqSerialArray.join(',');
-      console.log('serialNoArray', this.fixReqSerialArray);
-      console.log(this.fixReqInfo);
+      // console.log('serialNoArray', this.fixReqSerialArray);
+      // console.log(this.fixReqInfo);
     }
   }
 
+  /**
+   * 判斷是否已經有產品序號列表或銷貨單號是否修改
+   */
   ifProdSerialArray() {
-    //取得銷貨單中產品列表
-    if (this.prodSerialArray?.length == 0 || !this.prodSerialArray) {
+    if (
+      this.prodSerialArray?.length == 0 ||
+      !this.prodSerialArray ||
+      this.lastOrder !== this.fixReqInfo.order_no
+    ) {
       this.fetchOrderProdList();
     } else {
+      //
       this.filterSerialNo();
     }
   }
 
   /**
-   *
+   * 取得銷貨單中所有的產品序號
    */
   fetchOrderProdList() {
-    const body: orderListParameters = { order_no: this.fixReqInfo.order_no };
-    console.log(body);
-    this.equipmentManagementService
-      .getOrderListApi(body)
-      .pipe(takeUntil(this.ngUnsubscribe))
-      .subscribe((_orderDetail) => {
-        // 回傳基本資料
-        // this.equipmentManagementService.setOrderDetail(orderDetail); //set OrderDetail
-        // this.orderDetail = _orderDetail;
-        if (_orderDetail) {
-          // console.log(_orderDetail);
-          this.prodSerialArray = _orderDetail?.product?.map((product) => product.serial_no);
-          this.filterSerialNo();
-        }
-      });
+    if (
+      this.lastOrder && this.fixReqInfo.order_no
+        ? this.lastOrder !== this.fixReqInfo.order_no
+        : this.fixReqInfo.order_no !== ''
+    ) {
+      this.lastOrder = this.fixReqInfo.order_no;
+      const body: orderListParameters = { order_no: this.fixReqInfo.order_no };
+      // console.log(body);
+      this.equipmentManagementService
+        .getOrderListApi(body)
+        .pipe(takeUntil(this.ngUnsubscribe))
+        .subscribe((_orderDetail) => {
+          if (_orderDetail) {
+            // console.log(_orderDetail);
+            this.prodSerialArray = _orderDetail?.product?.map((product) => product.serial_no);
+            this.filterSerialNo();
+          }
+        });
+    }
   }
 
   countTextLength(text: string) {
@@ -216,7 +381,7 @@ export class EditMaintenanceRequirementComponent implements OnInit, OnChanges, O
 
   selectStatus(option: string | null) {
     this.fixReqInfo.status = option;
-    console.log(this.fixReqInfo.status);
+    // console.log(this.fixReqInfo.status);
     this.showRepairStatusDropdown = !this.showRepairStatusDropdown;
   }
 
@@ -235,7 +400,7 @@ export class EditMaintenanceRequirementComponent implements OnInit, OnChanges, O
         }
       } else {
         //修改視窗
-        console.log('修改叫修單');
+        // console.log('修改叫修單');
         this.getFixReqList();
       }
     }
@@ -274,6 +439,7 @@ export class EditMaintenanceRequirementComponent implements OnInit, OnChanges, O
           // console.log('fixReqInfo:', this.fixReqDetail.repair_form[0]);
           const targetOrderInfo = this.fixReqDetail.repair_form[0];
           this.fixReqInfo = cloneDeep(targetOrderInfo);
+          this.setFileArray();
           this.originFixReqInfo = cloneDeep(this.fixReqInfo);
         }
       });
@@ -284,7 +450,10 @@ export class EditMaintenanceRequirementComponent implements OnInit, OnChanges, O
    * @param btn
    */
   checkInfoChange(btn: string) {
-    if (!_.isEqual(this.fixReqInfo, this.originFixReqInfo)) {
+    if (btn == 'save' && this.isNewForm && !this.NewFixReq) {
+      //直接在銷貨單新增叫修單
+      this.checkoutContent();
+    } else if (!_.isEqual(this.fixReqInfo, this.originFixReqInfo)) {
       //物件內容深層比較，有變更
       switch (btn) {
         case 'save':
@@ -293,7 +462,6 @@ export class EditMaintenanceRequirementComponent implements OnInit, OnChanges, O
         case 'close':
           this.alertInfoChanged();
           break;
-
         default:
           break;
       }
@@ -311,27 +479,20 @@ export class EditMaintenanceRequirementComponent implements OnInit, OnChanges, O
     } else {
       this.closeEdit();
       this.fixReqInfo = cloneDeep(this.originFixReqInfo);
+      this.fileNames = this.fixReqInfo.attach_file.split(',');
     }
   }
 
   checkoutContent() {
-    const { order_no, user_name, phone, address, e_mail } = this.fixReqInfo;
+    const { order_no, request_date, user_name, phone, address, e_mail } = this.fixReqInfo;
     this.fixReqForm.patchValue({
       order_no: order_no,
+      request_date: request_date,
       user_name: user_name,
       phone: phone,
       address: address,
       e_mail: e_mail,
     });
-    // if (order_no === null) {
-    //   alert('請輸入銷貨單號');
-    // } else if (user_name === '') {
-    //   alert('請輸入名稱');
-    // } else if (phone === null) {
-    //   alert('請輸入電話');
-    // } else if (address === '') {
-    //   alert('請輸入地址');
-    // } else {
     if (this.fixReqForm.valid) {
       if (this.isNewForm) {
         this.addFixReqInfo();
@@ -347,9 +508,20 @@ export class EditMaintenanceRequirementComponent implements OnInit, OnChanges, O
    * 新增叫修單 - 儲存內容
    */
   addFixReqInfo() {
-    const { order_no, user_name, e_mail, phone, address, serial_no, description } = this.fixReqInfo;
+    const {
+      order_no,
+      request_date,
+      user_name,
+      e_mail,
+      phone,
+      address,
+      serial_no,
+      description,
+      attach_file,
+    } = this.fixReqInfo;
     const updateData: any = {
       order_no,
+      request_date,
       user_name,
       e_mail,
       phone,
@@ -357,6 +529,7 @@ export class EditMaintenanceRequirementComponent implements OnInit, OnChanges, O
       serial_no,
       description,
       status: 'undone',
+      attach_file,
       create_name: this.modifyCteateName,
     };
 
@@ -381,11 +554,9 @@ export class EditMaintenanceRequirementComponent implements OnInit, OnChanges, O
    * 修改叫修單 - 儲存內容
    */
   updateFixReqInfo() {
-    const { order_no, user_name, e_mail, phone, address, serial_no, description, status } =
-      this.fixReqInfo;
-    const updateData: any = {
-      repair_id: this.repair_id,
+    const {
       order_no,
+      request_date,
       user_name,
       e_mail,
       phone,
@@ -393,6 +564,20 @@ export class EditMaintenanceRequirementComponent implements OnInit, OnChanges, O
       serial_no,
       description,
       status,
+      attach_file,
+    } = this.fixReqInfo;
+    const updateData: any = {
+      repair_id: this.repair_id,
+      order_no,
+      request_date,
+      user_name,
+      e_mail,
+      phone,
+      address,
+      serial_no,
+      description,
+      status,
+      attach_file,
       modify_name: this.userService.getUser().nickname,
     };
 
@@ -430,6 +615,7 @@ export class EditMaintenanceRequirementComponent implements OnInit, OnChanges, O
    * 退出編輯視窗
    */
   closeEdit() {
+    this.setFileArray();
     this.editing = false;
     this.editingChange.emit(this.editing);
   }
