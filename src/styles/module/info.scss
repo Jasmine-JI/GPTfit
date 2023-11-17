@@ -49,9 +49,22 @@ $edit-icon-size: 30px;
   cursor: pointer;
   white-space: nowrap;
   @include bold-font(16px);
+  // transition: all 0.2s cubic-bezier(0.5, 0.5, 0.5, 0.5);
 
   &:hover {
     background-color: var(--scale-245-50);
+  }
+
+  &.active {
+    &::before {
+      content: '';
+      width: 100%;
+      height: 3px;
+      position: absolute;
+      bottom: 100%;
+      left: 0;
+      background-color: rgb(0, 183, 238);
+    }
   }
 }
 
@@ -61,7 +74,7 @@ $edit-icon-size: 30px;
   height: $avatar-normal-size;
   z-index: nth($normal-index, 2);
   top: 150px;
-  left: 50px;
+  // left: 50px;
   background: #ffffff;
   border: 3px solid #ffffff;
   border-radius: 50%;
@@ -145,6 +158,7 @@ $edit-icon-size: 30px;
   align-items: center;
   justify-content: space-between;
   margin-top: 10px;
+  width: 100%;
 }
 
 .info-headerRow {
@@ -226,22 +240,31 @@ $edit-icon-size: 30px;
   background-color: $group-btn-gray;
 }
 
-.info-portalMode {
-  width: 90vw !important;
-  margin: 0 auto;
+.info-portalMode,
+.page_info_wrapper {
+  width: 95%;
+  max-width: 1200px !important;
+  margin: auto;
 }
 
 .info-pageListBar {
   width: 100%;
-  padding: 10px 0px;
+  padding-bottom: 10px;
+  top: -65px;
+  transition: top 0.5s 0s;
 }
 
 .info-pageListBar-fixed {
-  position: fixed;
-  top: 50px;
+  position: sticky;
+  top: -2px;
   background-color: var(--scale-255-0);
   z-index: $content-navbar;
-  box-shadow: 1px 2px 4px rgba(150, 150, 150, 1);
+  box-shadow: 0px 0px 4px rgba(150, 150, 150, 1);
+  transition: top 0.5s 0s;
+}
+
+.info-pageListBar-nofixed {
+  top: -65px;
 }
 
 /**
@@ -250,7 +273,7 @@ $edit-icon-size: 30px;
 .info-pageListBar-replace {
   &:after {
     content: '';
-    min-height: 69px;
+    min-height: 60px;
   }
 }
 
@@ -320,6 +343,7 @@ $edit-icon-size: 30px;
   max-width: 900px;
   pointer-events: none;
   padding-right: 40px;
+  overflow-wrap: anywhere;
 }
 
 .info-activeBar {

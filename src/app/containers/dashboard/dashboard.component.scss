@@ -15,7 +15,7 @@ $alert-icon-color: rgba(255, 56, 56, 1);
 
 #aside__menu {
   justify-content: space-between;
-  height: 90vh;
+  height: 85vh;
   overflow-x: hidden;
   @include overflow-y-scroll(false);
 }
@@ -25,7 +25,6 @@ $alert-icon-color: rgba(255, 56, 56, 1);
   position: relative;
   flex-grow: 1;
   height: 100vh;
-  padding: 60px 0 0 0;
   background-color: var(--scale-255-0);
   @include overflow-y-scroll();
 }
@@ -344,8 +343,9 @@ $alert-icon-color: rgba(255, 56, 56, 1);
 }
 
 .expand__navbar {
+  // position: absolute;
   display: flex;
-  background-color: rgba(31, 38, 38, 1);
+  background-color: rgb(31 38 38 / 79%);
   z-index: $sidebar;
   width: 270px;
   height: 100vh;

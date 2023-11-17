@@ -42,14 +42,14 @@
 
 @media screen and (min-width: 1300px) {
   .chart_wrap {
-    max-height: fit-content;
-    min-height: fit-content;
+    // max-height: fit-content;
+    // min-height: fit-content;
     max-width: 1440px;
     overflow-x: hidden;
 
     display: grid;
     grid-gap: 20px;
-    grid-template-columns: [line_1] 40% [line2] 60% [column-3];
+    grid-template-columns: 40% 60%;
     grid-template-rows: 30px auto repeat(1, 1fr);
     grid-auto-rows: minmax(20px, auto);
   }

@@ -1,7 +1,7 @@
 <ng-container *ngIf="uiFlag.isMobile">
   <router-outlet></router-outlet>
 </ng-container>
-<div class="flexRow" *ngIf="!uiFlag.isMobile">
+<div class="flexRow info-portalMode" *ngIf="!uiFlag.isMobile">
   <div class="create__mail__button">
     <button (click)="createMail()">
       <i class="icon-svg_web-icon_p1_029-add create__mail__icon"></i>

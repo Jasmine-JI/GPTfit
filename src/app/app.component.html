@@ -1,3 +1,7 @@
+<!-- <app-navbar
+  [isAlphaVersion]="uiFlag.isAlphaVersion"
+  *ngIf="!uiFlag.isPreviewMode && !uiFlag.hideNavbar"
+></app-navbar> -->
 <router-outlet></router-outlet>
 <div *ngIf="!appLoaded">
   <app-loading></app-loading>

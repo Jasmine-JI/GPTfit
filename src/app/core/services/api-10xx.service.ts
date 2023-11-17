@@ -165,6 +165,18 @@ export class Api10xxService {
   }
 
   /**
+   * api-v2 取得AlaPoint
+   * @param body {any}-api 所需參數
+   */
+  fetchAlaZonePoint(body: any): Observable<any> {
+    return <any>(
+      this.http
+        .post('/api/v2/user/getAlaZonePoint', body)
+        .pipe(catchError((err) => throwRxError(err)))
+    );
+  }
+
+  /**
    * 回傳欲添加的header物件
    * @param options {any}-欲設置之header
    * @author kidin-1110114

@@ -296,12 +296,12 @@ export class PersonalSportsChartData {
     const [baseData, compareData] = data;
 
     const baseFilterResult = this.filterData(baseData, sportType, dataKey, false);
-    console.log('baseFilterResult', baseFilterResult);
+    // console.log('baseFilterResult', baseFilterResult);
 
     const compareFilterResult = compareData
       ? this.filterData(compareData, sportType, dataKey, true)
       : undefined;
-    console.log('baseFilterResult', baseFilterResult, 'compareFilterResult', compareFilterResult);
+    // console.log('baseFilterResult', baseFilterResult, 'compareFilterResult', compareFilterResult);
 
     return [baseFilterResult, compareFilterResult];
   }
@@ -322,7 +322,7 @@ export class PersonalSportsChartData {
       if (checkDataOpen(_resultCode)) {
         _data[key].forEach((_dataRow) => {
           const { activities, ala_zone_point, startTime, endTime } = _dataRow;
-          console.log('_dataRow', _dataRow);
+          // console.log('_dataRow', _dataRow);
 
           activities.forEach((_activity) => {
             const { type } = _activity;
@@ -347,7 +347,7 @@ export class PersonalSportsChartData {
       if (result.length > 0) filterResult.push(result);
     });
 
-    console.log('filterResult', filterResult);
+    // console.log('filterResult', filterResult);
     return filterResult;
   };
 
@@ -363,11 +363,7 @@ export class PersonalSportsChartData {
     benefitTimeStartZone: BenefitTimeStartZone
   ) {
     const [baseData, compareData] = allData;
-    console.log('33333', allData);
-
     const achievementData = (data: Array<any>) => {
-      console.log('222222', data);
-
       return data.map((_data) => {
         const {
           activities: {
@@ -385,7 +381,6 @@ export class PersonalSportsChartData {
           startTime,
           endTime,
         } = _data;
-        console.log('111111', _data);
 
         const hrZone = [zone0, zone1, zone2, zone3, zone4, zone5];
         // 計算效益時間並寫回activities
@@ -481,9 +476,7 @@ export class PersonalSportsChartData {
 
     const baseDataResult = achievementData(baseData);
     const compareDataResult = compareData ? achievementData(compareData) : undefined;
-
-    console.log('baseDataResult', baseDataResult, 'comp areDataResult', compareDataResult);
-
+    // console.log('baseDataResult', baseDataResult, 'comp areDataResult', compareDataResult);
     return [baseDataResult, compareDataResult];
   }
 
@@ -510,8 +503,6 @@ export class PersonalSportsChartData {
     const result: Array<any> = [];
     const temporaryCount = new TemporaryCount();
     const flatData = data[0] || [];
-    console.log('gogog', flatData);
-
     flatData.forEach((_data, _index) => {
       const {
         startTime: _startTime,
@@ -519,8 +510,6 @@ export class PersonalSportsChartData {
         activities: _activities,
         alaPoint: _alaPoint,
       } = _data;
-      console.log('dggsdg', _alaPoint);
-
       const { start, end } = this.getSameRangeDate(_startTime, _endTime, dateUnit);
       const { startTime } = temporaryCount.dateRange;
       const isFirstData = _index === 0;
@@ -565,8 +554,6 @@ export class PersonalSportsChartData {
   ) {
     const [baseDateList, compareDateList] = allDateList;
     const [baseActivitiesData, compareActivitiesData] = allData;
-    console.log('allData', allData);
-
     const baseDataResult = [];
     const compareDataResult = [];
     const lifeTrackingKey = condition.dateUnit.getReportKey('lifeTracking');
@@ -678,7 +665,6 @@ export class PersonalSportsChartData {
         startTime: _startTime,
         endTime: _endTime,
       } = _data;
-      console.log('8476548946', _data);
 
       const {
         totalHrZone0Second: _z0,
@@ -844,7 +830,6 @@ export class PersonalSportsChartData {
       }
 
       this._sportsTableData.push([tableData]);
-      console.log('QQQQQQ', this._sportsTableData);
     });
   }
 
@@ -855,8 +840,6 @@ export class PersonalSportsChartData {
    */
   handleChartWithCompare(allData: Array<any>, sportType: SportType) {
     const [baseData, compareData] = allData;
-    console.log('9999', allData);
-
     baseData.forEach((_baseData, _index) => {
       const {
         activities: _baseActivities,
@@ -864,8 +847,6 @@ export class PersonalSportsChartData {
         startTime: _baseStartTime,
         endTime: _baseEndTime,
       } = _baseData;
-      console.log('9999', _baseData);
-
       const {
         totalHrZone0Second: _baseZ0,
         totalHrZone1Second: _baseZ1,

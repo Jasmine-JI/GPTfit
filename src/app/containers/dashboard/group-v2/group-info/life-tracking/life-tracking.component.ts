@@ -800,7 +800,7 @@ export class LifeTrackingComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * 建立個人分析物件以方便後續數據計算，並回傳不重複之成員id
+   * 建立個人分析物件以便後續數據計算，並回傳不重複之成員id
    * @param memList {Array<any>}-api 1103回傳的資料
    * @param level {number}-群組階層
    * @author kidin-1100617
@@ -845,7 +845,7 @@ export class LifeTrackingComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * 生成個人分析物件，方便後續計算個人分析數據
+   * 生成個人分析物件，便後續計算個人分析數據
    * @param userId {number}
    * @param userName {string}
    * @param groupName {string}
@@ -885,8 +885,8 @@ export class LifeTrackingComponent implements OnInit, OnDestroy {
         token: this.authService.token,
         type: this.reportTime.type,
         targetUserId: idList,
-        filterStartTime: dayjs(startTimestamp).format('YYYY-MM-DDTHH:mm:ss.SSSZ'),
-        filterEndTime: dayjs(endTimestamp).format('YYYY-MM-DDTHH:mm:ss.SSSZ'),
+        filterStartTime: dayjs(startTimestamp).startOf('day').format('YYYY-MM-DDTHH:mm:ss.SSSZ'),
+        filterEndTime: dayjs(endTimestamp).endOf('day').format('YYYY-MM-DDTHH:mm:ss.SSSZ'),
       };
 
     this.api21xxService.fetchTrackingSummaryArray(body).subscribe((res) => {
@@ -922,16 +922,16 @@ export class LifeTrackingComponent implements OnInit, OnDestroy {
       this.dateLen = dayjs(endTimestamp).diff(dayjs(startTimestamp), 'day') + 1;
       dateRange = 86400000; // 間隔1天(ms)
     } else {
-      reportStartDate = dayjs(startTimestamp).startOf('week').valueOf();
-      reportEndDate = dayjs(endTimestamp).startOf('week').valueOf();
+      reportStartDate = dayjs(startTimestamp).startOf('isoWeek').startOf('day').valueOf();
+      reportEndDate = dayjs(endTimestamp).endOf('isoWeek').endOf('day').valueOf();
       this.dateLen = dayjs(reportEndDate).diff(dayjs(reportStartDate), 'week') + 1;
+      // console.log('this.dateLen', this.dateLen);
       dateRange = 604800000; // 間隔7天(ms)
     }
 
     for (let i = 0; i < this.dateLen; i++) {
       result.push(reportStartDate + dateRange * i);
     }
-
     return result;
   }
 
@@ -977,10 +977,15 @@ export class LifeTrackingComponent implements OnInit, OnDestroy {
             } = this.reportConditionOpt,
             rangeUnit = this.translate.instant('universal_time_day');
           this.reportTime = {
-            create: dayjs().format('YYYY-MM-DD HH:mm'),
-            endDate: dayjs(endTimestamp).format('YYYY-MM-DD'),
-            range: `${dayjs(endTimestamp).diff(dayjs(startTimestamp), 'day') + 1}${rangeUnit}`,
-            diffWeek: (dayjs(endTimestamp).diff(dayjs(startTimestamp), 'day') + 1) / 7,
+            create: dayjs().startOf('day').format('YYYY-MM-DD HH:mm'),
+            endDate: dayjs(endTimestamp).endOf('day').format('YYYY-MM-DD'),
+            range: `${
+              dayjs(endTimestamp).endOf('day').diff(dayjs(startTimestamp).startOf('day'), 'day') + 1
+            }${rangeUnit}`,
+            diffWeek:
+              (dayjs(endTimestamp).endOf('day').diff(dayjs(startTimestamp).startOf('day'), 'day') +
+                1) /
+              7,
             type: this.reportTime.type,
             typeTranslate: this.translate.instant(
               this.reportTime.type === 1 ? 'universal_time_day' : 'universal_time_week'
@@ -1191,20 +1196,40 @@ export class LifeTrackingComponent implements OnInit, OnDestroy {
    * @author kidin-1100617
    */
   handleMixData(mixData: Array<any>) {
-    mixData.sort((a, b) => dayjs(a.startTime).valueOf() - dayjs(b.startTime).valueOf());
+    mixData.sort(
+      (a, b) =>
+        dayjs(a.startTime).startOf('day').valueOf() - dayjs(b.startTime).startOf('day').valueOf()
+    );
     const dateArr = this.createChartXaxis(this.reportConditionOpt.date, this.reportTime.type);
     const noRepeatDateData = this.mergeSameDateData(mixData);
     const needKey = this.getNeedKey();
     let dataIdx = 0;
-    for (let i = 0, len = dateArr.length; i < len; i++) {
+    // console.log('dateArr', dateArr); //需要的筆數
+    // console.log('noRepeatDateData', noRepeatDateData); //有的資料數
+
+    for (let i = 0; i < dateArr.length; i++) {
       // 若無該日數據，則以補0方式呈現圖表數據。
       const xAxisTimestamp = dateArr[i];
+
       const { startTimestamp, tracking } = noRepeatDateData[dataIdx] || {
         startTimestamp: undefined,
         tracking: undefined,
       };
+      // console.log(noRepeatDateData[dataIdx]);
 
-      if (xAxisTimestamp === startTimestamp) {
+      // noRepeatDateData[dataIdx + 1].startTimestamp = this.reportTime.type === 2?xAxisTimestamp:startTimestamp
+
+      // console.log('xAxisTimestamp', xAxisTimestamp);
+      // console.log('startTimestamp',startTimestamp);
+      // // console.log('endTimestamp',endTimestamp);
+      // console.log('tracking', tracking);
+
+      if (
+        (this.reportTime.type === 1 && xAxisTimestamp == startTimestamp) ||
+        (this.reportTime.type === 2 &&
+          xAxisTimestamp == noRepeatDateData[dataIdx + 1]?.startTimestamp) ||
+        xAxisTimestamp > noRepeatDateData[dataIdx + 1]?.startTimestamp
+      ) {
         let sameDateData = {};
         const trackingLen = tracking.length;
         for (let j = 0; j < trackingLen; j++) {
@@ -1218,11 +1243,13 @@ export class LifeTrackingComponent implements OnInit, OnDestroy {
               // 將各數據加總，之後均化產生趨勢圖表
               if (sameDateData[key] !== undefined) {
                 sameDateData[key] += value;
+                // console.log('sameDateData[key] += value',sameDateData[key]);
               } else {
                 sameDateData = { [key]: value, ...sameDateData };
+                // console.log('sameDateData',sameDateData)
               }
 
-              // 計算紀錄數據非0的人數，以方便計算人均數據
+              // 計算紀錄數據非0的人數，以計算人均數據
               if (value) {
                 const countKey = `${key}EffectCount`;
                 if (sameDateData[countKey] !== undefined) {
@@ -1234,10 +1261,12 @@ export class LifeTrackingComponent implements OnInit, OnDestroy {
             }
           }
         }
+        // console.log('sameDateData',sameDateData);
 
         this.createChartData(sameDateData, xAxisTimestamp);
         dataIdx++;
       } else {
+        // console.log('zeroData');
         let zeroData = {};
         for (let l = 0, keyLen = needKey.length; l < keyLen; l++) {
           const key = needKey[l];
@@ -1597,23 +1626,28 @@ export class LifeTrackingComponent implements OnInit, OnDestroy {
     let sameDateData = {};
     const result = [];
     for (let i = 0, len = data.length; i < len; i++) {
-      const { startTime, ...rest } = data[i],
+      const { startTime, endTime, ...rest } = data[i],
         { startTime: nextStartTime } = data[i + 1] || { startTime: undefined },
+        { endTime: nextEndTime } = data[i + 1] || { endTime: undefined },
         startDate = startTime.split('T')[0],
-        nextStartDate = nextStartTime ? nextStartTime.split('T')[0] : undefined;
-      if (nextStartDate === startDate) {
-        if (!sameDateData['startTimestamp']) {
+        endDate = endTime.split('T')[0],
+        nextStartDate = nextStartTime ? nextStartTime.split('T')[0] : undefined,
+        nextEndDate = nextEndTime ? nextEndTime.split('T')[0] : undefined;
+      if (nextStartDate === startDate || nextEndDate === endDate) {
+        if (!sameDateData['startTimestamp'] || !sameDateData['endTimestamp']) {
           sameDateData = {
-            startTimestamp: dayjs(startDate, 'YYYY-MM-DD').valueOf(),
+            startTimestamp: dayjs(startDate, 'YYYY-MM-DD').startOf('day').valueOf(),
+            endTimestamp: dayjs(endDate, 'YYYY-MM-DD').endOf('day').valueOf(),
             tracking: [rest],
           };
         } else {
           sameDateData['tracking'] = sameDateData['tracking'].concat([rest]);
         }
       } else {
-        if (!sameDateData['startTimestamp']) {
+        if (!sameDateData['startTimestamp'] || !sameDateData['endTimestamp']) {
           result.push({
-            startTimestamp: dayjs(startDate, 'YYYY-MM-DD').valueOf(),
+            startTimestamp: dayjs(startDate, 'YYYY-MM-DD').startOf('day').valueOf(),
+            endTimestamp: dayjs(endDate, 'YYYY-MM-DD').endOf('day').valueOf(),
             tracking: [rest],
           });
         } else {
@@ -1634,6 +1668,8 @@ export class LifeTrackingComponent implements OnInit, OnDestroy {
    * @author kidin-1100621
    */
   createStepTrendChart(strokeData: any, startTimestamp: number) {
+    // console.log('totalStep',strokeData.totalStep);
+
     const { totalStep, targetStep, totalDistanceMeters } = strokeData;
     const { stepTrend } = this.chart;
     stepTrend.totalDistance += totalDistanceMeters;

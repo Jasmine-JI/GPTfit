@@ -389,8 +389,8 @@ export class MyLifeTrackingComponent implements OnInit, OnDestroy {
       token: this.authService.token,
       type: this.reportTime.type,
       targetUserId: [id],
-      filterStartTime: dayjs(startTimestamp).format('YYYY-MM-DDTHH:mm:ss.SSSZ'),
-      filterEndTime: dayjs(endTimestamp).format('YYYY-MM-DDTHH:mm:ss.SSSZ'),
+      filterStartTime: dayjs(startTimestamp).startOf('day').format('YYYY-MM-DDTHH:mm:ss.SSSZ'),
+      filterEndTime: dayjs(endTimestamp).endOf('day').format('YYYY-MM-DDTHH:mm:ss.SSSZ'),
     };
 
     this.api21xxService.fetchTrackingSummaryArray(body).subscribe((res) => {
@@ -426,8 +426,8 @@ export class MyLifeTrackingComponent implements OnInit, OnDestroy {
       this.dateLen = dayjs(endTimestamp).diff(dayjs(startTimestamp), 'day') + 1;
       dateRange = 86400000; // 間隔1天(ms)
     } else {
-      (reportStartDate = dayjs(startTimestamp).startOf('week').valueOf()),
-        (reportEndDate = dayjs(endTimestamp).startOf('week').valueOf());
+      reportStartDate = dayjs(startTimestamp).startOf('isoWeek').startOf('day').valueOf();
+      reportEndDate = dayjs(endTimestamp).endOf('isoWeek').endOf('day').valueOf();
       this.dateLen = dayjs(reportEndDate).diff(dayjs(reportStartDate), 'week') + 1;
       dateRange = 604800000; // 間隔7天(ms)
     }
@@ -435,7 +435,6 @@ export class MyLifeTrackingComponent implements OnInit, OnDestroy {
     for (let i = 0; i < this.dateLen; i++) {
       result.push(reportStartDate + dateRange * i);
     }
-
     return result;
   }
 
@@ -470,10 +469,15 @@ export class MyLifeTrackingComponent implements OnInit, OnDestroy {
             } = this.reportConditionOpt,
             rangeUnit = this.translate.instant('universal_time_day');
           this.reportTime = {
-            create: dayjs().format('YYYY-MM-DD HH:mm'),
-            endDate: dayjs(endTimestamp).format('YYYY-MM-DD'),
-            range: `${dayjs(endTimestamp).diff(dayjs(startTimestamp), 'day') + 1}${rangeUnit}`,
-            diffWeek: (dayjs(endTimestamp).diff(dayjs(startTimestamp), 'day') + 1) / 7,
+            create: dayjs().startOf('day').format('YYYY-MM-DD HH:mm'),
+            endDate: dayjs(endTimestamp).endOf('day').format('YYYY-MM-DD'),
+            range: `${
+              dayjs(endTimestamp).endOf('day').diff(dayjs(startTimestamp).startOf('day'), 'day') + 1
+            }${rangeUnit}`,
+            diffWeek:
+              (dayjs(endTimestamp).endOf('day').diff(dayjs(startTimestamp).startOf('day'), 'day') +
+                1) /
+              7,
             type: this.reportTime.type,
             typeTranslate: this.translate.instant(
               this.reportTime.type === 1 ? 'universal_time_day' : 'universal_time_week'
@@ -545,7 +549,7 @@ export class MyLifeTrackingComponent implements OnInit, OnDestroy {
     const noRepeatDateData = this.mergeSameDateData(data),
       needKey = this.getNeedKey();
     let dataIdx = 0;
-    for (let i = 0, len = this.xAxisArr.length; i < len; i++) {
+    for (let i = 0; i < this.xAxisArr.length; i++) {
       // 若無該日數據，則以補0方式呈現圖表數據。
       const xAxisTimestamp = this.xAxisArr[i],
         oneStrokeData = noRepeatDateData[dataIdx],
@@ -554,7 +558,12 @@ export class MyLifeTrackingComponent implements OnInit, OnDestroy {
           tracking: undefined,
         };
 
-      if (xAxisTimestamp === startTimestamp) {
+      if (
+        (this.reportTime.type === 1 && xAxisTimestamp == startTimestamp) ||
+        (this.reportTime.type === 2 &&
+          xAxisTimestamp == noRepeatDateData[dataIdx + 1]?.startTimestamp) ||
+        xAxisTimestamp > noRepeatDateData[dataIdx + 1]?.startTimestamp
+      ) {
         if (this.info['stroke']) {
           this.info['stroke'] += 1;
         } else {

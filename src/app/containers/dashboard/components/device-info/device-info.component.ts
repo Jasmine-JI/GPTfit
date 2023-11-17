@@ -320,14 +320,14 @@ export class DeviceInfoComponent implements OnInit, OnDestroy {
       const { top: barTop } = pageListBar.getBoundingClientRect(),
         { bottom: descBottom } = headerRow.getBoundingClientRect(),
         { width } = scenerySection.getBoundingClientRect();
-      if (barTop <= 51 && descBottom < 50) {
+      if (barTop <= 61 && descBottom < 60) {
         pageListBar.classList.add('info-pageListBar-fixed');
-        headerDescriptionBlock.classList.add('info-pageListBar-replace'); // 填充原本功能列的高度
-        pageListBar.style.width = `${width}px`;
+        // headerDescriptionBlock.classList.add('info-pageListBar-replace'); // 填充原本功能列的高度
+        // pageListBar.style.width = `${width}px`;
       } else {
         pageListBar.classList.remove('info-pageListBar-fixed');
-        headerDescriptionBlock.classList.remove('info-pageListBar-replace');
-        pageListBar.style.width = `100%`;
+        // headerDescriptionBlock.classList.remove('info-pageListBar-replace');
+        // pageListBar.style.width = `100%`;
       }
 
       if (this.uiFlag.isPortalMode) {
@@ -483,7 +483,9 @@ export class DeviceInfoComponent implements OnInit, OnDestroy {
         const tagPosition = document.querySelectorAll('.main__page__list');
         if (tagPosition && tagPosition[tagIdx]) {
           this.uiFlag.barWidth = tagPosition[tagIdx].clientWidth;
-          let frontSize = 0;
+          let frontSize =
+            this.pageListBar.nativeElement.getBoundingClientRect().left -
+            this.navSection.nativeElement.getBoundingClientRect().left;
           for (let i = 0; i < tagIdx; i++) {
             frontSize += tagPosition[i].clientWidth;
           }

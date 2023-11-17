@@ -1,27 +1,29 @@
-<mat-tab-group class="inner-test">
-  <mat-tab label="Key in UserId">
-    <label>選擇使用者:</label>
-    {{ targetUserName }}
-    <button class="icon-btn" (click)="openSelectorWin($event)">
-      <i class="icon-svg_web-icon_p1_021-add_friend group-icon" style="font-size: 30px"></i>
-    </button>
-    <ng-container *ngIf="targetUserId">
-      <app-my-device [targetUserId]="targetUserId"></app-my-device>
-    </ng-container>
-  </mat-tab>
-  <mat-tab label="Key in SN">
-    <div style="padding: 15px">
-      <span style="margin-right: 15px">SN:</span>
-      <input placeholder="請填入SN" [(ngModel)]="deviceSN" />
-      <button
-        class="alatech-btn alatech-btn--default"
-        title="查看SN相關綁訂資料"
-        [disabled]="!deviceSN"
-        (click)="watchDeviceSNDetail()"
-        style="margin-left: 15px"
-      >
-        查看SN相關綁訂資料
+<div class="page_info_wrapper">
+  <mat-tab-group class="inner-test">
+    <mat-tab label="Key in UserId">
+      <label>選擇使用者:</label>
+      {{ targetUserName }}
+      <button class="icon-btn" (click)="openSelectorWin($event)">
+        <i class="icon-svg_web-icon_p1_021-add_friend group-icon" style="font-size: 30px"></i>
       </button>
-    </div>
-  </mat-tab>
-</mat-tab-group>
+      <ng-container *ngIf="targetUserId">
+        <app-my-device [targetUserId]="targetUserId"></app-my-device>
+      </ng-container>
+    </mat-tab>
+    <mat-tab label="Key in SN">
+      <div style="padding: 15px">
+        <span style="margin-right: 15px">SN:</span>
+        <input placeholder="請填入SN" [(ngModel)]="deviceSN" />
+        <button
+          class="alatech-btn alatech-btn--default"
+          title="查看SN相關綁訂資料"
+          [disabled]="!deviceSN"
+          (click)="watchDeviceSNDetail()"
+          style="margin-left: 15px"
+        >
+          查看SN相關綁訂資料
+        </button>
+      </div>
+    </mat-tab>
+  </mat-tab-group>
+</div>

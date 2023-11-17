@@ -128,6 +128,7 @@ import {
   LoadingBarComponent,
   LoadingMaskComponent,
   ImgCropperComponent,
+  // AlapointAchievementComponent,
 } from '../../components';
 import { ActivityListFilterComponent } from './activity-list-filter/activity-list-filter.component';
 
@@ -260,6 +261,7 @@ import { ActivityListFilterComponent } from './activity-list-filter/activity-lis
     CompareExtremeGforceChartComponent,
     WeightTrainLevelSelectorComponent,
     ActivityListFilterComponent,
+    // AlapointAchievementComponent
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   exports: [

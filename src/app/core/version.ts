@@ -1,5 +1,5 @@
 export const version = {
-  develop: '1.16.0.4 alpha',
-  release: '1.16.0.4 alpha',
-  master: '1.16.0',
+  develop: '1.16.1.0 alpha',
+  release: '1.16.1.0 alpha',
+  master: '1.16.1',
 };

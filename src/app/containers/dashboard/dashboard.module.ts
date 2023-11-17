@@ -83,6 +83,7 @@ import {
   PaginationComponent,
   ImgCropperComponent,
   ShareBoxComponent,
+  // AlapointAchievementComponent
 } from '../../components';
 import {
   DateUnitKeyPipe,
@@ -146,11 +147,13 @@ import {
   QrcodeService,
 } from '../../core/services';
 import { MemberAnalysisListComponent } from '../professional';
+import { TranslateModule } from '@ngx-translate/core';
 
 @NgModule({
   imports: [
     DashboardRoutingModule,
     CommonModule,
+    TranslateModule,
     FormsModule,
     CustomMaterialModule,
     ReactiveFormsModule,
@@ -276,6 +279,7 @@ import { MemberAnalysisListComponent } from '../professional';
     SettingAccountComponent,
     ActivityListComponent,
     GsensorComponent,
+    // AlapointAchievementComponent
   ],
   providers: [
     GpxService,

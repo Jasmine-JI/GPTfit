@@ -17,10 +17,11 @@ import { UserProfile } from '../../core/models/api/api-10xx';
 import { langData } from '../../core/models/const';
 import { AccessRight } from '../../core/enums/common';
 import { setLocalStorageObject, getLocalStorageObject, checkResponse } from '../../core/utils';
-import { appPath } from '../../app-path.const';
+import { appPath, linkList } from '../../app-path.const';
 import { StationMailService } from '../station-mail/services/station-mail.service';
 import { InboxComponent } from '../station-mail/inbox/inbox.component';
-import { NgIf, NgTemplateOutlet, NgClass, NgFor } from '@angular/common';
+import { NgIf, NgTemplateOutlet, NgClass, NgFor, CommonModule } from '@angular/common';
+import { NavbarComponent } from '../../shared/components/navbar/navbar.component';
 
 enum Dashboard {
   trainLive,
@@ -60,6 +61,7 @@ const adminPath = appPath.adminManage;
   styleUrls: ['./dashboard.component.scss'],
   standalone: true,
   imports: [
+    CommonModule,
     NgIf,
     InboxComponent,
     RouterLink,
@@ -68,6 +70,7 @@ const adminPath = appPath.adminManage;
     RouterOutlet,
     NgFor,
     TranslateModule,
+    NavbarComponent,
   ],
 })
 export class DashboardComponent implements OnInit, AfterViewChecked, OnDestroy {
@@ -105,33 +108,34 @@ export class DashboardComponent implements OnInit, AfterViewChecked, OnDestroy {
   notifyUpdateTime: number | null = null;
 
   readonly AccessRight = AccessRight;
-  readonly linkList = {
-    userSetting: `/${dashboardHome}/${appPath.personal.userSettings}`,
-    trainlive: `/${dashboardHome}/${appPath.dashboard.trainLive}`,
-    myGroupList: `/${dashboardHome}/${appPath.professional.myGroupList}`,
-    groupSearch: `/${dashboardHome}/${appPath.professional.groupSearch}`,
-    activityList: `/${dashboardHome}/${appPath.personal.activityList}`,
-    device: `/${dashboardHome}/${appPath.device.home}`,
-    personalSportsReport: `/${dashboardHome}/${appPath.personal.sportsReport}`,
-    personalLifeTracking: `/${dashboardHome}/${appPath.personal.lifeTracking}`,
-    personalCloudrun: `/${dashboardHome}/${appPath.personal.cloudrun}`,
-    adminSettingMember: `/${dashboardHome}/${adminPath.home}/${adminPath.settingMember}`,
-    adminInnerTest: `/${dashboardHome}/${adminPath.home}/${adminPath.innerTest}`,
-    adminInnerGpx: `/${dashboardHome}/${adminPath.home}/${adminPath.innerGpx}`,
-    adminLifeTracking: `/${dashboardHome}/${adminPath.home}/${adminPath.lifeTracking}`,
-    adminSystemLog: `/${dashboardHome}/${adminPath.home}/${adminPath.systemLog}`,
-    adminFolderPermission: `/${dashboardHome}/${adminPath.home}/${adminPath.folderPermission}`,
-    adminAllGroupList: `/${dashboardHome}/${adminPath.home}/${adminPath.allGroupList}`,
-    adminCreateBrandGroup: `/${dashboardHome}/${adminPath.home}/${adminPath.createBrandGroup}`,
-    adminCreateComGroup: `/${dashboardHome}/${adminPath.home}/${adminPath.createComGroup}`,
-    adminCreatePush: `/${dashboardHome}/${adminPath.home}/${adminPath.createPush}`,
-    adminPushList: `/${dashboardHome}/${adminPath.home}/${adminPath.pushList}`,
-    adminDevicePairManagement: `/${dashboardHome}/${adminPath.home}/${adminPath.devicePairManagement}`,
-    adminDeviceLog: `/${dashboardHome}/${adminPath.home}/${adminPath.deviceLog.home}`,
-    adminSystemOperationReport: `/${dashboardHome}/${adminPath.home}/${adminPath.systemOperationReport}`,
-    adminGroupOperationList: `/${dashboardHome}/${adminPath.home}/${adminPath.groupOperationList}`,
-    adminAlaAppAnalysis: `/${dashboardHome}/${adminPath.home}/${adminPath.alaAppAnalysis}`,
-  };
+  readonly linkList = linkList;
+  // {
+  //   userSetting: `/${dashboardHome}/${appPath.personal.userSettings}`,
+  //   trainlive: `/${dashboardHome}/${appPath.dashboard.trainLive}`,
+  //   myGroupList: `/${dashboardHome}/${appPath.professional.myGroupList}`,
+  //   groupSearch: `/${dashboardHome}/${appPath.professional.groupSearch}`,
+  //   activityList: `/${dashboardHome}/${appPath.personal.activityList}`,
+  //   device: `/${dashboardHome}/${appPath.device.home}`,
+  //   personalSportsReport: `/${dashboardHome}/${appPath.personal.sportsReport}`,
+  //   personalLifeTracking: `/${dashboardHome}/${appPath.personal.lifeTracking}`,
+  //   personalCloudrun: `/${dashboardHome}/${appPath.personal.cloudrun}`,
+  //   adminSettingMember: `/${dashboardHome}/${adminPath.home}/${adminPath.settingMember}`,
+  //   adminInnerTest: `/${dashboardHome}/${adminPath.home}/${adminPath.innerTest}`,
+  //   adminInnerGpx: `/${dashboardHome}/${adminPath.home}/${adminPath.innerGpx}`,
+  //   adminLifeTracking: `/${dashboardHome}/${adminPath.home}/${adminPath.lifeTracking}`,
+  //   adminSystemLog: `/${dashboardHome}/${adminPath.home}/${adminPath.systemLog}`,
+  //   adminFolderPermission: `/${dashboardHome}/${adminPath.home}/${adminPath.folderPermission}`,
+  //   adminAllGroupList: `/${dashboardHome}/${adminPath.home}/${adminPath.allGroupList}`,
+  //   adminCreateBrandGroup: `/${dashboardHome}/${adminPath.home}/${adminPath.createBrandGroup}`,
+  //   adminCreateComGroup: `/${dashboardHome}/${adminPath.home}/${adminPath.createComGroup}`,
+  //   adminCreatePush: `/${dashboardHome}/${adminPath.home}/${adminPath.createPush}`,
+  //   adminPushList: `/${dashboardHome}/${adminPath.home}/${adminPath.pushList}`,
+  //   adminDevicePairManagement: `/${dashboardHome}/${adminPath.home}/${adminPath.devicePairManagement}`,
+  //   adminDeviceLog: `/${dashboardHome}/${adminPath.home}/${adminPath.deviceLog.home}`,
+  //   adminSystemOperationReport: `/${dashboardHome}/${adminPath.home}/${adminPath.systemOperationReport}`,
+  //   adminGroupOperationList: `/${dashboardHome}/${adminPath.home}/${adminPath.groupOperationList}`,
+  //   adminAlaAppAnalysis: `/${dashboardHome}/${adminPath.home}/${adminPath.alaAppAnalysis}`,
+  // };
 
   constructor(
     private authService: AuthService,
@@ -188,7 +192,6 @@ export class DashboardComponent implements OnInit, AfterViewChecked, OnDestroy {
             if (checkValue && !isPreviewMode && checkAccessRight) {
               this.changeTheme(value as Theme);
             }
-
             break;
           }
         }

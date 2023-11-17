@@ -55,8 +55,6 @@ export class SportsReport {
       const preferSports = new PreferSportType();
       const preferWeightTrainGroup = new WeightTrainStatistics();
       data.forEach((_data) => {
-        console.log(_data);
-        console.log(_data['ala_zone_point']);
         if (_data.ala_zone_point && !isNaN(_data.ala_zone_point)) {
           alaPoint += _data.ala_zone_point;
         }

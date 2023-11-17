@@ -1,3 +1,4 @@
+<app-alapoint-achievement [isPageOwner]="uiFlag.isPageOwner"></app-alapoint-achievement>
 <section class="cardSection">
   <div class="cardContent">
     <div class="flexRow" style="justify-content: space-between">
@@ -22,7 +23,7 @@
       <h6 class="settingSubTitle">{{ 'universal_group_introduction' | translate }}</h6>
       <div class="contentDetail">
         <p
-          style="white-space: pre-wrap; color: var(--scale-75-230)"
+          style="overflow-wrap: anywhere; white-space: pre-wrap; color: var(--scale-75-230)"
           *ngIf="uiFlag.editMode === 'close'"
         >
           {{ pageOwnerUserProfile?.description }}

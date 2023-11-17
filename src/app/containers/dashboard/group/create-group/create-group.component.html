@@ -1,39 +1,41 @@
-<ng-container *ngIf="createType === 4">
-  <div class="group-edit-bar" style="justify-content: flex-end">
-    <button
-      class="alatech-btn alatech-btn--default"
-      title="{{ 'universal_activityData_create' | translate }} {{
-        'universal_group_brand' | translate
-      }}"
-      (click)="showConfirmMsg(BrandType.brand)"
-      style="width: 222px; height: 46px"
-      [disabled]="!commercePlan"
-    >
-      {{ 'universal_activityData_create' | translate }} {{ 'universal_group_brand' | translate }}
-    </button>
-  </div>
-  <app-commerce-plan-table
-    (onChange)="changePlan($event)"
-    [createType]="4"
-  ></app-commerce-plan-table>
-</ng-container>
-<ng-container *ngIf="createType === 5">
-  <div class="group-edit-bar" style="justify-content: flex-end">
-    <button
-      class="alatech-btn alatech-btn--default"
-      title="{{ 'universal_activityData_create' | translate }} {{
-        'universal_group_brand' | translate
-      }}"
-      (click)="showConfirmMsg(BrandType.enterprise)"
-      style="width: 222px; height: 46px"
-      [disabled]="!commercePlan"
-    >
-      {{ 'universal_activityData_create' | translate }}
-      {{ 'universal_group_enterprise' | translate }}
-    </button>
-  </div>
-  <app-commerce-plan-table
-    (onChange)="changePlan($event)"
-    [createType]="5"
-  ></app-commerce-plan-table>
-</ng-container>
+<div class="page_info_wrapper">
+  <ng-container *ngIf="createType === 4">
+    <div class="group-edit-bar" style="justify-content: flex-end">
+      <button
+        class="alatech-btn alatech-btn--default"
+        title="{{ 'universal_activityData_create' | translate }} {{
+          'universal_group_brand' | translate
+        }}"
+        (click)="showConfirmMsg(BrandType.brand)"
+        style="width: 222px; height: 46px"
+        [disabled]="!commercePlan"
+      >
+        {{ 'universal_activityData_create' | translate }} {{ 'universal_group_brand' | translate }}
+      </button>
+    </div>
+    <app-commerce-plan-table
+      (onChange)="changePlan($event)"
+      [createType]="4"
+    ></app-commerce-plan-table>
+  </ng-container>
+  <ng-container *ngIf="createType === 5">
+    <div class="group-edit-bar" style="justify-content: flex-end">
+      <button
+        class="alatech-btn alatech-btn--default"
+        title="{{ 'universal_activityData_create' | translate }} {{
+          'universal_group_brand' | translate
+        }}"
+        (click)="showConfirmMsg(BrandType.enterprise)"
+        style="width: 222px; height: 46px"
+        [disabled]="!commercePlan"
+      >
+        {{ 'universal_activityData_create' | translate }}
+        {{ 'universal_group_enterprise' | translate }}
+      </button>
+    </div>
+    <app-commerce-plan-table
+      (onChange)="changePlan($event)"
+      [createType]="5"
+    ></app-commerce-plan-table>
+  </ng-container>
+</div>
