@@ -361,7 +361,12 @@ export class ReportFilterComponent implements OnInit, OnDestroy {
         break;
       case 2:
         this.date.type = 'sixMonth';
-        this.date.startTimestamp = dayjs().subtract(6, 'month').add(1, 'day').valueOf();
+        this.date.startTimestamp = dayjs()
+          .subtract(6, 'month')
+          .add(1, 'week')
+          .startOf('isoWeek')
+          .startOf('day')
+          .valueOf();
         this.date.endTimestamp = dayjs().endOf('day').valueOf();
         this.date.openSelector = null;
         if (this.reportConditionOpt.hideConfirmBtn) {
@@ -464,7 +469,7 @@ export class ReportFilterComponent implements OnInit, OnDestroy {
         this.date.endTimestamp = dayjs().endOf('day').valueOf();
         break;
       case 'thisWeek':
-        this.date.startTimestamp = dayjs().startOf('week').valueOf();
+        this.date.startTimestamp = dayjs().startOf('isoWeek').valueOf();
         this.date.endTimestamp = dayjs().endOf('day').valueOf();
         break;
       case 'thisMonth':
@@ -472,7 +477,7 @@ export class ReportFilterComponent implements OnInit, OnDestroy {
         this.date.endTimestamp = dayjs().endOf('day').valueOf();
         break;
       case 'thisYear':
-        this.date.startTimestamp = dayjs().startOf('year').valueOf();
+        this.date.startTimestamp = dayjs().startOf('year').day(1).startOf('isoWeek').valueOf();
         this.date.endTimestamp = dayjs().endOf('day').valueOf();
         break;
     }
@@ -528,13 +533,8 @@ export class ReportFilterComponent implements OnInit, OnDestroy {
         break;
       }
       case 'sixMonth': {
-        const newStartTimestamp = startTime.subtract(6, 'month');
-        this.date.startTimestamp = newStartTimestamp.valueOf();
-        this.date.endTimestamp = newStartTimestamp
-          .add(6, 'month')
-          .subtract(1, 'day')
-          .endOf('day')
-          .valueOf();
+        this.date.startTimestamp = startTime.subtract(6, 'month').startOf('isoWeek').valueOf();
+        this.date.endTimestamp = startTime.add(-1, 'day').endOf('day').valueOf();
         break;
       }
       case 'today': {
@@ -588,6 +588,7 @@ export class ReportFilterComponent implements OnInit, OnDestroy {
    */
   shiftNextTime() {
     const startTime = dayjs(this.date.startTimestamp);
+    const endTime = dayjs(this.date.endTimestamp);
     switch (this.date.type) {
       case 'sevenDay':
       case 'thisWeek': {
@@ -597,17 +598,18 @@ export class ReportFilterComponent implements OnInit, OnDestroy {
         break;
       }
       case 'thirtyDay': {
-        const newStartTimestamp = startTime.add(30, 'day');
-        this.date.startTimestamp = newStartTimestamp.valueOf();
-        this.date.endTimestamp = startTime.add(29, 'day').endOf('day').valueOf();
+        this.date.startTimestamp = endTime.add(1, 'day').startOf('day').valueOf();
+        this.date.endTimestamp = dayjs(this.date.startTimestamp)
+          .add(29, 'day')
+          .endOf('day')
+          .valueOf();
         break;
       }
       case 'sixMonth': {
-        const newStartTimestamp = startTime.add(6, 'month');
-        this.date.startTimestamp = newStartTimestamp.valueOf();
-        this.date.endTimestamp = startTime
+        this.date.startTimestamp = endTime.add(1, 'day').startOf('day').valueOf();
+        this.date.endTimestamp = dayjs(this.date.startTimestamp)
           .add(6, 'month')
-          .subtract(1, 'day')
+          .endOf('isoWeek')
           .endOf('day')
           .valueOf();
         break;

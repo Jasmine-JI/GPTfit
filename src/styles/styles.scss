@@ -784,17 +784,20 @@ a.ban-send:hover {
 }
 
 .cardSection {
-  padding: 10px;
-  margin: 5px 0;
+  // padding: 10px;
+  margin: 10px 0;
   width: 100%;
+  border-radius: 10px;
   background-color: var(--scale-240-100);
+  box-shadow: 0px 0px 0px 5px var(--scale-240-100);
 }
 
 .cardContent {
   background-color: var(--scale-255-0);
   border: 1px solid rgba(200, 200, 200, 1);
+  border-radius: 10px;
   padding: 10px;
-  margin-bottom: 10px;
+  // margin-bottom: 10px;
 }
 
 .noDataText {
@@ -870,6 +873,10 @@ a.ban-send:hover {
 
 .cdk-overlay-container {
   z-index: $mask-full-screen;
+}
+
+.pointer {
+  cursor: pointer;
 }
 
 /************************************* media **************************************/

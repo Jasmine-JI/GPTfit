@@ -1,4 +1,4 @@
-<div style="position: relative" class="flexCol" [style.top]="uiFlag.portalMode ? '-63px' : '0'">
+<div style="position: relative" class="flexCol" [style.top]="uiFlag.portalMode ? '-63px' : ''">
   <nav
     #navSection
     class="flexCol"
@@ -29,8 +29,8 @@
         ></i>
       </div>
     </section>
-    <section class="info-header" [class.info-portalMode]="uiFlag.portalMode">
-      <div class="flexCenter info-avatarIcon" [style.left]="uiFlag.portalMode ? 'initial' : '50px'">
+    <section class="info-header info-portalMode">
+      <div class="flexCenter info-avatarIcon">
         <div class="info-avatarImg">
           <img
             [src]="
@@ -197,10 +197,7 @@
         </div>
       </div>
     </section>
-    <section
-      class="flexCol info-headerDescriptionBlock"
-      [class.info-portalMode]="uiFlag.portalMode"
-    >
+    <section class="flexCol info-headerDescriptionBlock info-portalMode">
       <span
         #groupHeaderDescription
         [innerHTML]="currentGroupInfo.groupDetail.groupDesc"
@@ -211,135 +208,129 @@
       ></span>
       <app-loading-icon *ngIf="uiFlag.isLoading"></app-loading-icon>
     </section>
-    <section
-      #pageListBar
-      class="flexCol info-pageListBar"
-      [class.info-portalMode]="uiFlag.portalMode"
+  </nav>
+  <section
+    class="flexCol info-pageListBar info-pageListBar-fixed"
+    [style.display]="uiFlag.isPreviewMode ? 'none' : ''"
+  >
+    <div class="info-barLine info-portalMode"></div>
+    <div
+      class="info-activeBar"
+      [style.width]="uiFlag.barWidth + 'px'"
+      [style.left]="uiFlag.barPosition + 'px'"
+    ></div>
+    <div
+      class="flexRow info-portalMode"
+      style="justify-content: space-between; align-items: center"
     >
-      <div class="info-barLine"></div>
-      <div
-        class="info-activeBar"
-        [style.width]="uiFlag.barWidth + 'px'"
-        [style.left]="uiFlag.barPosition + 'px'"
-      ></div>
-      <div class="flexRow" style="justify-content: space-between; align-items: center">
-        <div class="flexRow">
-          <ng-container *ngFor="let _page of childPageList; let _idx = index">
-            <ng-container
-              *ngIf="
-                uiFlag.editMode !== 'create' ||
-                (uiFlag.editMode === 'create' && _page === GroupChildPage.groupIntroduction)
-              "
-            >
-              <span
-                class="info-childPageTitle main__page__list"
-                [class.info-active--color]="uiFlag.currentTagIndex === _idx"
-                (click)="handleShowContent($event, _page, _idx)"
-                *ngIf="uiFlag.divideIndex === null || _idx < uiFlag.divideIndex"
-              >
-                <ng-container
-                  *ngTemplateOutlet="
-                    pageNav;
-                    context: {
-                      pageName: _page
-                    }
-                  "
-                ></ng-container>
-                <i
-                  class="icon-svg_web-icon_p1_069-about warn__icon"
-                  *ngIf="
-                    _page === GroupChildPage.commercePlan &&
-                    (currentGroupInfo.commerceInfo.expired ||
-                      +currentGroupInfo.commerceInfo.commerceStatus !== 1)
-                  "
-                ></i>
-              </span>
-            </ng-container>
-          </ng-container>
-        </div>
-        <div
-          #seeMore
-          class="info-childPageTitle info-moreBtn"
-          (click)="handleShowMorePageOpt($event)"
-          *ngIf="uiFlag.divideIndex !== null && uiFlag.editMode !== 'create'"
-        >
-          <span
-            [class.info-active--color]="
-              uiFlag.currentTagIndex >= uiFlag.divideIndex && !uiFlag.showMorePageOpt
+      <div #pageListBar class="flexRow">
+        <ng-container *ngFor="let _page of childPageList; let _idx = index">
+          <ng-container
+            *ngIf="
+              uiFlag.editMode !== 'create' ||
+              (uiFlag.editMode === 'create' && _page === GroupChildPage.groupIntroduction)
             "
           >
-            <span style="position: relative">
-              {{ 'universal_operating_more' | translate }}
+            <span
+              class="info-childPageTitle main__page__list"
+              [class.info-active--color]="uiFlag.currentTagIndex === _idx"
+              (click)="handleShowContent($event, _page, _idx)"
+              *ngIf="uiFlag.divideIndex === null || _idx < uiFlag.divideIndex"
+            >
+              <ng-container
+                *ngTemplateOutlet="
+                  pageNav;
+                  context: {
+                    pageName: _page
+                  }
+                "
+              ></ng-container>
               <i
-                style="top: -10px; right: -10px"
                 class="icon-svg_web-icon_p1_069-about warn__icon"
                 *ngIf="
-                  currentGroupInfo.groupLevel === 30 &&
+                  _page === GroupChildPage.commercePlan &&
                   (currentGroupInfo.commerceInfo.expired ||
                     +currentGroupInfo.commerceInfo.commerceStatus !== 1)
                 "
               ></i>
             </span>
-            <span
-              class="info-seeMoreTriangle"
-              [class.info-active--color]="
-                uiFlag.currentTagIndex >= uiFlag.divideIndex && !uiFlag.showMorePageOpt
+          </ng-container>
+        </ng-container>
+      </div>
+      <div
+        #seeMore
+        class="info-childPageTitle info-moreBtn"
+        (click)="handleShowMorePageOpt($event)"
+        *ngIf="uiFlag.divideIndex !== null && uiFlag.editMode !== 'create'"
+      >
+        <span
+          [class.info-active--color]="
+            uiFlag.currentTagIndex >= uiFlag.divideIndex && !uiFlag.showMorePageOpt
+          "
+        >
+          <span style="position: relative">
+            {{ 'universal_operating_more' | translate }}
+            <i
+              style="top: -10px; right: -10px"
+              class="icon-svg_web-icon_p1_069-about warn__icon"
+              *ngIf="
+                currentGroupInfo.groupLevel === 30 &&
+                (currentGroupInfo.commerceInfo.expired ||
+                  +currentGroupInfo.commerceInfo.commerceStatus !== 1)
               "
-              [class.info-openFold]="uiFlag.showMorePageOpt"
-            ></span>
+            ></i>
           </span>
-          <div class="flexCol info-foldList" *ngIf="uiFlag.showMorePageOpt">
-            <ng-container *ngFor="let _foldItem of childPageList; let _fIdx = index">
-              <div class="info-foldListItem" *ngIf="_fIdx >= uiFlag.divideIndex">
-                <span
-                  [class.info-active--color]="uiFlag.currentTagIndex === _fIdx"
-                  (click)="handleShowContent($event, _foldItem, _fIdx)"
-                >
-                  <ng-container
-                    *ngTemplateOutlet="
-                      pageNav;
-                      context: {
-                        pageName: _foldItem
-                      }
-                    "
-                  ></ng-container>
-                </span>
-              </div>
-            </ng-container>
-          </div>
+          <span
+            class="info-seeMoreTriangle"
+            [class.info-active--color]="
+              uiFlag.currentTagIndex >= uiFlag.divideIndex && !uiFlag.showMorePageOpt
+            "
+            [class.info-openFold]="uiFlag.showMorePageOpt"
+          ></span>
+        </span>
+        <div class="flexCol info-foldList" *ngIf="uiFlag.showMorePageOpt">
+          <ng-container *ngFor="let _foldItem of childPageList; let _fIdx = index">
+            <div class="info-foldListItem" *ngIf="_fIdx >= uiFlag.divideIndex">
+              <span
+                [class.info-active--color]="uiFlag.currentTagIndex === _fIdx"
+                (click)="handleShowContent($event, _foldItem, _fIdx)"
+              >
+                <ng-container
+                  *ngTemplateOutlet="
+                    pageNav;
+                    context: {
+                      pageName: _foldItem
+                    }
+                  "
+                ></ng-container>
+              </span>
+            </div>
+          </ng-container>
         </div>
       </div>
-    </section>
-  </nav>
-  <section
-    class="cardSection"
-    [style.display]="uiFlag.isPreviewMode ? 'none' : ''"
-    *ngIf="
-      [
-        GroupChildPage.myclassReport,
-        GroupChildPage.lifeTracking,
-        GroupChildPage.cloudrunReport,
-        GroupChildPage.deviceList
-      ].includes(uiFlag.currentPage)
-    "
-  >
-    <app-report-filter></app-report-filter>
+    </div>
   </section>
-  <!-- 531 -->
-  <article
-    id="main__section"
-    class="cardSection"
-    [ngClass]="{
-      cardSection:
-        uiFlag.currentPage !== GroupChildPage.sportsReport &&
-        uiFlag.currentPage !== GroupChildPage.exerciseHabits,
-      'info-portalMode': uiFlag.portalMode
-    }"
-  >
+
+  <article id="main__section" class="info-portalMode flexCol">
+    <section
+      class="cardSection"
+      [style.display]="uiFlag.isPreviewMode ? 'none' : ''"
+      *ngIf="
+        [
+          GroupChildPage.myclassReport,
+          GroupChildPage.lifeTracking,
+          GroupChildPage.cloudrunReport,
+          GroupChildPage.deviceList
+        ].includes(uiFlag.currentPage)
+      "
+    >
+      <app-report-filter></app-report-filter>
+    </section>
     <ng-container *ngIf="currentGroupInfo.groupDetail?.groupId">
       <router-outlet></router-outlet>
     </ng-container>
   </article>
+
   <section
     class="flexCenter info-editMask"
     *ngIf="

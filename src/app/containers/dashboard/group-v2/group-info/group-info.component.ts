@@ -5,6 +5,7 @@ import {
   ElementRef,
   AfterViewChecked,
   ViewChild,
+  HostListener,
 } from '@angular/core';
 import { fromEvent, Subscription, Subject, forkJoin } from 'rxjs';
 import { takeUntil, switchMap, map } from 'rxjs/operators';
@@ -148,6 +149,9 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
     isLoading: false,
     isJoinLoading: false,
     displayShareBox: false,
+    sidebarMode: '',
+    scrollUp: false,
+    fixed: false,
   };
 
   /**
@@ -269,26 +273,47 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
     });
   }
 
+  private timer: any; // 保存計時器的引用
+  @HostListener('window:mousewheel', ['$event'])
+  IfscrollUp(e: WheelEvent) {
+    this.uiFlag.scrollUp = e.deltaY < 0 ? true : false;
+  }
+
   /**
    * 確認tab位置與寬度
    */
   checkPageListBarPosition() {
     const pageListBar = document.querySelectorAll('.info-pageListBar')[0] as any,
-      headerDescriptionBlock = document.querySelectorAll('.info-headerDescriptionBlock')[0],
       headerDescription = document.querySelectorAll('.info-headerDescription')[0],
       scenerySection = document.querySelectorAll('.info-scenerySection')[0];
+    // headerDescriptionBlock = document.querySelectorAll('.info-headerDescriptionBlock')[0],
     if (pageListBar && headerDescription && scenerySection) {
       const { top: barTop } = pageListBar.getBoundingClientRect(),
-        { bottom: descBottom } = headerDescription.getBoundingClientRect(),
-        { width } = scenerySection.getBoundingClientRect();
-      if (barTop <= 51 && descBottom < 50) {
-        pageListBar.classList.add('info-pageListBar-fixed');
-        headerDescriptionBlock.classList.add('info-pageListBar-replace'); // 填充原本功能列的高度
-        pageListBar.style.width = `${width}px`;
+        { bottom: descBottom } = headerDescription.getBoundingClientRect();
+      // { width } = scenerySection.getBoundingClientRect();
+      if (barTop <= 61 && descBottom < 60) {
+        // 超過bar位置
+        if (this.uiFlag.scrollUp && !this.uiFlag.fixed) {
+          //往上出現
+          pageListBar.classList.remove('info-pageListBar-nofixed');
+          pageListBar.classList.add('info-pageListBar-fixed');
+          this.uiFlag.fixed = true;
+        } else if (!this.uiFlag.scrollUp && this.uiFlag.fixed) {
+          //往下消失
+          pageListBar.classList.add('info-pageListBar-nofixed');
+          this.uiFlag.fixed = false;
+        } else if (this.uiFlag.scrollUp && this.uiFlag.fixed) {
+          // 設置新的計時器，5秒後執行隱藏bar
+          clearTimeout(this.timer);
+          this.timer = setTimeout(() => {
+            pageListBar.classList.add('info-pageListBar-nofixed');
+            this.uiFlag.fixed = false;
+          }, 3000);
+        }
       } else {
         pageListBar.classList.remove('info-pageListBar-fixed');
-        headerDescriptionBlock.classList.remove('info-pageListBar-replace');
-        pageListBar.style.width = `100%`;
+        pageListBar.classList.remove('info-pageListBar-nofixed');
+        this.uiFlag.fixed = false;
       }
 
       if (this.uiFlag.portalMode) {
@@ -307,10 +332,11 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
     this.globalEventsService
       .getRxSideBarMode()
       .pipe(takeUntil(this.ngUnsubscribe))
-      .subscribe(() => {
-        setTimeout(() => {
-          this.checkScreenSize();
-        }, 250); // 待sidebar動畫結束再計算位置
+      .subscribe((mode) => {
+        (this.uiFlag.sidebarMode = mode),
+          setTimeout(() => {
+            this.checkScreenSize();
+          }, 250); // 待sidebar動畫結束再計算位置
       });
   }
 
@@ -1362,11 +1388,12 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
         const tagPosition = document.querySelectorAll('.main__page__list');
         if (tagPosition && tagPosition[tagIdx]) {
           this.uiFlag.barWidth = tagPosition[tagIdx].clientWidth;
-          let frontSize = 0;
+          let frontSize =
+            this.pageListBar.nativeElement.getBoundingClientRect().left -
+            this.navSection.nativeElement.getBoundingClientRect().left;
           for (let i = 0; i < tagIdx; i++) {
             frontSize += tagPosition[i].clientWidth;
           }
-
           this.uiFlag.barPosition = frontSize;
         }
       });
@@ -1399,8 +1426,13 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
       const pageListBar = this.pageListBar.nativeElement,
         seeMoreTag = this.seeMore.nativeElement;
       this.uiFlag.barWidth = seeMoreTag.clientWidth;
-      this.uiFlag.barPosition =
-        seeMoreTag.getBoundingClientRect().left - pageListBar.getBoundingClientRect().left;
+      if (this.uiFlag.sidebarMode == 'hide') {
+        this.uiFlag.barPosition = seeMoreTag.getBoundingClientRect().left;
+      } else {
+        this.uiFlag.barPosition =
+          seeMoreTag.getBoundingClientRect().left -
+          this.navSection.nativeElement.getBoundingClientRect().left;
+      }
     });
   }
 

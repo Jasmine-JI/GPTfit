@@ -5,6 +5,7 @@ import {
   ViewChild,
   ElementRef,
   AfterContentInit,
+  HostListener,
 } from '@angular/core';
 import { UserProfile } from '../../../core/models/api/api-10xx';
 import { Subject, Subscription, fromEvent } from 'rxjs';
@@ -34,7 +35,8 @@ import { SettingPreferComponent } from './setting-prefer/setting-prefer.componen
 import { SettingPrivacyComponent } from './setting-privacy/setting-privacy.component';
 import { SettingBaseComponent } from './setting-base/setting-base.component';
 import { LoadingIconComponent } from '../../../shared/components/loading-icon/loading-icon.component';
-import { NgIf, NgFor, NgTemplateOutlet } from '@angular/common';
+import { NgIf, NgFor, NgTemplateOutlet, CommonModule } from '@angular/common';
+import * as Hammer from 'hammerjs';
 
 type ImgType = 'icon' | 'scenery';
 
@@ -44,6 +46,7 @@ type ImgType = 'icon' | 'scenery';
   styleUrls: ['./personal.component.scss'],
   standalone: true,
   imports: [
+    CommonModule,
     NgIf,
     LoadingIconComponent,
     NgFor,
@@ -91,6 +94,8 @@ export class PersonalComponent implements OnInit, AfterContentInit, OnDestroy {
     isSettingPage: false,
     patchEditPrivacy: false,
     displayShareBox: false,
+    scrollUp: false,
+    fixed: false,
   };
 
   /**
@@ -268,33 +273,68 @@ export class PersonalComponent implements OnInit, AfterContentInit, OnDestroy {
     });
   }
 
+  private timer: any; // 保存計時器的引用
+  @HostListener('window:mousewheel', ['$event'])
+  IfscrollUp(e: WheelEvent) {
+    this.uiFlag.scrollUp = e.deltaY < 0 ? true : false;
+  }
+
+  // @HostListener('window:swipe', ['$event'])
+  // IfswipeUp(){
+  //   const hammer = new Hammer(document.body);
+  // hammer.on('swipe', (event: any) => {
+  //   // event.direction 可能的值為 2（向上）或 8（向下）
+  //   if (event.direction === Hammer.DIRECTION_UP) {
+  //     console.log('向上滑動');
+  //     // 在這裡執行相應的邏輯
+  //   } else if (event.direction === Hammer.DIRECTION_DOWN) {
+  //     console.log('向下滑動');
+  //     // 在這裡執行相應的邏輯
+  //   }
+  // });
+  // }
+
   /**
    * 確認tab位置與寬度
    */
   checkPageListBarPosition() {
     if (!this.uiFlag.isSettingPage) {
       const pageListBar = document.querySelectorAll('.info-pageListBar')[0] as any;
-      const headerDescriptionBlock = document.querySelectorAll('.info-headerDescriptionBlock')[0];
       const headerDescription = document.querySelectorAll('.info-headerDescription')[0];
       const scenerySection = document.querySelectorAll('.info-scenerySection')[0];
+      // const headerDescriptionBlock = document.querySelectorAll('.info-headerDescriptionBlock')[0];
       if (pageListBar && headerDescription && scenerySection) {
         const { top: barTop } = pageListBar.getBoundingClientRect();
         const { bottom: descBottom } = headerDescription.getBoundingClientRect();
-        const { width } = scenerySection.getBoundingClientRect();
-        if (barTop <= 51 && descBottom < 50) {
-          pageListBar.classList.add('info-pageListBar-fixed');
-          headerDescriptionBlock.classList.add('info-pageListBar-replace'); // 填充原本功能列的高度
-          pageListBar.style.width = `${width}px`;
+        // const { width } = scenerySection.getBoundingClientRect();
+        if (barTop <= 61 && descBottom < 60) {
+          // 超過bar位置
+          if (this.uiFlag.scrollUp && !this.uiFlag.fixed) {
+            //往上出現
+            pageListBar.classList.remove('info-pageListBar-nofixed');
+            pageListBar.classList.add('info-pageListBar-fixed');
+            this.uiFlag.fixed = true;
+          } else if (!this.uiFlag.scrollUp && this.uiFlag.fixed) {
+            //往下消失
+            pageListBar.classList.add('info-pageListBar-nofixed');
+            this.uiFlag.fixed = false;
+          } else if (this.uiFlag.scrollUp && this.uiFlag.fixed) {
+            // 設置新的計時器，5秒後執行隱藏bar
+            clearTimeout(this.timer);
+            this.timer = setTimeout(() => {
+              pageListBar.classList.add('info-pageListBar-nofixed');
+              this.uiFlag.fixed = false;
+            }, 3000);
+          }
         } else {
           pageListBar.classList.remove('info-pageListBar-fixed');
-          headerDescriptionBlock.classList.remove('info-pageListBar-replace');
-          pageListBar.style.width = `100%`;
+          pageListBar.classList.remove('info-pageListBar-nofixed');
+          this.uiFlag.fixed = false;
         }
-
-        if (this.uiFlag.isPortalMode) {
-          pageListBar.style.left = 0;
-          pageListBar.style.right = 0;
-        }
+      }
+      if (this.uiFlag.isPortalMode) {
+        pageListBar.style.left = 0;
+        pageListBar.style.right = 0;
       }
     }
   }
@@ -710,6 +750,7 @@ export class PersonalComponent implements OnInit, AfterContentInit, OnDestroy {
     const { dashboard, personal } = appPath;
     if (e) e.stopPropagation();
     if (isPortalMode) {
+      //未登入
       this.router.navigateByUrl(`/${personal.home}/${this.hashUserId}/${page}`);
     } else {
       this.router.navigateByUrl(`/${dashboard.home}/${page}`);
@@ -733,7 +774,9 @@ export class PersonalComponent implements OnInit, AfterContentInit, OnDestroy {
         const tagPosition = document.querySelectorAll('.main__page__list');
         if (tagPosition && tagPosition[tagIdx]) {
           this.uiFlag.barWidth = tagPosition[tagIdx].clientWidth;
-          let frontSize = 0;
+          let frontSize =
+            this.pageListBar.nativeElement.getBoundingClientRect().left -
+            this.navSection.nativeElement.getBoundingClientRect().left;
           for (let i = 0; i < tagIdx; i++) {
             frontSize += tagPosition[i].clientWidth;
           }
@@ -770,8 +813,7 @@ export class PersonalComponent implements OnInit, AfterContentInit, OnDestroy {
       const seeMoreTag = this.seeMore?.nativeElement;
       if (pageListBar && seeMoreTag) {
         this.uiFlag.barWidth = seeMoreTag.clientWidth;
-        this.uiFlag.barPosition =
-          seeMoreTag.getBoundingClientRect().left - pageListBar.getBoundingClientRect().left;
+        this.uiFlag.barPosition = seeMoreTag.getBoundingClientRect().left;
       }
     });
   }

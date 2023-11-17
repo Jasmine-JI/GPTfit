@@ -90,6 +90,7 @@ import {
 } from '@angular/common';
 import { LoadingMaskComponent } from '../../../../../components/loading-mask/loading-mask.component';
 import { LoadingBarComponent } from '../../../../../components/loading-bar/loading-bar.component';
+import * as XLSX from 'xlsx/xlsx.mjs';
 
 dayjs.extend(isoWeek);
 
@@ -742,7 +743,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
   handleGroupInfoData(allGroupList: AllGroupMember) {
     const rootGroupInfo = this.getBelongGroupObj();
     this.groupSportsInfo = new GroupSportsReportInfo(rootGroupInfo, allGroupList);
-    console.log(this.groupSportsInfo);
+    // console.log(this.groupSportsInfo);
 
     this.groupAnalysis = new SportsAnalysisSort(
       Object.values(this.groupSportsInfo.groupSportInfo),
@@ -911,12 +912,13 @@ export class SportsReportComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * 取得個人概要數據
+   * 取得個人概要數據  /////////////////////////////////////////////////////////
    * @param data {any}-運動概要數據
    * @param key {string}-指定數據的鍵名
    * @author kidin-1110324
    */
   getPersonalData(data: any, key: string) {
+    //data : personAnalysis.data ; key = 需要的資料名稱
     if (this.uiFlag.progress !== 100) return 0;
 
     const isMetric = this.userUnit === DataUnitType.metric;
@@ -1263,8 +1265,101 @@ export class SportsReportComponent implements OnInit, OnDestroy {
   }
 
   /**
+   *下載運動報告-個人分析 xlsx檔案
+   * @memberof SportsReportComponent
+   */
+  downloadXlsx() {
+    const workbook = XLSX.utils.book_new(); // 創建試算表檔案
+    const data = [];
+    const columns = [
+      '名稱',
+      '達成率',
+      '活動數量',
+      '總計時',
+      '效益時間',
+      '活動指標 PAI',
+      '總卡路里',
+      '平均心率',
+      '總發電量',
+      '活動偏好',
+      'ALA POINT',
+      'Zone0',
+      'Zone1',
+      'Zone2',
+      'Zone3',
+      'Zone4',
+      'Zone5',
+    ];
+    data.push(columns);
+    this.personAnalysis.data.forEach((person) => {
+      const personData = [];
+      personData.push(person.memberName);
+      personData.push(this.getPersonalData(person.base, 'targetAchieveRate'));
+      personData.push(this.getPersonalData(person.base, 'totalActivities'));
+      personData.push(this.transform(this.getPersonalData(person.base, 'totalSecond')));
+      personData.push(this.transform(this.getPersonalData(person.base, 'benefitTime')));
+      personData.push(this.getPersonalData(person.base, 'pai'));
+      personData.push(this.getPersonalData(person.base, 'calories'));
+      personData.push(this.getPersonalData(person.base, 'avgHeartRateBpm'));
+      personData.push(this.getPersonalData(person.base, 'totalFeedbackEnergy'));
+      const preferString = person.base.preferSports?.join(',') || '';
+      personData.push(preferString);
+      personData.push(this.getPersonalData(person.base, 'alaPoint'));
+      // 心律 Zone0-Zone5
+      personData.push(this.transform(this.getPersonalData(person.base, 'totalHrZone0Second')) || 0);
+      personData.push(this.transform(this.getPersonalData(person.base, 'totalHrZone1Second')) || 0);
+      personData.push(this.transform(this.getPersonalData(person.base, 'totalHrZone2Second')) || 0);
+      personData.push(this.transform(this.getPersonalData(person.base, 'totalHrZone3Second')) || 0);
+      personData.push(this.transform(this.getPersonalData(person.base, 'totalHrZone4Second')) || 0);
+      personData.push(this.transform(this.getPersonalData(person.base, 'totalHrZone5Second')) || 0);
+      // 將memberNameChars陣列放進data陣列中
+      data.push(personData);
+    });
+
+    const sheet = XLSX.utils.aoa_to_sheet(data);
+    XLSX.utils.sheet_add_aoa(sheet, data);
+    XLSX.utils.book_append_sheet(workbook, sheet, '個人分析', true);
+    XLSX.writeFileXLSX(workbook, '群組運動報告-個人分析.xlsx');
+  }
+
+  /**
+   * 將總秒數轉為時:分:秒或時:分
+   * @param value {any}-時間（s）
+   * @param args.showZeroHour 不足1小時或1分鐘是否仍完整顯示時：分：秒，ex. 00:00:39
+   * @param args.hideSecond 是否隱藏秒
+   */
+  transform(value: any, args = { showZeroHour: true, hideSecond: false }): string {
+    const { showZeroHour, hideSecond } = args;
+    if (typeof value === 'number') {
+      const prefix = value < 0 ? '-' : '';
+      const yVal = Math.abs(value);
+      const costhr = Math.floor(yVal / 3600);
+      const costmin = Math.floor(Math.round(yVal - costhr * 60 * 60) / 60);
+      const costsecond = Math.round(yVal - costmin * 60 - costhr * 60 * 60);
+      const timeHr = `${costhr}`.padStart(2, '0');
+      const timeSecond = `${costsecond}`.padStart(2, '0');
+      let timeMin = `${costmin}`.padStart(2, '0');
+
+      if (showZeroHour === undefined || showZeroHour) {
+        if (hideSecond) {
+          timeMin = +timeSecond >= 30 ? `${costmin + 1}`.padStart(2, '0') : timeMin;
+          return `${prefix}${timeHr}:${timeMin}`;
+        } else {
+          return `${prefix}${timeHr}:${timeMin}:${timeSecond}`;
+        }
+      } else {
+        if (costhr === 0) {
+          return `${prefix}${timeMin}:${timeSecond}`;
+        } else {
+          return `${prefix}${costhr}:${timeMin}:${timeSecond}`;
+        }
+      }
+    } else {
+      return '--';
+    }
+  }
+  /**
    * 解除rxjs訂閱
-   * @author kidin-1091211
    */
   ngOnDestroy() {
     this.ngUnsubscribe.next(null);

@@ -1,58 +1,60 @@
-<div class="d-flex justify-content-between">
-  <span class="pageTitle">
-    {{ 'universal_group_myGroup' | translate }}
-  </span>
-  <div class="group-edit-bar">
-    <button
-      class="alatech-btn alatech-btn--default"
-      title="{{ 'universal_group_searchGroup' | translate }}"
-      [routerLink]="[searchGroupLink]"
-    >
-      {{ 'universal_group_searchGroup' | translate }}
-    </button>
+<div class="page_info_wrapper">
+  <div class="d-flex justify-content-between">
+    <span class="pageTitle">
+      {{ 'universal_group_myGroup' | translate }}
+    </span>
+    <div class="group-edit-bar">
+      <button
+        class="alatech-btn alatech-btn--default"
+        title="{{ 'universal_group_searchGroup' | translate }}"
+        [routerLink]="[searchGroupLink]"
+      >
+        {{ 'universal_group_searchGroup' | translate }}
+      </button>
+    </div>
   </div>
-</div>
-<mat-form-field style="max-width: 130px">
-  <mat-select
-    [(value)]="brandType"
-    placeholder="{{ 'universal_activityData_type' | translate }}"
-    (selectionChange)="getLists()"
+  <mat-form-field style="max-width: 130px">
+    <mat-select
+      [(value)]="brandType"
+      placeholder="{{ 'universal_activityData_type' | translate }}"
+      (selectionChange)="getLists()"
+    >
+      <mat-option value="3">{{ 'universal_adjective_all' | translate }}</mat-option>
+      <mat-option value="1">{{ 'universal_group_gym' | translate }}</mat-option>
+      <mat-option value="2">{{ 'universal_group_enterprise' | translate }}</mat-option>
+    </mat-select>
+  </mat-form-field>
+  <mat-table [dataSource]="logSource" matSort #sortTable="matSort">
+    <ng-container matColumnDef="info">
+      <mat-header-cell *matHeaderCellDef>{{
+        'universal_activityData_name' | translate
+      }}</mat-header-cell>
+      <mat-cell class="row__hover" *matCellDef="let row">{{ row.groupName }}</mat-cell>
+    </ng-container>
+    <ng-container matColumnDef="time">
+      <mat-header-cell *matHeaderCellDef disableClear="true">
+        {{ 'universal_group_identity' | translate }}
+      </mat-header-cell>
+      <mat-cell class="row__hover" *matCellDef="let row">{{
+        row.groupProperty | accessName: row.brandType | translate
+      }}</mat-cell>
+    </ng-container>
+    <mat-header-row *matHeaderRowDef="['info', 'time']"></mat-header-row>
+    <mat-row *matRowDef="let logRow; columns: ['info', 'time']" (click)="goDetail(logRow.groupId)">
+    </mat-row>
+  </mat-table>
+  <div *ngIf="isEmpty" style="text-align: center; padding: 30px">
+    {{ 'universal_status_noData' | translate }}
+  </div>
+  <div class="ala-loading-shade" *ngIf="isLoading">
+    <mat-spinner></mat-spinner>
+  </div>
+  <mat-paginator
+    #paginator
+    [length]="totalCount"
+    [pageIndex]="currentPage?.pageIndex"
+    [pageSize]="10"
+    [pageSizeOptions]="[5, 10, 15]"
   >
-    <mat-option value="3">{{ 'universal_adjective_all' | translate }}</mat-option>
-    <mat-option value="1">{{ 'universal_group_gym' | translate }}</mat-option>
-    <mat-option value="2">{{ 'universal_group_enterprise' | translate }}</mat-option>
-  </mat-select>
-</mat-form-field>
-<mat-table [dataSource]="logSource" matSort #sortTable="matSort">
-  <ng-container matColumnDef="info">
-    <mat-header-cell *matHeaderCellDef>{{
-      'universal_activityData_name' | translate
-    }}</mat-header-cell>
-    <mat-cell class="row__hover" *matCellDef="let row">{{ row.groupName }}</mat-cell>
-  </ng-container>
-  <ng-container matColumnDef="time">
-    <mat-header-cell *matHeaderCellDef disableClear="true">
-      {{ 'universal_group_identity' | translate }}
-    </mat-header-cell>
-    <mat-cell class="row__hover" *matCellDef="let row">{{
-      row.groupProperty | accessName: row.brandType | translate
-    }}</mat-cell>
-  </ng-container>
-  <mat-header-row *matHeaderRowDef="['info', 'time']"></mat-header-row>
-  <mat-row *matRowDef="let logRow; columns: ['info', 'time']" (click)="goDetail(logRow.groupId)">
-  </mat-row>
-</mat-table>
-<div *ngIf="isEmpty" style="text-align: center; padding: 30px">
-  {{ 'universal_status_noData' | translate }}
+  </mat-paginator>
 </div>
-<div class="ala-loading-shade" *ngIf="isLoading">
-  <mat-spinner></mat-spinner>
-</div>
-<mat-paginator
-  #paginator
-  [length]="totalCount"
-  [pageIndex]="currentPage?.pageIndex"
-  [pageSize]="10"
-  [pageSizeOptions]="[5, 10, 15]"
->
-</mat-paginator>

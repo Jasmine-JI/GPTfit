@@ -19,13 +19,450 @@
       <ul class="main">
         <!-- 個人 -->
         <li class="main_list">
-          <a [routerLink]="['/signIn-web']" (click)="chooseNavItem('signIn')">
+          <a class="pointer" (click)="toggle('personalMenu')">
             <i class="icon-svg_web-icon_p4_023-dashboard"></i>
             {{ 'universal_userProfile_personal' | translate }}</a
           >
         </li>
+        <!-- 群組 -->
+        <li class="main_list" (click)="toggle('groupMenu')">
+          <a class="pointer">
+            <mat-icon>people</mat-icon>
+            {{ 'universal_group_group' | translate }}</a
+          >
+        </li>
+        <!-- 管理 -->
+        <li
+          *ngIf="systemAccessright < AccessRight.brandAdmin"
+          class="main_list"
+          (click)="toggle('adminMenu')"
+        >
+          <a class="pointer">
+            <mat-icon style="font-size: 20px; line-height: 1.2">build</mat-icon>
+            {{ 'universal_group_management' | translate }}</a
+          >
+        </li>
       </ul>
     </nav>
+    <!--  個人選單  -->
+    <div [class.personal_activ]="menu.personalMenu" class="personal">
+      <div class="menu_content">
+        <div class="text_content">
+          <p class="menu_list member-name">{{ userProfile.nickname }}</p>
+          <p *ngIf="menu.backbtn" (click)="backToMainNav()" class="menu_list member-name pointer">
+            <mat-icon>navigate_before</mat-icon>
+            <span> 返回 </span>
+          </p>
+        </div>
+        <ul class="menu_ul">
+          <li (click)="closeAllMenu()" class="menu_list">
+            <a [routerLink]="['/dashboard/activity-list']">
+              <i class="icon-svg_web-icon_p1_099-calendar"></i>
+              <span>{{ 'universal_activityData_story' | translate }}</span>
+            </a>
+          </li>
+          <li (click)="closeAllMenu()" class="menu_list">
+            <a [routerLink]="['/dashboard/sport-report']">
+              <i class="icon-svg_web-icon_p1_050-report"></i>
+              <span>{{ 'universal_activityData_sportReport' | translate }}</span>
+            </a>
+          </li>
+          <li (click)="closeAllMenu()" class="menu_list">
+            <a [routerLink]="['/dashboard/exercise-habits']">
+              <i class="icon-svg_web-icon_p1_037-chart"></i>
+              <span>{{ '531' | translate }}</span>
+            </a>
+          </li>
+          <li (click)="closeAllMenu()" class="menu_list">
+            <a [routerLink]="['/dashboard/life-tracking']">
+              <i class="icon-svg_web-icon_p3_016-life_tracking"></i>
+              <span>{{ 'universal_lifeTracking_lifeTracking' | translate }}</span>
+            </a>
+          </li>
+          <li (click)="closeAllMenu()" class="menu_list">
+            <a [routerLink]="['/dashboard/device']">
+              <i class="icon-svg_web-icon_p1_010-treadmill"></i>
+              <span>{{ 'universal_deviceSetting_myDevice' | translate }}</span>
+            </a>
+          </li>
+          <li (click)="closeAllMenu()" class="menu_list">
+            <a [routerLink]="['/dashboard/cloudrun']">
+              <i class="icon-svg_web-icon_p1_050-report"></i>
+              <span>{{ 'CloudRun' | translate }}</span>
+            </a>
+          </li>
+          <li (click)="closeAllMenu()" class="menu_list">
+            <a [routerLink]="['/dashboard/info']">
+              <mat-icon>person</mat-icon>
+              <span>{{ 'universal_deviceSetting_adout' | translate }}</span>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <!--  群組選單  -->
+    <div [class.group_activ]="menu.groupMenu" class="group">
+      <div class="menu_content">
+        <div class="text_content">
+          <p class="menu_list member-name">{{ userProfile.nickname }}</p>
+          <p *ngIf="menu.backbtn" (click)="backToMainNav()" class="menu_list member-name pointer">
+            <mat-icon>navigate_before</mat-icon>
+            <span> 返回 </span>
+          </p>
+        </div>
+        <ul class="menu_ul">
+          <li (click)="closeAllMenu()" class="menu_list">
+            <a [routerLink]="['/dashboard/my-group-list']">
+              <mat-icon>group</mat-icon>
+              <span>{{ 'universal_group_myGroup' | translate }}</span>
+            </a>
+          </li>
+          <li (click)="closeAllMenu()" class="menu_list">
+            <a [routerLink]="['/dashboard/group-search']">
+              <mat-icon>search</mat-icon>
+              <span>{{ 'universal_group_searchGroup' | translate }}</span>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <!--  管理選單  -->
+    <div [class.admin_activ]="menu.adminMenu" class="admin">
+      <div class="menu_content">
+        <div class="text_content">
+          <p class="menu_list member-name">{{ userProfile.nickname }}</p>
+          <p *ngIf="menu.backbtn" (click)="backToMainNav()" class="menu_list member-name pointer">
+            <mat-icon>navigate_before</mat-icon>
+            <span> 返回 </span>
+          </p>
+        </div>
+        <ul class="menu_ul">
+          <li (click)="toggle('systemAdminMenu')" class="menu_list">
+            <a>
+              <mat-icon style="font-size: 20px; line-height: 1.2">build</mat-icon>
+              <span>{{ 'universal_system_systemManagement' | translate }}</span>
+            </a>
+          </li>
+          <li (click)="toggle('groupAdminMenu')" class="menu_list">
+            <a>
+              <mat-icon style="font-size: 20px; line-height: 1.2">build</mat-icon>
+              <span>{{ 'universal_group_groupManagement' | translate }}</span>
+            </a>
+          </li>
+          <li (click)="toggle('pushNotifiAdminMenu')" class="menu_list">
+            <a>
+              <mat-icon style="font-size: 20px; line-height: 1.2">build</mat-icon>
+              <span>{{ '推播管理' | translate }}</span>
+            </a>
+          </li>
+          <li (click)="toggle('deviceAdminMenu')" class="menu_list">
+            <a>
+              <mat-icon style="font-size: 20px; line-height: 1.2">build</mat-icon>
+              <span>{{ 'universal_deviceSetting_deviceManagement' | translate }}</span>
+            </a>
+          </li>
+          <li (click)="toggle('operateAdminMenu')" class="menu_list">
+            <a>
+              <mat-icon style="font-size: 20px; line-height: 1.2">build</mat-icon>
+              <span>{{ '營運分析' | translate }}</span>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <!--  系統管理 選單  -->
+    <div [class.system_admin_activ]="menu.systemAdminMenu" class="admin">
+      <div class="menu_content">
+        <div class="text_content">
+          <!-- <p class="menu_list member-name">{{ 'universal_system_systemManagement' | translate }}</p> -->
+          <p
+            *ngIf="menu.backAdminbtn"
+            (click)="backToAdminMenu()"
+            class="menu_list member-name pointer"
+          >
+            <mat-icon>navigate_before</mat-icon>
+            <span> 返回 </span>
+          </p>
+        </div>
+        <ul class="menu_ul">
+          <li
+            *ngIf="systemAccessright < AccessRight.brandAdmin"
+            (click)="closeAllMenu()"
+            class="menu_list"
+          >
+            <a [routerLink]="[linkList.adminSettingMember]">
+              <mat-icon style="font-size: 20px; line-height: 1.2">build</mat-icon>
+              <span>{{ 'universal_system_internalAdministrator' | translate }}</span>
+            </a>
+          </li>
+          <li
+            *ngIf="systemAccessright < AccessRight.brandAdmin"
+            (click)="closeAllMenu()"
+            class="menu_list"
+          >
+            <a [routerLink]="[linkList.adminInnerTest]">
+              <mat-icon style="font-size: 20px; line-height: 1.2">build</mat-icon>
+              <span>{{ 'universal_group_rserGroupQuery' | translate }}</span>
+            </a>
+          </li>
+          <li
+            *ngIf="systemAccessright <= AccessRight.maintainer"
+            (click)="closeAllMenu()"
+            class="menu_list"
+          >
+            <a [routerLink]="[linkList.adminInnerGpx]">
+              <mat-icon style="font-size: 20px; line-height: 1.2">build</mat-icon>
+              <span>{{ 'universal_system_coordinateSystemConversion' | translate }}</span>
+            </a>
+          </li>
+          <li
+            *ngIf="systemAccessright <= AccessRight.maintainer"
+            (click)="closeAllMenu()"
+            class="menu_list"
+          >
+            <a [routerLink]="[linkList.adminLifeTracking]">
+              <mat-icon style="font-size: 20px; line-height: 1.2">build</mat-icon>
+              <span>{{ 'universal_system_lifetrackingLog' | translate }}</span>
+            </a>
+          </li>
+          <li
+            *ngIf="systemAccessright <= AccessRight.maintainer"
+            (click)="closeAllMenu()"
+            class="menu_list"
+          >
+            <a [routerLink]="[linkList.adminSystemLog]">
+              <mat-icon style="font-size: 20px; line-height: 1.2">build</mat-icon>
+              <span>{{ '系統日誌' | translate }}</span>
+            </a>
+          </li>
+          <li
+            *ngIf="systemAccessright < AccessRight.god"
+            (click)="closeAllMenu()"
+            class="menu_list"
+          >
+            <a [routerLink]="[linkList.adminFolderPermission]">
+              <mat-icon style="font-size: 20px; line-height: 1.2">build</mat-icon>
+              <span>{{ '系統使用者存取權限設定' | translate }}</span>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <!--  群組管理 選單  -->
+    <div [class.group_admin_activ]="menu.groupAdminMenu" class="admin">
+      <div class="menu_content">
+        <div class="text_content">
+          <!-- <p class="menu_list member-name">{{ 'universal_group_groupManagement' | translate }}</p> -->
+          <p
+            *ngIf="menu.backAdminbtn"
+            (click)="backToAdminMenu()"
+            class="menu_list member-name pointer"
+          >
+            <mat-icon>navigate_before</mat-icon>
+            <span> 返回 </span>
+          </p>
+        </div>
+        <ul class="menu_ul">
+          <li
+            *ngIf="systemAccessright < AccessRight.brandAdmin"
+            (click)="closeAllMenu()"
+            class="menu_list"
+          >
+            <a [routerLink]="[linkList.adminAllGroupList]">
+              <mat-icon style="font-size: 20px; line-height: 1.2">build</mat-icon>
+              <span>{{ 'universal_group_listAllGroups' | translate }}</span>
+            </a>
+          </li>
+          <li
+            *ngIf="systemAccessright < AccessRight.brandAdmin"
+            (click)="closeAllMenu()"
+            class="menu_list"
+          >
+            <a [routerLink]="[linkList.adminCreateBrandGroup]">
+              <mat-icon style="font-size: 20px; line-height: 1.2">build</mat-icon>
+              <span>{{ '建立健身品牌群組' | translate }}</span>
+            </a>
+          </li>
+          <li
+            *ngIf="systemAccessright < AccessRight.brandAdmin"
+            (click)="closeAllMenu()"
+            class="menu_list"
+          >
+            <a [routerLink]="[linkList.adminCreateComGroup]">
+              <mat-icon style="font-size: 20px; line-height: 1.2">build</mat-icon>
+              <span>{{ '建立企業經營群組' | translate }}</span>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <!--  推播管理 選單  -->
+    <div [class.pushNotifi_admin_activ]="menu.pushNotifiAdminMenu" class="admin">
+      <div class="menu_content">
+        <div class="text_content">
+          <!-- <p class="menu_list member-name">{{ '推播管理' | translate }}</p> -->
+          <p
+            *ngIf="menu.backAdminbtn"
+            (click)="backToAdminMenu()"
+            class="menu_list member-name pointer"
+          >
+            <mat-icon>navigate_before</mat-icon>
+            <span> 返回 </span>
+          </p>
+        </div>
+        <ul class="menu_ul">
+          <li
+            *ngIf="[AccessRight.god, AccessRight.pusher].includes(systemAccessright)"
+            (click)="closeAllMenu()"
+            class="menu_list"
+          >
+            <a [routerLink]="[linkList.adminCreatePush]">
+              <mat-icon style="font-size: 20px; line-height: 1.2">build</mat-icon>
+              <span>{{ '建立推播' | translate }}</span>
+            </a>
+          </li>
+          <li
+            *ngIf="systemAccessright < AccessRight.brandAdmin"
+            (click)="closeAllMenu()"
+            class="menu_list"
+          >
+            <a [routerLink]="[linkList.adminPushList]">
+              <mat-icon style="font-size: 20px; line-height: 1.2">build</mat-icon>
+              <span>{{ '推播清單' | translate }}</span>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <!--  裝置管理 選單  -->
+    <div [class.device_admin_activ]="menu.deviceAdminMenu" class="admin">
+      <div class="menu_content">
+        <div class="text_content">
+          <!-- <p class="menu_list member-name">{{ 'universal_deviceSetting_deviceManagement' | translate }}</p> -->
+          <p
+            *ngIf="menu.backAdminbtn"
+            (click)="backToAdminMenu()"
+            class="menu_list member-name pointer"
+          >
+            <mat-icon>navigate_before</mat-icon>
+            <span> 返回 </span>
+          </p>
+        </div>
+        <ul class="menu_ul">
+          <li
+            *ngIf="systemAccessright < AccessRight.brandAdmin"
+            (click)="closeAllMenu()"
+            class="menu_list"
+          >
+            <a [routerLink]="[linkList.adminDevicePairManagement]">
+              <mat-icon style="font-size: 20px; line-height: 1.2">build</mat-icon>
+              <span>{{ 'universal_deviceSetting_deviceInquiry' | translate }}</span>
+            </a>
+          </li>
+          <li
+            *ngIf="systemAccessright < AccessRight.maintainer"
+            (click)="closeAllMenu()"
+            class="menu_list"
+          >
+            <a [routerLink]="[linkList.adminDeviceLog]">
+              <mat-icon style="font-size: 20px; line-height: 1.2">build</mat-icon>
+              <span>{{ '應用日誌' | translate }}</span>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <!--  營運分析 選單  -->
+    <div [class.operate_admin_activ]="menu.operateAdminMenu" class="admin">
+      <div class="menu_content">
+        <div class="text_content">
+          <!-- <p class="menu_list member-name">{{ '營運分析' | translate }}</p> -->
+          <p
+            *ngIf="menu.backAdminbtn"
+            (click)="backToAdminMenu()"
+            class="menu_list member-name pointer"
+          >
+            <mat-icon>navigate_before</mat-icon>
+            <span> 返回 </span>
+          </p>
+        </div>
+        <ul class="menu_ul">
+          <li
+            *ngIf="systemAccessright < AccessRight.brandAdmin"
+            (click)="closeAllMenu()"
+            class="menu_list"
+          >
+            <a [routerLink]="[linkList.adminSystemOperationReport]">
+              <mat-icon style="font-size: 20px; line-height: 1.2">build</mat-icon>
+              <span>{{ 'universal_group_analysisReport' | translate }}</span>
+            </a>
+          </li>
+          <li
+            *ngIf="systemAccessright < AccessRight.brandAdmin"
+            (click)="closeAllMenu()"
+            class="menu_list"
+          >
+            <a [routerLink]="[linkList.adminGroupOperationList]">
+              <mat-icon style="font-size: 20px; line-height: 1.2">build</mat-icon>
+              <span>{{ '群組分析列表' | translate }}</span>
+            </a>
+          </li>
+          <li
+            *ngIf="systemAccessright < AccessRight.maintainer"
+            (click)="closeAllMenu()"
+            class="menu_list"
+          >
+            <a [routerLink]="[linkList.adminAlaAppAnalysis]">
+              <mat-icon style="font-size: 20px; line-height: 1.2">build</mat-icon>
+              <span>{{ '流量統計分析' | translate }}</span>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- 提醒 -->
+    <ng-container *ngIf="login">
+      <div class="flexCenter mail__button__section">
+        <button
+          class="mail__button"
+          [class.alert_animate]="!uiFlag.haveNewMail"
+          (click)="showStationMailList($event)"
+        >
+          <mat-icon>notifications_none</mat-icon>
+          <i
+            *ngIf="!uiFlag.haveNewMail"
+            class="icon-svg_web-icon_p1_069-about alert__icon__mail"
+          ></i>
+        </button>
+        <div class="brief__mail__list" *ngIf="uiFlag.showStationMailList">
+          <div class="flexRow message__title__section">
+            <h5 class="mail__list__title">
+              {{ 'universal_deviceSetting_message' | translate }}
+            </h5>
+            <button class="create__message__button" (click)="navigateNewMailPage()">
+              <i class="icon-svg_web-icon_p1_029-add"></i>
+            </button>
+          </div>
+          <app-inbox [isBriefList]="true"></app-inbox>
+          <a href="#" class="inbox__link" (click)="navigateInbox($event)">
+            {{ 'universal_operating_more' | translate }}
+          </a>
+        </div>
+      </div>
+    </ng-container>
+    <!-- ALA POINT -->
+    <ng-container *ngIf="login && alaPoint">
+      <div [routerLink]="['/dashboard/info']" class="main_nav_member nav_alapoint pointer">
+        <div class="member_avatar">
+          <img src="/assets/images/alaPoint.png" class="alapoint_img" />
+        </div>
+        <div class="alapoint">
+          <span>{{ alaPoint.remaining_points || 0 }}</span>
+        </div>
+      </div>
+    </ng-container>
+
     <div class="main_nav_member">
       <!-- 頭像 -->
       <div class="member_avatar" (click)="toggle('memberMenu')">
@@ -37,50 +474,65 @@
         />
         <i
           class="icon-svg_web-icon_p1_069-about alert__icon__enable"
-          *ngIf="accountStatus === 1"
+          *ngIf="(login && !accountStatus) || accountStatus === 1"
         ></i>
       </div>
-      <ul [class.member_activ]="menu.memberMenu" class="member">
-        <p class="member_list member-name">{{ userProfile.nickname }}</p>
-        <!-- 啟用帳號 -->
-        <li class="member_list enableAccount" *ngIf="accountStatus === 1">
-          <a [routerLink]="['']" (click)="toEnableAccount()">
-            <i class="icon-svg_web-icon_p1_069-about alert__icon__enable list_icon"></i>
-            <span
-              >{{ 'universal_deviceSetting_switch' | translate
-              }}{{ 'universal_userAccount_account' | translate }}</span
+      <div [class.member_activ]="menu.memberMenu" class="member">
+        <div class="menu_content">
+          <div class="text_content">
+            <p class="menu_list member-name">{{ userProfile.nickname }}</p>
+          </div>
+          <ul class="menu_ul">
+            <!-- 啟用帳號 -->
+            <li
+              class="menu_list enableAccount"
+              *ngIf="(login && !accountStatus) || accountStatus === 1"
             >
-          </a>
-        </li>
-        <!-- 登入 -->
-        <li *ngIf="(login$ | async) === false" class="member_list">
-          <a (click)="chooseNavItem('signIn')">
-            <mat-icon class="list_icon">person</mat-icon>
-            <span>{{ 'universal_userAccount_logIn' | translate }}</span>
-          </a>
-        </li>
-        <!-- 登出 -->
-        <li class="member_list">
-          <a *ngIf="login$ | async" (click)="chooseNavItem('logout')">
-            <mat-icon class="list_icon">close</mat-icon>
-            <span>{{ 'universal_userAccount_logOut' | translate }}</span>
-          </a>
-        </li>
-        <!-- 語言 -->
-        <li class="member_list">
-          <a
-            class="ala-btn__lang dropdown-toggle"
-            (click)="toggle('showLanguage')"
-            style="background-color: transparent; border-color: transparent"
-          >
-            <mat-icon class="list_icon">language</mat-icon>
-            <span>{{ langName }}</span>
-            <div class="showLanguage dropdown-menu" [class.show]="menu.showLanguage">
-              <ng-container *ngTemplateOutlet="langList"></ng-container>
-            </div>
-          </a>
-        </li>
-      </ul>
+              <a [routerLink]="['']" (click)="toEnableAccount()">
+                <i class="icon-svg_web-icon_p1_069-about alert__icon__enable list_icon"></i>
+                <span
+                  >{{ 'universal_deviceSetting_switch' | translate
+                  }}{{ 'universal_userAccount_account' | translate }}</span
+                >
+              </a>
+            </li>
+            <li (click)="closeAllMenu()" *ngIf="login" class="menu_list">
+              <a [routerLink]="['/dashboard/user-settings']">
+                <mat-icon class="list_icon">settings</mat-icon>
+                <span>{{ 'universal_system_accountManagement' | translate }}</span>
+              </a>
+            </li>
+            <!-- 語言 -->
+            <li class="menu_list">
+              <a
+                class="ala-btn__lang dropdown-toggle"
+                (click)="toggle('showLanguage')"
+                style="background-color: transparent; border-color: transparent"
+              >
+                <mat-icon class="list_icon">language</mat-icon>
+                <span>{{ langName }}</span>
+                <div class="showLanguage dropdown-menu" [class.show]="menu.showLanguage">
+                  <ng-container *ngTemplateOutlet="langList"></ng-container>
+                </div>
+              </a>
+            </li>
+            <!-- 登入 -->
+            <li *ngIf="!login" class="menu_list">
+              <a (click)="chooseNavItem('signIn')">
+                <mat-icon class="list_icon">person</mat-icon>
+                <span>{{ 'universal_userAccount_logIn' | translate }}</span>
+              </a>
+            </li>
+            <!-- 登出 -->
+            <li *ngIf="login" class="menu_list">
+              <a (click)="chooseNavItem('logout')">
+                <mat-icon class="list_icon">close</mat-icon>
+                <span>{{ 'universal_userAccount_logOut' | translate }}</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
     </div>
     <!-- hamber -->
     <label for="menu-switch" class="hb">

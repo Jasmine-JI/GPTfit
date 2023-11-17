@@ -241,7 +241,7 @@ export class CompletionRateDoughnutChartComponent implements OnInit, AfterViewIn
     };
 
     const options: ChartOptions = {
-      responsive: true,
+      responsive: false,
       maintainAspectRatio: true,
       animation: {
         easing: 'easeOutBounce',
@@ -401,7 +401,7 @@ export class CompletionRateDoughnutChartComponent implements OnInit, AfterViewIn
     };
 
     const options: ChartOptions = {
-      responsive: true, // 允許圖表自適應大小
+      responsive: false, // 允許圖表自適應大小
       maintainAspectRatio: true,
       animation: {
         easing: 'easeOutBounce',

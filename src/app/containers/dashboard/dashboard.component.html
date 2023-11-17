@@ -1,3 +1,7 @@
+<app-navbar
+  [isAlphaVersion]="isAlphaVersion"
+  [style.display]="isPreviewMode ? 'none' : ''"
+></app-navbar>
 <div
   (window:resize)="onResize($event)"
   [class.minimize-main-nav]="uiFlag.sidebarMode === 'expand'"
@@ -5,7 +9,7 @@
   *ngIf="!isLoading"
 >
   <ng-container *ngIf="!isPreviewMode">
-    <header class="header header__color ala-dashboard-header">
+    <!-- <header class="header header__color ala-dashboard-header">
       <div class="mobile-menu-toggle" (click)="navbarFixed()" *ngIf="uiFlag.mobileMode">
         <div>
           <i class="icon-svg_web-icon_p1_005-menu main-nav-toggle-icon"></i>
@@ -128,9 +132,9 @@
           </div>
         </div>
       </div>
-    </header>
+    </header> -->
 
-    <nav
+    <!-- <nav
       class="flexCol expand__navbar"
       [class.narrow__navbar]="uiFlag.sidebarMode === 'narrow' && !uiFlag.navFixed"
       [class.hide__navbar]="uiFlag.sidebarMode === 'hide' && !uiFlag.navFixed"
@@ -457,7 +461,7 @@
           </div>
         </div>
       </div>
-    </nav>
+    </nav> -->
   </ng-container>
   <div #mainBody class="main-body main__container" [class.preview]="isPreviewMode">
     <div
@@ -465,11 +469,7 @@
       *ngIf="uiFlag.mobileMode && uiFlag.sidebarMode === 'expand'"
       (click)="navbarFixed()"
     ></div>
-    <div
-      [class.dashboard__container]="isHadContainer"
-      [class.containerPrint]="isPreviewMode"
-      *ngIf="!isLoading"
-    >
+    <div [class.containerPrint]="isPreviewMode" *ngIf="!isLoading">
       <router-outlet></router-outlet>
     </div>
     <div class="mobileFiller"></div>

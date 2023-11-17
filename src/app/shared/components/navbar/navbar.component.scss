@@ -3,10 +3,13 @@
 @import 'screen-size.scss';
 @import 'color.scss';
 
+$nav-text-color: #800155;
+
 * {
   a {
     text-decoration: none;
   }
+
   ol,
   ul,
   li {
@@ -17,18 +20,34 @@
     font-size: 0;
     font: inherit;
     vertical-align: baseline;
+    line-height: 1;
   }
 }
 
 #menu-switch {
   display: none;
+
   &:checked + header {
     .main_nav {
       left: 0;
-      height: 190px;
       opacity: 1;
       transition: opacity 0.5s 0s, height 0.5s 0s;
+
+      @include s() {
+        height: 200px;
+      }
+
+      @include xs() {
+        display: flex;
+        flex-direction: column;
+        justify-content: start;
+        height: 100vh;
+        width: 70vw;
+        right: 0;
+        left: unset;
+      }
     }
+
     .hb {
       span:nth-child(1) {
         animation: no1 0.5s 0.5s forwards;
@@ -51,251 +70,533 @@ header {
   position: sticky;
   top: 0;
   z-index: 999999;
-  .header_box {
-    max-width: 1440px;
-    height: 60px;
-    margin: auto;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background-color: $nav-bgcolor;
-    top: 0;
-    z-index: 100;
+}
 
-    .logo {
-      margin-left: 10px;
+.header_box {
+  max-width: 1440px;
+  height: 60px;
+  margin: auto;
+  display: flex;
+  gap: 3px;
+  justify-content: space-between;
+  align-items: center;
+  background-color: $nav-bgcolor;
+  top: 0;
+  z-index: 100;
+
+  @include m() {
+    gap: 10px;
+  }
+
+  .logo {
+    margin-left: 10px;
+    height: 40px;
+
+    img {
+      height: 100%;
+      vertical-align: top;
+    }
+  }
+
+  svg {
+    width: 30px;
+
+    @include m() {
+      width: 50px;
+    }
+
+    color: $box-shadow;
+    height: 20px;
+    padding: 5px;
+  }
+
+  .hb {
+    margin: 0 10px;
+
+    @include s() {
+      width: 28px;
       height: 40px;
-      img {
-        height: 100%;
-        vertical-align: top;
-      }
+      position: relative;
     }
 
-    svg {
-      width: 30px;
+    @include m() {
+      display: none;
+    }
+
+    span {
+      width: 25px;
+      height: 2.8px;
+      background-color: $nav-text-color;
+      position: absolute;
+      left: 0;
+      right: 0;
+      margin: auto;
+      border-radius: 2.8px;
+      transform: rotate(0deg);
+      opacity: 1;
+
+      &:nth-child(1) {
+        top: 10px;
+      }
+
+      &:nth-child(2) {
+        top: 20px;
+      }
+
+      &:nth-child(3) {
+        top: 30px;
+      }
+    }
+  }
+
+  .main_nav_icon {
+    display: flex;
+    align-items: center;
+
+    @include s() {
+      margin-inline-start: auto;
+      text-align: right;
+    }
+  }
+
+  .main_nav_member {
+    display: flex;
+    align-items: center;
+
+    @include m() {
+      margin-right: 15px;
+    }
+  }
+}
+
+.member,
+.personal,
+.group,
+.admin {
+  position: absolute;
+  top: 100%;
+  left: -100%;
+  height: 0vh;
+  width: 100%;
+  opacity: 0;
+  background: #f7f2ff;
+  transition: opacity 0.5s 0s, height 0.5s 0s;
+
+  @include xs() {
+    left: unset;
+    height: 100vh;
+    width: 70vw;
+    right: -100%;
+    transition: opacity 0.5s 0s, right 0.5s 0s, width 0.5s 0s;
+  }
+}
+
+.menu_content {
+  max-width: 1024px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  margin: auto;
+  height: 100%;
+
+  @include xs() {
+    justify-content: flex-start;
+  }
+}
+
+.member .menu_ul,
+.personal .menu_ul,
+.group .menu_ul,
+.admin .menu_ul {
+  display: flex;
+  gap: 20% 10%;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-content: start;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  height: 70%;
+
+  @include s() {
+    gap: 20% 0%;
+    align-content: space-around;
+  }
+
+  @include xs() {
+    height: 90%;
+    gap: 35px;
+    align-content: center;
+  }
+}
+
+.text_content {
+  height: 20%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+
+  @include xs() {
+    height: 10%;
+  }
+}
+
+.menu_list.member-name {
+  font-weight: 900;
+  margin: 0;
+  font-size: 16px;
+  > mat-icon {
+    vertical-align: bottom;
+  }
+}
+
+.menu_list {
+  @include s() {
+    padding-left: 15px;
+  }
+
+  a {
+    display: inline-flex;
+    align-items: center;
+    color: black;
+    cursor: pointer;
+
+    .list_icon {
+      vertical-align: bottom;
+    }
+
+    span {
+      margin-left: 10px;
+    }
+
+    &:hover {
+      font-weight: 600;
+    }
+
+    @include s() {
+      font-size: 18px;
+    }
+  }
+}
+
+.menu_ul > .menu_list i,
+.menu_ul > .menu_list .mat-icon {
+  font-size: 24px;
+  width: 24px;
+  height: 24px;
+}
+
+// 啟用帳號li
+.menu_list.enableAccount {
+  color: #ff3838;
+
+  .alert__icon__enable {
+    color: $alert-icon-color;
+    font-size: 24px;
+  }
+}
+
+.member.member_activ,
+.personal.personal_activ,
+.group.group_activ,
+.admin.admin_activ,
+.admin.system_admin_activ,
+.admin.group_admin_activ,
+.admin.pushNotifi_admin_activ,
+.admin.device_admin_activ,
+.admin.operate_admin_activ {
+  left: 0;
+  height: 200px;
+  opacity: 1;
+  box-shadow: 0px 1px 1px 0px $box-shadow;
+
+  @include xs() {
+    width: 70vw;
+    left: unset;
+    right: 0;
+    height: 100vh;
+  }
+
+  @include m() {
+    padding-left: 15px;
+  }
+}
+
+.nav_alapoint {
+  padding: 3px 3px 3px 0;
+  margin-right: 10px;
+
+  &:hover {
+    background: #ecdcf0;
+    border-radius: 10px;
+  }
+
+  .alapoint_img {
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+  }
+}
+
+.main_nav_member {
+  // 頭像
+  .member_avatar {
+    position: relative;
+
+    .avatar {
+      height: 40px;
+      width: 40px;
+      border-radius: 25%;
+      cursor: pointer;
+
       @include m() {
-        width: 50px;
+        height: 45px;
+        width: 45px;
       }
-      color: $box-shadow;
-      height: 20px;
-      padding: 5px;
     }
 
-    .hb {
-      margin: 0 10px;
-      @include s() {
-        width: 28px;
-        height: 40px;
-        position: relative;
+    // 啟用帳號警告
+    > .alert__icon__enable {
+      color: $alert-icon-color;
+      font-size: 30px;
+      position: absolute;
+      right: -15px;
+      bottom: -9px;
+    }
+  }
+}
+
+.main_nav {
+  @include s() {
+    position: absolute;
+    width: 100%;
+    top: 100%;
+    left: -100%;
+    height: 0px;
+    opacity: 0;
+    transition: opacity 0.5s 0s, height 0.5s 0s;
+    background: $nav-bgcolor;
+    box-shadow: 0px 1px 1px 0px $box-shadow;
+  }
+
+  @include m() {
+    display: flex;
+    width: fit-content;
+    flex-grow: 1;
+  }
+
+  ul.main {
+    @include s() {
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-around;
+    }
+
+    @include xs() {
+      margin-top: 50px;
+      justify-content: flex-start;
+      gap: 36px;
+    }
+  }
+
+  ul.main .main_list {
+    position: relative;
+    vertical-align: middle;
+
+    @include m() {
+      display: inline-block;
+
+      &:hover > ul.sub {
+        display: block;
+
+        &::after {
+          content: '';
+          width: 100%;
+          height: 100%;
+          background-color: #000;
+          position: absolute;
+          top: 0;
+          right: -3px;
+          z-index: -1;
+          padding-bottom: 3px;
+        }
       }
+    }
+
+    > a {
+      font-size: 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+
+      &:hover {
+        font-weight: 600;
+      }
+
+      @include s() {
+        color: black;
+        text-align: center;
+      }
+
+      @include m() {
+        color: black;
+        margin: 0 22px;
+        text-align: center;
+        line-height: (60px - 1px * 2);
+        border: 1px solid transparent;
+        letter-spacing: 1px;
+      }
+
+      > i {
+        font-size: 24px;
+        font-weight: 600;
+        margin-inline-end: 6px;
+      }
+    }
+
+    .sub {
+      position: absolute;
+
+      @include s() {
+        display: none;
+      }
+
       @include m() {
         display: none;
       }
-      span {
-        width: 25px;
-        height: 2.8px;
-        background-color: black;
-        position: absolute;
-        left: 0;
-        right: 0;
-        margin: auto;
-        border-radius: 2.8px;
-        transform: rotate(0deg);
-        opacity: 1;
 
-        &:nth-child(1) {
-          top: 10px;
-        }
-        &:nth-child(2) {
-          top: 20px;
-        }
-        &:nth-child(3) {
-          top: 30px;
-        }
-      }
-    }
+      a {
+        text-decoration: none;
+        color: gray;
+        background-color: $box-shadow;
+        text-align: center;
+        font-weight: 400;
+        border: 1px solid $box-shadow;
 
-    .main_nav_icon {
-      display: flex;
-      align-items: center;
-      @include s() {
-        margin-inline-start: auto;
-        text-align: right;
-      }
-    }
-
-    .main_nav_member {
-      display: flex;
-      align-items: center;
-      margin-left: auto;
-      @include m() {
-        margin-right: 15px;
-      }
-      .member {
-        position: absolute;
-        top: 100%;
-        left: -100%;
-        height: 0vh;
-        width: 100%;
-        opacity: 0;
-        background: #f7f2ff;
-        transition: opacity 0.5s 0s, height 0.5s 0s;
-        .member_list {
-          margin: 10px 0 0 20px;
-          @include m() {
-            max-width: 1024px;
-            padding-left: 20px;
-            margin: 15px auto;
-          }
-          a {
-            display: inline-flex;
-            align-items: center;
-            color: black;
-            cursor: pointer;
-            .list_icon {
-              vertical-align: bottom;
-            }
-            span {
-              margin-left: 10px;
-            }
-            &:hover {
-              font-weight: 600;
-            }
-          }
-        }
-        .member_list.member-name {
-          font-weight: 900;
-          margin-bottom: 10px;
-        }
-        // 啟用帳號li
-        .member_list.enableAccount {
-          color: #ff3838;
-          .alert__icon__enable {
-            color: $alert-icon-color;
-            font-size: 24px;
-          }
-        }
-      }
-      .member.member_activ {
-        left: 0;
-        height: 190px;
-        opacity: 1;
-        box-shadow: 0px 1px 1px 0px $box-shadow;
-      }
-    }
-
-    .main_nav_member {
-      // 頭像
-      .member_avatar {
-        position: relative;
-        .avatar {
-          height: 40px;
-          width: 40px;
-          border-radius: 50%;
-          cursor: pointer;
-        }
-        // 啟用帳號警告
-        > .alert__icon__enable {
-          color: $alert-icon-color;
-          font-size: 30px;
-          position: absolute;
-          right: -15px;
-          bottom: -9px;
-        }
-      }
-    }
-
-    .main_nav {
-      @include s() {
-        position: absolute;
-        width: 100%;
-        left: -100%;
-        height: 0;
-        top: 100%;
-        opacity: 0;
-        transition: opacity 0.5s 0s, left 0s 0.5s;
-        background: $nav-bgcolor;
-        box-shadow: 0px 1px 1px 0px $box-shadow;
-      }
-      @include m() {
-        display: flex;
-        width: fit-content;
-        flex-grow: 1;
-      }
-      ul.main .main_list {
-        position: relative;
-        @include m() {
-          display: inline-block;
-          &:hover > ul.sub {
-            display: block;
-            &::after {
-              content: '';
-              width: 100%;
-              height: 100%;
-              background-color: #000;
-              position: absolute;
-              top: 0;
-              right: -3px;
-              z-index: -1;
-              padding-bottom: 3px;
-            }
-          }
-        }
-        > a {
-          font-size: 20px;
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          &:hover {
-            font-weight: 600;
-          }
-          @include s() {
-            padding: 20px;
-            color: black;
-            background-color: $nav-bgcolor;
-            text-align: center;
-          }
-          @include m() {
-            color: black;
-            margin: 0 22px;
-            text-align: center;
-            line-height: (60px - 1px * 2);
-            border: 1px solid transparent;
-            letter-spacing: 1px;
-          }
-          i {
-            font-size: 24px;
-            font-weight: 600;
-            margin-inline-end: 6px;
-          }
-        }
-        .sub {
-          position: absolute;
-          @include s() {
-            display: none;
-          }
-          @include m() {
-            display: none;
-          }
-          a {
-            text-decoration: none;
-            color: gray;
-            background-color: $box-shadow;
-            text-align: center;
-            font-weight: 400;
-            border: 1px solid $box-shadow;
-            &:hover {
-              background-color: #eceeff;
-              border: 1px solid #eceeff;
-              font-weight: 500;
-              color: $box-shadow;
-            }
-          }
+        &:hover {
+          background-color: #eceeff;
+          border: 1px solid #eceeff;
+          font-weight: 500;
+          color: $box-shadow;
         }
       }
     }
   }
 }
+
+//alapoint
+.alapoint {
+  font-weight: bold;
+  font-size: 18px;
+  color: $nav-text-color;
+
+  @include m() {
+    font-size: 20px;
+  }
+}
+
+// notification
+
+.material-symbols-outlined {
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+
+.mail__button__section {
+  position: relative;
+  height: 100%;
+  margin-left: auto;
+  max-width: 40px;
+  padding: 0;
+}
+
+.mail__button {
+  color: $nav-text-color;
+  font-size: 28px;
+}
+
+.mail__button.alert_animate {
+  animation: skew-y-shakeing 5s ease-in-out infinite;
+}
+
+@keyframes skew-y-shakeing {
+  0%,
+  10%,
+  20%,
+  30%,
+  40%,
+  70%,
+  80%,
+  90%,
+  100% {
+    -webkit-transform: rotate(0deg);
+    transform: rotate(0deg);
+  }
+
+  45%,
+  55%,
+  65% {
+    -webkit-transform: rotate(10deg);
+    transform: rotate(10deg);
+  }
+
+  50%,
+  60% {
+    -webkit-transform: rotate(-20deg);
+    transform: rotate(-20deg);
+  }
+}
+
+.alert__icon__mail {
+  position: absolute;
+  color: rgb(255, 56, 56);
+  font-size: 18px;
+  right: 2px;
+  top: 0;
+  cursor: pointer;
+}
+
+.brief__mail__list {
+  $shodow-color: rgba(200, 200, 200, 1);
+  $width: 250px;
+  width: $width;
+  min-width: $width;
+  box-shadow: 2px 2px 2px $shodow-color, -2px 2px 2px $shodow-color;
+
+  position: absolute;
+  top: 100%;
+  right: 0;
+  padding: 5px;
+  color: black;
+  background-color: white;
+  z-index: $navbar-drop-list;
+
+  @include s() {
+    right: unset;
+  }
+}
+
+.inbox__link {
+  width: 100%;
+  text-align: center;
+  display: block;
+  padding: 5px 0;
+}
+
+.message__title__section {
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.mail__list__title {
+  font-weight: bold;
+  margin: 0;
+}
+
+.create__message__button {
+  font-size: 24px;
+}
+
+// --end notification
 
 @keyframes no1 {
   0% {
@@ -344,11 +645,13 @@ header {
 .ala-btn__lang {
   position: relative;
   cursor: pointer;
+
   .showLanguage {
     position: absolute;
     top: 100%;
     display: none;
   }
+
   .showLanguage.show {
     display: block;
   }
@@ -371,7 +674,8 @@ header {
   z-index: $mask-full-screen;
   backdrop-filter: blur(1px);
   opacity: 0;
-  pointer-events: none; /* 點擊非主選單區域時關閉選單 */
+  pointer-events: none;
+  /* 點擊非主選單區域時關閉選單 */
 }
 
 .navmask_activ {

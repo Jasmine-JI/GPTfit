@@ -1,0 +1,78 @@
+<ng-container *ngIf="alaPoint && isPageOwner">
+  <div class="alapoint_wrapper">
+    <div class="alapoint_content">
+      <div class="alapont_overview">
+        <div class="alapoint_img_title">
+          <div class="alapoint_img">
+            <img class="img" src="../../../../assets/images/alaPoint.png" alt="可用點數" />
+          </div>
+          <div class="alapoint_title">可用點數</div>
+        </div>
+        <div class="alapoint_number">
+          {{ alaPoint.remaining_points }}
+        </div>
+      </div>
+      <div class="alapont_overview">
+        <div class="alapoint_img_title">
+          <div class="alapoint_img">
+            <img class="img" src="../../../../assets/images/remain_alaPoint.png" alt="本月點數" />
+          </div>
+          <div class="alapoint_title">本月點數</div>
+        </div>
+        <div class="alapoint_number">
+          {{ alaPoint.earned_this_month }}
+        </div>
+      </div>
+      <div class="alapont_overview">
+        <div class="alapoint_img_title">
+          <div class="alapoint_img">
+            <img class="img" src="../../../../assets/images/remain_alaPoint.png" alt="總累積點數" />
+          </div>
+          <div class="alapoint_title">總累積點數</div>
+        </div>
+        <div class="alapoint_number">
+          {{ alaPoint.total_earned_points }}
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-container>
+<!-- <ng-container *ngIf="alaPoint && !isPageOwner">
+  <div class="alapoint_wrapper">
+    <div class="alapoint_content">
+      <div class="alapont_overview">
+        <div class="alapoint_img_title">
+          <div class="alapoint_img">
+            <img class="img" src="../../../../assets/images/alaPoint.png" alt="可用點數" />
+          </div>
+          <div class="alapoint_title">可用點數</div>
+        </div>
+        <div class="alapoint_number">
+          {{ '???' }}
+        </div>
+      </div>
+      <div class="alapont_overview">
+        <div class="alapoint_img_title">
+          <div class="alapoint_img">
+            <img class="img" src="../../../../assets/images/remain_alaPoint.png" alt="本月點數" />
+          </div>
+          <div class="alapoint_title">本月點數</div>
+        </div>
+        <div class="alapoint_number">
+          {{ '???' }}
+        </div>
+      </div>
+      <div class="alapont_overview">
+        <div class="alapoint_img_title">
+          <div class="alapoint_img">
+            <img class="img" src="../../../../assets/images/remain_alaPoint.png" alt="總累積點數" />
+          </div>
+          <div class="alapoint_title">總累積點數</div>
+        </div>
+        <div class="alapoint_number">
+          {{ '???' }}
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-container> -->

@@ -440,7 +440,7 @@ export class DiscolorColumnChartComponent implements OnInit, OnChanges, OnDestro
         // 設定浮動提示框顯示格式-kidin-1090204
         trendChartOptions['tooltip'] = {
           formatter: function () {
-            const startDate = dayjs(this.x).format('YYYY-MM-DD'),
+            const startDate = dayjs(this.x).startOf('day').format('YYYY-MM-DD'),
               tVal = parseFloat(this.point.t.toFixed(1)),
               zVal = parseFloat(this.point.z.toFixed(1));
             if (this.series.xAxis.tickInterval === month) {

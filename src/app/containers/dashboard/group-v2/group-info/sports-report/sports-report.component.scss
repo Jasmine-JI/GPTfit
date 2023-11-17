@@ -122,3 +122,13 @@ $not-achieved-color: rgba(255, 0, 0, 1);
     width: 27px;
   }
 }
+
+.downloadXlsx {
+  display: flex;
+  align-items: center;
+  margin: 0 15px 0 auto;
+}
+
+.pointer {
+  cursor: pointer;
+}

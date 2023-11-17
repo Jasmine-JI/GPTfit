@@ -198,3 +198,33 @@ export const appPath = {
    */
   gsensor: 'gsensor',
 };
+
+const dashboardHome = appPath.dashboard.home;
+const adminPath = appPath.adminManage;
+export const linkList = {
+  userSetting: `/${dashboardHome}/${appPath.personal.userSettings}`,
+  trainlive: `/${dashboardHome}/${appPath.dashboard.trainLive}`,
+  myGroupList: `/${dashboardHome}/${appPath.professional.myGroupList}`,
+  groupSearch: `/${dashboardHome}/${appPath.professional.groupSearch}`,
+  activityList: `/${dashboardHome}/${appPath.personal.activityList}`,
+  device: `/${dashboardHome}/${appPath.device.home}`,
+  personalSportsReport: `/${dashboardHome}/${appPath.personal.sportsReport}`,
+  personalLifeTracking: `/${dashboardHome}/${appPath.personal.lifeTracking}`,
+  personalCloudrun: `/${dashboardHome}/${appPath.personal.cloudrun}`,
+  adminSettingMember: `/${dashboardHome}/${adminPath.home}/${adminPath.settingMember}`,
+  adminInnerTest: `/${dashboardHome}/${adminPath.home}/${adminPath.innerTest}`,
+  adminInnerGpx: `/${dashboardHome}/${adminPath.home}/${adminPath.innerGpx}`,
+  adminLifeTracking: `/${dashboardHome}/${adminPath.home}/${adminPath.lifeTracking}`,
+  adminSystemLog: `/${dashboardHome}/${adminPath.home}/${adminPath.systemLog}`,
+  adminFolderPermission: `/${dashboardHome}/${adminPath.home}/${adminPath.folderPermission}`,
+  adminAllGroupList: `/${dashboardHome}/${adminPath.home}/${adminPath.allGroupList}`,
+  adminCreateBrandGroup: `/${dashboardHome}/${adminPath.home}/${adminPath.createBrandGroup}`,
+  adminCreateComGroup: `/${dashboardHome}/${adminPath.home}/${adminPath.createComGroup}`,
+  adminCreatePush: `/${dashboardHome}/${adminPath.home}/${adminPath.createPush}`,
+  adminPushList: `/${dashboardHome}/${adminPath.home}/${adminPath.pushList}`,
+  adminDevicePairManagement: `/${dashboardHome}/${adminPath.home}/${adminPath.devicePairManagement}`,
+  adminDeviceLog: `/${dashboardHome}/${adminPath.home}/${adminPath.deviceLog.home}`,
+  adminSystemOperationReport: `/${dashboardHome}/${adminPath.home}/${adminPath.systemOperationReport}`,
+  adminGroupOperationList: `/${dashboardHome}/${adminPath.home}/${adminPath.groupOperationList}`,
+  adminAlaAppAnalysis: `/${dashboardHome}/${adminPath.home}/${adminPath.alaAppAnalysis}`,
+};

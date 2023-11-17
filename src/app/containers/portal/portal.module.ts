@@ -141,6 +141,7 @@ import { ExerciseHabitsModule } from '../exercise-habits/exercise-habits.module'
     AppCompressDataComponent,
     AppDestroyAccountComponent,
     ExerciseHabitsModule,
+    // AlapointAchievementComponent,
   ],
   providers: [
     HashIdService,

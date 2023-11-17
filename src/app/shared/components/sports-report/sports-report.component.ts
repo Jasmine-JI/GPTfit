@@ -863,8 +863,6 @@ export class SportsReportComponent implements OnInit, OnDestroy {
       ? new SportsReport(getParameter('compare', compareSportSummary))
       : null;
     if (this.uiFlag.isCompareMode) this.sportInfoData.diff = this.getSportInfoDiff();
-
-    console.log('sportInfoData', this.sportInfoData);
   }
 
   /**

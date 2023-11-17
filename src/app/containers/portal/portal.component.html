@@ -1,7 +1,9 @@
 <app-navbar
   [isAlphaVersion]="uiFlag.isAlphaVersion"
   *ngIf="!uiFlag.isPreviewMode && !uiFlag.hideNavbar"
+  [style.display]="uiFlag.isPreviewMode ? 'none' : ''"
 ></app-navbar>
+
 <div class="routeroutlet main__container main">
   <router-outlet></router-outlet>
 </div>

@@ -225,9 +225,9 @@ td {
 
 .group_data:nth-child(2) tr {
   cursor: pointer;
-
+  transition: background-color 0.3s ease-in-out;
   &:hover {
-    background-color: rgb(252, 241, 241);
+    background-color: #f1fbfe;
   }
 }
 

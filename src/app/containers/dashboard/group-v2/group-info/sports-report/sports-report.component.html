@@ -1532,6 +1532,18 @@
         <h6 class="cardSubtitle">{{ 'universal_group_personalAnalysis' | translate }}</h6>
         <app-tip-dialog [description]="tipContent.personalAnalysis"></app-tip-dialog>
       </div>
+      <div
+        *ngIf="reportCondition.sportType === SportType.all"
+        (click)="downloadXlsx()"
+        class="downloadXlsx"
+      >
+        <button class="btn__download">
+          <img
+            src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIHZpZXdCb3g9IjAgMCAxNiAxNiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0xMi43NjYzIDQuNzY2MjVMMTQgNkw4IDEyTDIgNkwzLjI0MjUgNC43NTc1TDcuMTI1IDguNjQ4NzVWMy4zMjQzOFYwSDguODc1VjguNjQ4NzVMMTIuNzY2MyA0Ljc2NjI1Wk0yLjcyNzExIDlIMFYxNkgxNlY5SDEzLjI3MjlWMTAuNjE1NEgxNC40NTE2VjE0LjM4NDZIMS41NDgzOVYxMC42MTU0SDIuNzI3MTFWOVoiIGZpbGw9IiMyQzBEMEQiIGZpbGwtb3BhY2l0eT0iMC44NyIvPgo8L3N2Zz4K"
+          />
+        </button>
+        <span class="btn__text pointer">下載XLSX</span>
+      </div>
       <div class="report-optionSection">
         <button (click)="showPersonalAnalysisOption($event)">
           <i class="icon-svg_web-icon_p1_001-setting report-settingIcon"></i>
@@ -1570,7 +1582,9 @@
         {{ 'universal_vocabulary_missTarget' | translate }}
       </span>
     </div>
+    <!-- table-th -->
     <div class="flexRow report-analysisHeaderRow">
+      <!-- 名稱 -->
       <div
         *ngTemplateOutlet="
           analysisHeader;
@@ -1583,6 +1597,7 @@
           }
         "
       ></div>
+      <!-- 達成率 -->
       <div class="flexRow report-analysisDataRow">
         <div
           *ngTemplateOutlet="
@@ -1598,6 +1613,7 @@
             }
           "
         ></div>
+        <!-- 活動數量 -->
         <div
           *ngTemplateOutlet="
             analysisHeader;
@@ -1613,6 +1629,7 @@
             }
           "
         ></div>
+        <!-- 總計時 -->
         <div
           *ngTemplateOutlet="
             analysisHeader;
@@ -1629,6 +1646,7 @@
           "
         ></div>
         <ng-container *ngIf="reportCondition.sportType === SportType.all">
+          <!-- 效益時間 -->
           <div
             *ngTemplateOutlet="
               analysisHeader;
@@ -1644,6 +1662,7 @@
               }
             "
           ></div>
+          <!-- PAI -->
           <div
             *ngTemplateOutlet="
               analysisHeader;
@@ -1658,6 +1677,7 @@
             "
           ></div>
         </ng-container>
+        <!-- 總卡路里 -->
         <div
           *ngTemplateOutlet="
             analysisHeader;
@@ -1671,6 +1691,7 @@
             }
           "
         ></div>
+        <!-- 平均心率 -->
         <div
           *ngTemplateOutlet="
             analysisHeader;
@@ -1756,7 +1777,7 @@
               }
             "
           ></div>
-
+          <!-- 總發電量 -->
           <div
             *ngTemplateOutlet="
               analysisHeader;
@@ -1953,6 +1974,7 @@
           ></div>
         </ng-container>
         <ng-container *ngIf="reportCondition.sportType === SportType.all">
+          <!-- 活動偏好 -->
           <div
             *ngTemplateOutlet="
               analysisHeader;
@@ -1968,6 +1990,7 @@
             "
           ></div>
         </ng-container>
+        <!-- ALA POINT -->
         <div
           *ngTemplateOutlet="
             analysisHeader;
@@ -1981,6 +2004,7 @@
             }
           "
         ></div>
+        <!-- 心率區間 -->
         <div
           *ngTemplateOutlet="
             analysisHeader;

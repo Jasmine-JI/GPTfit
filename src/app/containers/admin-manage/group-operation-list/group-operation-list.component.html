@@ -1,214 +1,227 @@
-<article>
-  <h4 class="pageTitle">群組分析列表</h4>
-  <section>
-    <app-page-road-path [pathList]="pathList"></app-page-road-path>
-  </section>
-  <section>
-    <app-operation-list-condition
-      [allConditionSetting]="allOperationCondition"
-      (changeCondition)="changeCondition($event)"
-    ></app-operation-list-condition>
-  </section>
-  <section>
-    <app-pagination [pageSetting]="page$ | async" (pageChange)="shiftPage($event)"></app-pagination>
-  </section>
-  <section class="flexCol">
-    <div class="list__column__header list__grid">
-      <span class="grid__cell">{{ '品牌名稱' | translate }}</span>
-      <span class="grid__cell">{{ '方案類別' | translate }}</span>
-      <span class="grid__cell">{{ '會員數/限制' | translate }}</span>
-      <span class="grid__cell">{{ 'universal_group_authorizationDueDate' | translate }}</span>
-      <span class="grid__cell">{{ 'universal_group_lastClassDate' | translate }}</span>
-      <span class="grid__cell">{{ '建立日期' | translate }}</span>
-    </div>
-    <ul class="flexCol group__list" *ngIf="list$ | async as list">
-      <li class="group__list__item" *ngFor="let _list of list; let _index = index">
-        <div class="flexCol">
-          <div
-            class="list__grid list__info"
-            (click)="_list.unfold = handleUnfoldItem($event, _list)"
-          >
-            <div class="flexRow group__name">
-              <figure class="flexCenter group__icon__container">
-                <img
-                  class="group__image"
-                  [src]="_list.baseInfo.groupIcon"
-                  [alt]="_list.baseInfo.groupName"
-                  (error)="_list.baseInfo.groupIcon = professionalIconSubstitudePath"
-                />
-              </figure>
-              <span class="list__group__name">{{ _list.baseInfo.groupName }}</span>
-            </div>
-            <span class="grid__cell">
-              {{ _list.commerceInfo.plan | groupCommercePlan | translate }}
-            </span>
-            <span
-              class="grid__cell"
-              [class.item__alert]="
-                _list.commerceInfo.currentGroupMembers >= _list.commerceInfo.maxGroupMembers
-              "
+<div class="page_info_wrapper">
+  <article>
+    <h4 class="pageTitle">群組分析列表</h4>
+    <section>
+      <app-page-road-path [pathList]="pathList"></app-page-road-path>
+    </section>
+    <section>
+      <app-operation-list-condition
+        [allConditionSetting]="allOperationCondition"
+        (changeCondition)="changeCondition($event)"
+      ></app-operation-list-condition>
+    </section>
+    <section>
+      <app-pagination
+        [pageSetting]="page$ | async"
+        (pageChange)="shiftPage($event)"
+      ></app-pagination>
+    </section>
+    <section class="flexCol">
+      <div class="list__column__header list__grid">
+        <span class="grid__cell">{{ '品牌名稱' | translate }}</span>
+        <span class="grid__cell">{{ '方案類別' | translate }}</span>
+        <span class="grid__cell">{{ '會員數/限制' | translate }}</span>
+        <span class="grid__cell">{{ 'universal_group_authorizationDueDate' | translate }}</span>
+        <span class="grid__cell">{{ 'universal_group_lastClassDate' | translate }}</span>
+        <span class="grid__cell">{{ '建立日期' | translate }}</span>
+      </div>
+      <ul class="flexCol group__list" *ngIf="list$ | async as list">
+        <li class="group__list__item" *ngFor="let _list of list; let _index = index">
+          <div class="flexCol">
+            <div
+              class="list__grid list__info"
+              (click)="_list.unfold = handleUnfoldItem($event, _list)"
             >
-              {{ _list.commerceInfo.currentGroupMembers }}/{{ _list.commerceInfo.maxGroupMembers }}
-            </span>
-            <span
-              class="grid__cell"
-              [class.item__alert]="currentTimestamp >= _list.commerceInfo.planExpired * 1000"
-            >
-              {{ _list.commerceInfo.planExpired * 1000 | timeFormat: 'YYYY-MM-DD' }}
-            </span>
-            <span class="grid__cell">
-              <ng-container *ngIf="_list.classAnalysis.lastTeachDate">
-                {{ _list.classAnalysis.lastTeachDate * 1000 | timeFormat: 'YYYY-MM-DD' }}
-              </ng-container>
-              <ng-container *ngIf="!_list.classAnalysis.lastTeachDate">
-                {{ '-' }}
-              </ng-container>
-            </span>
-            <span class="grid__cell">
-              {{ _list.baseInfo.createDate * 1000 | timeFormat: 'YYYY-MM-DD' }}
-            </span>
-            <i
-              class="icon-svg_web-icon_p1_006-unfold unfold__icon"
-              [class.unfold__icon--active]="_list.unfold"
-            ></i>
-          </div>
-          <div class="item__detail" *ngIf="_list.unfold">
-            <div class="flexCol">
-              <h6 class="content__title">{{ '基本資訊' | translate }}</h6>
-              <div class="content__section">
-                <div
-                  *ngTemplateOutlet="
-                    detailGrid;
-                    context: {
-                      detailArray: [
-                        ['群組編號', _list.baseInfo.groupId],
-                        [
-                          '群組類別',
-                          30 | groupLevelTranslate: _list.baseInfo.brandType | translate
-                        ],
-                        [
-                          '營運狀態',
-                          _list.commerceInfo.status | commerceOperationStatus | translate
-                        ]
-                      ]
-                    }
-                  "
-                ></div>
-                <div
-                  *ngTemplateOutlet="
-                    detailGrid;
-                    context: {
-                      detailArray: [
-                        ['universal_group_storeGroupAmount', _list.baseInfo.branchCounts],
-                        ['universal_group_classGroupAmount', _list.baseInfo.classCounts]
-                      ]
-                    }
-                  "
-                ></div>
-                <div
-                  *ngTemplateOutlet="
-                    detailGrid;
-                    context: {
-                      detailArray: [
-                        ['universal_group_classCounts', _list.classAnalysis.teachCounts],
-                        ['universal_group_totalClassUserCounts', _list.classAnalysis.attendsCounts],
-                        ['總課程檔案數', _list.classAnalysis.classFile]
-                      ]
-                    }
-                  "
-                ></div>
+              <div class="flexRow group__name">
+                <figure class="flexCenter group__icon__container">
+                  <img
+                    class="group__image"
+                    [src]="_list.baseInfo.groupIcon"
+                    [alt]="_list.baseInfo.groupName"
+                    (error)="_list.baseInfo.groupIcon = professionalIconSubstitudePath"
+                  />
+                </figure>
+                <span class="list__group__name">{{ _list.baseInfo.groupName }}</span>
               </div>
+              <span class="grid__cell">
+                {{ _list.commerceInfo.plan | groupCommercePlan | translate }}
+              </span>
+              <span
+                class="grid__cell"
+                [class.item__alert]="
+                  _list.commerceInfo.currentGroupMembers >= _list.commerceInfo.maxGroupMembers
+                "
+              >
+                {{ _list.commerceInfo.currentGroupMembers }}/{{
+                  _list.commerceInfo.maxGroupMembers
+                }}
+              </span>
+              <span
+                class="grid__cell"
+                [class.item__alert]="currentTimestamp >= _list.commerceInfo.planExpired * 1000"
+              >
+                {{ _list.commerceInfo.planExpired * 1000 | timeFormat: 'YYYY-MM-DD' }}
+              </span>
+              <span class="grid__cell">
+                <ng-container *ngIf="_list.classAnalysis.lastTeachDate">
+                  {{ _list.classAnalysis.lastTeachDate * 1000 | timeFormat: 'YYYY-MM-DD' }}
+                </ng-container>
+                <ng-container *ngIf="!_list.classAnalysis.lastTeachDate">
+                  {{ '-' }}
+                </ng-container>
+              </span>
+              <span class="grid__cell">
+                {{ _list.baseInfo.createDate * 1000 | timeFormat: 'YYYY-MM-DD' }}
+              </span>
+              <i
+                class="icon-svg_web-icon_p1_006-unfold unfold__icon"
+                [class.unfold__icon--active]="_list.unfold"
+              ></i>
             </div>
-            <div class="flexCol">
-              <h6 class="content__title">{{ 'universal_time_lastMonthSummary' | translate }}</h6>
-              <div class="content__section">
-                <div
-                  *ngTemplateOutlet="
-                    detailGrid;
-                    context: {
-                      detailArray: [['新增會員數', _list.oneMonthAnalysis.newMember]]
-                    }
-                  "
-                ></div>
-                <div
-                  *ngTemplateOutlet="
-                    detailGrid;
-                    context: {
-                      detailArray: [
-                        ['universal_group_classCounts', _list.oneMonthAnalysis.teachCounts],
-                        ['universal_group_classUserCounts', _list.oneMonthAnalysis.attendsCounts],
-                        ['課程檔案數', _list.oneMonthAnalysis.classFile]
-                      ]
-                    }
-                  "
-                ></div>
-                <div
-                  *ngTemplateOutlet="
-                    detailGrid;
-                    context: {
-                      detailArray: [
-                        ['上課活躍人數', _list.oneMonthAnalysis.class_active_count],
-                        ['運動活躍人數', _list.oneMonthAnalysis.group_active_count]
-                      ]
-                    }
-                  "
-                ></div>
-              </div>
-            </div>
-            <div class="flexCol">
-              <h6 class="content__title">{{ '裝置資訊' | translate }}</h6>
-              <div class="content__section">
-                <div>
-                  <p class="content__subtitle">{{ '使用次數' | translate }}</p>
+            <div class="item__detail" *ngIf="_list.unfold">
+              <div class="flexCol">
+                <h6 class="content__title">{{ '基本資訊' | translate }}</h6>
+                <div class="content__section">
                   <div
                     *ngTemplateOutlet="
                       detailGrid;
                       context: {
-                        detailArray: _list.device.useCounts
+                        detailArray: [
+                          ['群組編號', _list.baseInfo.groupId],
+                          [
+                            '群組類別',
+                            30 | groupLevelTranslate: _list.baseInfo.brandType | translate
+                          ],
+                          [
+                            '營運狀態',
+                            _list.commerceInfo.status | commerceOperationStatus | translate
+                          ]
+                        ]
+                      }
+                    "
+                  ></div>
+                  <div
+                    *ngTemplateOutlet="
+                      detailGrid;
+                      context: {
+                        detailArray: [
+                          ['universal_group_storeGroupAmount', _list.baseInfo.branchCounts],
+                          ['universal_group_classGroupAmount', _list.baseInfo.classCounts]
+                        ]
+                      }
+                    "
+                  ></div>
+                  <div
+                    *ngTemplateOutlet="
+                      detailGrid;
+                      context: {
+                        detailArray: [
+                          ['universal_group_classCounts', _list.classAnalysis.teachCounts],
+                          [
+                            'universal_group_totalClassUserCounts',
+                            _list.classAnalysis.attendsCounts
+                          ],
+                          ['總課程檔案數', _list.classAnalysis.classFile]
+                        ]
                       }
                     "
                   ></div>
                 </div>
-                <span> {{ '使用型號一覽' | translate }}: {{ _list.device.modelTypeList }} </span>
               </div>
-            </div>
-            <div class="flexCol">
-              <h6 class="content__title">
-                {{ 'universal_deviceSetting_relatedLinks' | translate }}
-              </h6>
-              <div class="flexCol content__section">
-                <a [href]="_list.link.introduction" target="_blank" class="relative__link">
-                  {{ 'universal_group_introduction' | translate }}
-                </a>
-                <a [href]="_list.link.commerce" target="_blank" class="relative__link">
-                  {{ '群組方案頁' | translate }}
-                </a>
-                <a [href]="_list.link.operation" target="_blank" class="relative__link">
-                  {{ '群組營運分析' | translate }}
-                </a>
+              <div class="flexCol">
+                <h6 class="content__title">{{ 'universal_time_lastMonthSummary' | translate }}</h6>
+                <div class="content__section">
+                  <div
+                    *ngTemplateOutlet="
+                      detailGrid;
+                      context: {
+                        detailArray: [['新增會員數', _list.oneMonthAnalysis.newMember]]
+                      }
+                    "
+                  ></div>
+                  <div
+                    *ngTemplateOutlet="
+                      detailGrid;
+                      context: {
+                        detailArray: [
+                          ['universal_group_classCounts', _list.oneMonthAnalysis.teachCounts],
+                          ['universal_group_classUserCounts', _list.oneMonthAnalysis.attendsCounts],
+                          ['課程檔案數', _list.oneMonthAnalysis.classFile]
+                        ]
+                      }
+                    "
+                  ></div>
+                  <div
+                    *ngTemplateOutlet="
+                      detailGrid;
+                      context: {
+                        detailArray: [
+                          ['上課活躍人數', _list.oneMonthAnalysis.class_active_count],
+                          ['運動活躍人數', _list.oneMonthAnalysis.group_active_count]
+                        ]
+                      }
+                    "
+                  ></div>
+                </div>
+              </div>
+              <div class="flexCol">
+                <h6 class="content__title">{{ '裝置資訊' | translate }}</h6>
+                <div class="content__section">
+                  <div>
+                    <p class="content__subtitle">{{ '使用次數' | translate }}</p>
+                    <div
+                      *ngTemplateOutlet="
+                        detailGrid;
+                        context: {
+                          detailArray: _list.device.useCounts
+                        }
+                      "
+                    ></div>
+                  </div>
+                  <span> {{ '使用型號一覽' | translate }}: {{ _list.device.modelTypeList }} </span>
+                </div>
+              </div>
+              <div class="flexCol">
+                <h6 class="content__title">
+                  {{ 'universal_deviceSetting_relatedLinks' | translate }}
+                </h6>
+                <div class="flexCol content__section">
+                  <a [href]="_list.link.introduction" target="_blank" class="relative__link">
+                    {{ 'universal_group_introduction' | translate }}
+                  </a>
+                  <a [href]="_list.link.commerce" target="_blank" class="relative__link">
+                    {{ '群組方案頁' | translate }}
+                  </a>
+                  <a [href]="_list.link.operation" target="_blank" class="relative__link">
+                    {{ '群組營運分析' | translate }}
+                  </a>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      </li>
-      <li class="group__list__item" *ngIf="list.length === 0">
-        {{ 'universal_status_noData' | translate }}
-      </li>
-    </ul>
-  </section>
-  <section>
-    <app-pagination [pageSetting]="page$ | async" (pageChange)="shiftPage($event)"></app-pagination>
-  </section>
-  <p class="update__time" *ngIf="lastUpdateTime$ | async as lastUpdateTime">
-    {{ 'universal_group_lastUpdateddate' | translate }}:
-    <time>{{ lastUpdateTime.update.timestamp * 1000 | timeFormat: 'YYYY-MM-DD HH:mm' }}</time>
-  </p>
-</article>
+        </li>
+        <li class="group__list__item" *ngIf="list.length === 0">
+          {{ 'universal_status_noData' | translate }}
+        </li>
+      </ul>
+    </section>
+    <section>
+      <app-pagination
+        [pageSetting]="page$ | async"
+        (pageChange)="shiftPage($event)"
+      ></app-pagination>
+    </section>
+    <p class="update__time" *ngIf="lastUpdateTime$ | async as lastUpdateTime">
+      {{ 'universal_group_lastUpdateddate' | translate }}:
+      <time>{{ lastUpdateTime.update.timestamp * 1000 | timeFormat: 'YYYY-MM-DD HH:mm' }}</time>
+    </p>
+  </article>
 
-<ng-template #detailGrid let-detailArray="detailArray">
-  <div class="detail__grid">
-    <span *ngFor="let _detail of detailArray">
-      {{ _detail[0] | translate }}: {{ _detail[1] }}
-    </span>
-  </div>
-</ng-template>
+  <ng-template #detailGrid let-detailArray="detailArray">
+    <div class="detail__grid">
+      <span *ngFor="let _detail of detailArray">
+        {{ _detail[0] | translate }}: {{ _detail[1] }}
+      </span>
+    </div>
+  </ng-template>
+</div>

@@ -1,5 +1,8 @@
 <div class="flexCol" *ngIf="groupInfo && groupInfo.groupRootInfo">
-  <header class="flexCol childPageCard" [style.display]="uiFlag.isPreviewMode ? 'none' : ''">
+  <header
+    class="flexCol cardSection childPageCard"
+    [style.display]="uiFlag.isPreviewMode ? 'none' : ''"
+  >
     <span class="contentSubtitle">{{ 'universal_time_recentActivities' | translate }}</span>
     <app-group-analysis-calender
       [groupId]="groupInfo.groupId"
@@ -7,7 +10,7 @@
       (selectRangeDate)="selectRangeDate($event)"
     ></app-group-analysis-calender>
   </header>
-  <main class="childPageCard">
+  <main class="childPageCard cardSection">
     <ng-container *ngIf="!uiFlag.isLoading && !uiFlag.noData; else noData">
       <div class="functionBtnBar">
         <div>
