@@ -88,10 +88,11 @@
           <div class="input_select input">
             <div
               class="foldable"
+              [class.default-option]="!orderInfo.sales_channel"
               [class.unfold]="showSalesChannelDropdown"
               (click)="toggleSalesChannelDropdown()"
             >
-              {{ orderInfo.sales_channel }}
+              {{ orderInfo.sales_channel || '請選擇' }}
             </div>
             <div *ngIf="showSalesChannelDropdown" class="toggle_dropdown">
               <ul class="dropdown_ul">

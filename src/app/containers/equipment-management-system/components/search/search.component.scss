@@ -2,6 +2,12 @@
 $card_width: 550px;
 
 .section {
+  .title_wrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
   .title {
     font-size: 26px;
     font-weight: 700;
@@ -32,7 +38,7 @@ $card_width: 550px;
 
 .order_list,
 .rigister_list {
-  margin: 0 0 0 15%;
+  margin: 0 auto;
 }
 
 .order_list {
@@ -167,4 +173,16 @@ $card_width: 550px;
   &::before {
     position: relative;
   }
+}
+
+.toggle_dropdown {
+  width: max-content;
+}
+
+.label_input {
+  margin: unset;
+  width: max-content;
+  display: flex;
+  justify-content: space-between;
+  gap: 7px;
 }

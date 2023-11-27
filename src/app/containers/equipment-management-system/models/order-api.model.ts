@@ -92,7 +92,7 @@ export interface updateOrderInfoBody {
   user_name: string;
   phone: string;
   address: string;
-  sales_channel: string;
+  sales_channel?: string;
   memo?: string;
   modify_name?: string;
   create_name?: string;

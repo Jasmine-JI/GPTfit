@@ -3,6 +3,7 @@ import { CommonModule, NgIf } from '@angular/common';
 import {
   Component,
   EventEmitter,
+  HostListener,
   Input,
   OnChanges,
   OnDestroy,
@@ -30,7 +31,7 @@ import _, { cloneDeep } from 'lodash';
 import { Subject, takeUntil } from 'rxjs';
 import { Domain, WebIp } from '../../../../../core/enums/common';
 import { UserService } from '../../../../../core/services';
-import { orderListParameters } from '../../../models/order-api.model';
+import { orderListParameters, updateOrderInfoBody } from '../../../models/order-api.model';
 import { EquipmentManagementService } from '../../../services/equipment-management.service';
 
 const DATE_FORMAT = {
@@ -238,11 +239,18 @@ export class EditMaintenanceRequirementComponent implements OnInit, OnChanges, O
     this.fixReqInfo.phone = event.target.value;
   }
 
+  @HostListener('window:click', ['$event'])
+  onDocumentClick(event: Event): void {
+    this.addTag();
+  }
+
   /**
    * 輸入產品序號欄位鍵盤操作
    * @param event
    */
   onKeyDown(event: KeyboardEvent) {
+    console.log(event.key);
+
     if (event.key === 'Tab' || event.key === 'Enter' || event.key === ',') {
       event.preventDefault();
       this.addTag();
@@ -533,6 +541,8 @@ export class EditMaintenanceRequirementComponent implements OnInit, OnChanges, O
       create_name: this.modifyCteateName,
     };
 
+    this.IfHasOrder(updateData);
+
     this.equipmentManagementService
       .addFixReqfoApi(updateData)
       .pipe(takeUntil(this.ngUnsubscribe))
@@ -542,6 +552,7 @@ export class EditMaintenanceRequirementComponent implements OnInit, OnChanges, O
           alert(response.description);
         } else if (!response.error) {
           alert('新增成功');
+
           // console.log(updateData);
           // console.log(response);
           this.closeEdit();
@@ -590,7 +601,56 @@ export class EditMaintenanceRequirementComponent implements OnInit, OnChanges, O
           alert('編輯成功');
           // console.log(updateData);
           // console.log(this.fixReqInfo);
+          this.IfHasOrder(updateData);
+        }
+      });
+  }
 
+  async IfHasOrder(updateData: any) {
+    const body = { order_no: updateData.order_no };
+    // console.log(body);
+    this.equipmentManagementService
+      .getOrderListApi(body)
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe((res) => {
+        // console.log(res);
+        if (res.error) {
+          // console.log('單號不存在');
+          this.addOrderInfo(updateData);
+        } else {
+          // console.log('單號存在');
+          this.closeEdit();
+          this.infoChange.emit();
+        }
+      });
+  }
+
+  /**
+   * 新增銷貨單 - 儲存內容
+   */
+  addOrderInfo(updateData: any) {
+    console.log(updateData);
+
+    const { order_no, user_name, phone, address } = updateData;
+
+    const orderData: updateOrderInfoBody = {
+      order_no,
+      user_name,
+      phone,
+      address,
+      sales_channel: '',
+      create_name: this.modifyCteateName,
+    };
+
+    this.equipmentManagementService
+      .addOrderInfoApi(orderData)
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe((response) => {
+        // console.log(response);
+        if (response.error) {
+          alert(response.description);
+        } else if (!response.error) {
+          // console.log('新增銷貨單成功');
           this.closeEdit();
           this.infoChange.emit();
         }

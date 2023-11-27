@@ -92,7 +92,7 @@ export class EditOrderComponent implements OnInit, OnChanges, OnDestroy {
   ngOnChanges(changes: SimpleChanges): void {
     if (changes.isNewForm || changes.editing) {
       this.judgeEdmitMode();
-      this.textLength = this.orderInfo.memo.length;
+      this.textLength = this.orderInfo.memo?.length;
     }
     if (changes.editing) {
       this.closeAllDropdown();
