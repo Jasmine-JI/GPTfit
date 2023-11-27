@@ -1,6 +1,33 @@
 <section class="section">
-  <div class="title">搜尋結果</div>
-  <ng-container *ngIf="uiFlag.orderList || uiFlag.fixReqList; else noData">
+  <div class="title_wrapper">
+    <div class="title">搜尋結果</div>
+    <div #fixReqStatus *ngIf="uiFlag.searchType == 'repair_form'" class="label_input">
+      <label (click)="toggleDropdown('repairStatus')" class="edit_item_label pointer"
+        >處理狀態</label
+      >
+      <div class="input_select input">
+        <div
+          class="foldable"
+          [class.unfold]="repairOpt.showRepairStatusDropdown"
+          (click)="toggleDropdown('repairStatus')"
+        >
+          {{ repairOpt.repairStatus }}
+        </div>
+        <div *ngIf="repairOpt.showRepairStatusDropdown" class="toggle_dropdown">
+          <ul>
+            <li
+              *ngFor="let repairStatus of repairStatusList"
+              (click)="selectStatus(repairStatus)"
+              class="dropdown_list"
+            >
+              {{ repairStatus }}
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+  <ng-container *ngIf="uiFlag.orderList || repairOpt.filterFixReqList; else noData">
     <ng-container *ngIf="uiFlag.searchType == 'order'">
       <ng-container *ngFor="let order of uiFlag.orderList; let i = index">
         <div [routerLink]="['/equipment-management/order', order.order_no]" class="order_list">
@@ -26,7 +53,7 @@
       </ng-container>
     </ng-container>
     <ng-container *ngIf="uiFlag.searchType == 'repair_form'">
-      <ng-container *ngFor="let fixReq of uiFlag.fixReqList">
+      <ng-container *ngFor="let fixReq of repairOpt.filterFixReqList">
         <div
           [routerLink]="['/equipment-management/maintenance-requirement', fixReq.repair_id]"
           class="order_list"

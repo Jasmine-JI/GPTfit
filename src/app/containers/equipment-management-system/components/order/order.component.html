@@ -13,7 +13,7 @@
           <div class="name">{{ orderInfo.create_name }}</div>
         </div>
       </div>
-      <div class="time_name">
+      <div *ngIf="orderInfo.modify_time" class="time_name">
         <div class="establish_update_time">
           <div class="title">最後修改</div>
           <div class="date_time">{{ orderInfo.modify_time }}</div>
@@ -53,7 +53,7 @@
         <div class="detail_info_title">銷售渠道</div>
         <div class="content_wrap">
           <div class="editable_content">
-            {{ orderInfo.sales_channel }}
+            {{ orderInfo.sales_channel || '無' }}
           </div>
         </div>
       </div>

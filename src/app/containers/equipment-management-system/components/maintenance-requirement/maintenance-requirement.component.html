@@ -210,6 +210,22 @@
               <div class="editable_content">{{ repair.repair_date }}</div>
             </div>
           </div>
+          <ng-container *ngIf="repair.detail">
+            <div class="detail_info_wrap" [style.width.%]="95">
+              <div class="detail_info_title">詳細說明</div>
+              <div class="memo_wrap" style="max-width: 100%">
+                <div class="memo_content ellipsis">{{ repair.detail }}</div>
+              </div>
+            </div>
+          </ng-container>
+          <ng-container *ngIf="!repair.detail">
+            <div class="detail_info_wrap">
+              <div class="detail_info_title">詳細說明</div>
+              <div class="memo_wrap">
+                <div class="memo_content">無</div>
+              </div>
+            </div>
+          </ng-container>
         </div>
       </ng-container>
     </div>
